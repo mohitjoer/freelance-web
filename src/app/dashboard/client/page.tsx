@@ -1,26 +1,52 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from 'next/navigation';
-import connectDB  from '@/mongo/db';
-import UserData from '@/mongo/model/user';
+'use client';
 
+import { useEffect, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+import Link from 'next/link';
 
+export default function ClientDashboard() {
+  const { user } = useUser();
+  const [jobs, setJobs] = useState([]);
 
-export default async function ClientDashboardPage() {
-  const { userId } =  auth();
-  if (!userId) return redirect('/sign-in');
+  useEffect(() => {
+    // Example fetch (replace with real API call)
+    const fetchJobs = async () => {
+      try {
+        const res = await fetch('/api/jobs/client'); // Adjust endpoint
+        const data = await res.json();
+        setJobs(data.jobs || []);
+      } catch (error) {
+        console.error('Failed to fetch jobs:', error);
+      }
+    };
 
-  await connectDB();
-  const user = await UserData.findOne({ userId });
-
-  if (!user || user.role !== 'client') {
-    return redirect('/dashboard/freelancer'); // or 403 page
-  }
+    if (user) fetchJobs();
+  }, [user]);
 
   return (
-    <section className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Client Dashboard</h1>
-      <p>Welcome, {user.firstName}</p>
-      {/* Jobs Posted, Proposals Received, etc. */}
-    </section>
+    <main className="min-h-screen bg-gray-100 px-4 py-8">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Client Dashboard</h1>
+
+        <section className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-700">Your Posted Jobs</h2>
+            <Link
+              href="/dashboard/client/post-job"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+            >
+              + Post New Job
+            </Link>
+          </div>
+
+          {jobs.length === 0 ? (
+            <p className="text-gray-600">You haven’t posted any jobs yet.</p>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
   );
 }

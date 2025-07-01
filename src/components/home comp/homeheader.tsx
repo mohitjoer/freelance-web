@@ -64,9 +64,9 @@ function Homeheader() {
       </div>
 
       {/* Auth Section */}
-      <div className="w-full md:w-auto flex items-center justify-center md:justify-end">
+       <div className="w-full md:w-auto flex items-center justify-center md:justify-end">
         <SignedOut>
-          <SignInButton mode="modal">
+          <SignInButton mode="redirect" forceRedirectUrl="/select">
             <Button className="bg-white px-5 py-2 rounded-full font-semibold hover:text-sky-500 hover:scale-110 transition">
               Sign In
             </Button>

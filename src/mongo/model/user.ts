@@ -73,7 +73,6 @@ const userSchema = new Schema<IUserData>(
       {
         title: String,
         link: String,
-        description: String,
       },
     ],
 
