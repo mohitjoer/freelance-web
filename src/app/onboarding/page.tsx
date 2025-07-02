@@ -102,7 +102,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-r from-cyan-500 to-blue-500 flex flex-col items-center justify-center px-4 py-8">
+    <main className="h-screen bg-linear-to-r from-cyan-500 to-blue-500 flex flex-col items-center justify-center">
       <div className="w-full max-w-3xl sm:p-8 p-6 bg-white shadow-xl rounded-xl transition-all duration-300">
         {!role && (
           <>

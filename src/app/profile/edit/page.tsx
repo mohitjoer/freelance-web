@@ -99,74 +99,76 @@ export default function EditProfilePage() {
   if (loading) return <p className="p-4">Loading...</p>;
 
   return (
-    <main className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold mb-6">Edit Profile</h1>
+    <main  className="h-screen bg-linear-to-r from-cyan-500 to-blue-500 flex flex-col items-center justify-center ">
+      <div className="w-full max-w-3xl sm:p-8 p-6 bg-white shadow-xl rounded-xl transition-all duration-300">
+        <h1 className="text-3xl font-bold mb-6">Edit Profile</h1>
 
-      {msg && <p className="text-sm text-red-500 mb-4">{msg}</p>}
+        {msg && <p className="text-sm text-red-500 mb-4">{msg}</p>}
 
-      <label className="block mb-1 font-medium">First Name</label>
-      <input
-        className="w-full p-2 mb-4 border rounded"
-        value={form.firstName}
-        onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-      />
+        <label className="block mb-1 font-medium">First Name</label>
+        <input
+          className="w-full p-2 mb-4 border rounded"
+          value={form.firstName}
+          onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+        />
 
-      <label className="block mb-1 font-medium">Last Name</label>
-      <input
-        className="w-full p-2 mb-4 border rounded"
-        value={form.lastName}
-        onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-      />
+        <label className="block mb-1 font-medium">Last Name</label>
+        <input
+          className="w-full p-2 mb-4 border rounded"
+          value={form.lastName}
+          onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+        />
 
-      <label className="block mb-1 font-medium">Bio</label>
-      <textarea
-        className="w-full p-2 mb-4 border rounded h-24"
-        value={form.bio}
-        onChange={(e) => setForm({ ...form, bio: e.target.value })}
-      />
+        <label className="block mb-1 font-medium">Bio</label>
+        <textarea
+          className="w-full p-2 mb-4 border rounded h-24"
+          value={form.bio}
+          onChange={(e) => setForm({ ...form, bio: e.target.value })}
+        />
 
-      {role === "freelancer" && (
-        <>
-          <label className="block mb-1 font-medium">Skills (comma-separated)</label>
-          <input
-            className="w-full p-2 mb-4 border rounded"
-            value={form.skills}
-            onChange={(e) => setForm({ ...form, skills: e.target.value })}
-          />
+        {role === "freelancer" && (
+          <>
+            <label className="block mb-1 font-medium">Skills (comma-separated)</label>
+            <input
+              className="w-full p-2 mb-4 border rounded"
+              value={form.skills}
+              onChange={(e) => setForm({ ...form, skills: e.target.value })}
+            />
 
-          <label className="block mb-1 font-medium">Experience Level</label>
-          <input
-            className="w-full p-2 mb-4 border rounded"
-            value={form.experienceLevel}
-            onChange={(e) => setForm({ ...form, experienceLevel: e.target.value })}
-          />
-        </>
-      )}
+            <label className="block mb-1 font-medium">Experience Level</label>
+            <input
+              className="w-full p-2 mb-4 border rounded"
+              value={form.experienceLevel}
+              onChange={(e) => setForm({ ...form, experienceLevel: e.target.value })}
+            />
+          </>
+        )}
 
-      {role === "client" && (
-        <>
-          <label className="block mb-1 font-medium">Company Name</label>
-          <input
-            className="w-full p-2 mb-4 border rounded"
-            value={form.companyName}
-            onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-          />
+        {role === "client" && (
+          <>
+            <label className="block mb-1 font-medium">Company Name</label>
+            <input
+              className="w-full p-2 mb-4 border rounded"
+              value={form.companyName}
+              onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+            />
 
-          <label className="block mb-1 font-medium">Company Website</label>
-          <input
-            className="w-full p-2 mb-4 border rounded"
-            value={form.companyWebsite}
-            onChange={(e) => setForm({ ...form, companyWebsite: e.target.value })}
-          />
-        </>
-      )}
+            <label className="block mb-1 font-medium">Company Website</label>
+            <input
+              className="w-full p-2 mb-4 border rounded"
+              value={form.companyWebsite}
+              onChange={(e) => setForm({ ...form, companyWebsite: e.target.value })}
+            />
+          </>
+        )}
 
-      <button
-        onClick={handleUpdate}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mt-4"
-      >
-        Save Changes
-      </button>
+        <button
+          onClick={handleUpdate}
+          className="bg-linear-to-r from-cyan-500 to-blue-500 py-2 px-3 flex items-center justify-center  rounded-full text-white font-bold shadow-lg hover:from-white hover:to-white hover:text-cyan-500 transition-colors duration-300"
+        >
+          Save Changes
+        </button>
+      </div>
     </main>
   );
 }
