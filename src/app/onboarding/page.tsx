@@ -2,7 +2,7 @@
 
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -86,7 +86,9 @@ export default function OnboardingPage() {
       });
 
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.message === 'Already registered') {
+        setAlertMessage('User already exists. Please sign in or go to your dashboard.');
+      } else if (data.success) {
         router.push(`/dashboard/${role}`);
       } else {
         alert('Failed to register.');
@@ -104,19 +106,19 @@ export default function OnboardingPage() {
       <div className="w-full max-w-3xl sm:p-8 p-6 bg-white shadow-xl rounded-xl transition-all duration-300">
         {!role && (
           <>
-            <h1 className="text-xl font-bold mb-4 text-center">Choose Your Role</h1>
+            <h1 className="scroll-m-20 pb-6 text-center text-2xl font-bold tracking-tight text-balance">Choose Your Role</h1>
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => setRole('freelancer')}
-                className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+                className="w-1/2 bg-linear-to-br from-cyan-500 to-blue-700 hover:to-blue-200 hover:from-blue-200 hover:text-blue-500 text-white font-semibold py-2 px-4 rounded-full"
               >
-                I'm a Freelancer
+                I&apos;m looking for Freelance Work
               </button>
               <button
                 onClick={() => setRole('client')}
-                className="w-1/2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
+                className="w-1/2 bg-linear-to-br from-green-500 to-emerald-700 hover:to-lime-200 hover:from-lime-200 hover:text-emerald-700 text-white font-semibold py-2 px-4 rounded-full"
               >
-                I'm a Client
+                I&apos;m looking to Hire
               </button>
             </div>
           </>
@@ -124,7 +126,7 @@ export default function OnboardingPage() {
 
         {role && (
           <>
-            <h2 className="text-xl font-semibold mb-4 text-center">
+            <h2 className="scroll-m-20 text-center text-4xl font-bold tracking-tight text-balance">
               {role === 'freelancer' ? 'Freelancer Profile' : 'Client Profile'}
             </h2>
 
@@ -141,6 +143,7 @@ export default function OnboardingPage() {
               onChange={e => setFirstName(e.target.value)}
               className="w-full p-2 mb-4 border rounded"
               placeholder="First Name"
+              required
             />
 
             {/* Last Name */}
@@ -150,6 +153,7 @@ export default function OnboardingPage() {
               onChange={e => setLastName(e.target.value)}
               className="w-full p-2 mb-4 border rounded"
               placeholder="Last Name"
+              required
             />
 
             {/* Bio */}
@@ -159,6 +163,7 @@ export default function OnboardingPage() {
               onChange={(e) => setBio(e.target.value)}
               className="w-full p-2 mb-4 border rounded h-24"
               placeholder="Tell us about yourself"
+              required
             />
 
             {/* Freelancer Section */}
@@ -170,6 +175,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setSkills(e.target.value)}
                   className="w-full p-2 mb-4 border rounded"
                   placeholder="e.g. Video editor, Web developer, React"
+                  required
                 />
 
                 <label className="block mb-1 font-medium">Experience Level</label>
@@ -177,6 +183,7 @@ export default function OnboardingPage() {
                   value={experienceLevel}
                   onChange={e => setExperienceLevel(e.target.value as 'beginner' | 'intermediate' | 'expert')}
                   className="w-full p-2 mb-4 border rounded"
+                  required
                 >
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
@@ -204,31 +211,25 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={handleAddPortfolio}
-                  className="bg-linear-to-r from-cyan-500 to-blue-500 flex items-center justify-center px-3 py-2 rounded-full text-white font-bold shadow-lg hover:from-white hover:to-white hover:text-cyan-500 transition-colors duration-300"
+                  className="bg-blue-500 text-white px-3 py-1 rounded"
                 >
-                  + Add Portfolio
+                  Add
                 </button>
-
-                {/* Preview Portfolio List */}
-                {portfolio.length > 0 && (
-                  <div className="bg-cyan-500  gap-2 flex flex-col items-center justify-center rounded-lg p-2 my-4 text-sm text-gray-700">
-                    {portfolio.map((item, idx) => (
-                      <div  className='flex flex-row w-full gap-2' key={idx}>
-                        <div className='bg-white/80 w-9/10 flex items-center justify-center p-2 rounded-lg'>
-                          <span className="font-semibold">{item.title}</span>: {item.link}
-                        </div>
-                        <button className='bg-white/80 w-1/10 flex items-center justify-center p-2 rounded-lg'>
-                          <span
-                            className=" text-red-500  flex items-center justify-center  cursor-pointer"
-                            onClick={() => setPortfolio(portfolio.filter((_, i) => i !== idx))}
-                          >
-                           <DeleteOutlineIcon/>
-                          </span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <ul className="list-disc pl-5 mt-2 mb-4">
+                  {portfolio.map((item, idx) => (
+                    <li key={idx} className="flex justify-between items-center">
+                      <span className="text-sm">{item.title} - {item.link}</span>
+                      <button
+                        onClick={() => setPortfolio(portfolio.filter((_, i) => i !== idx))}
+                        className="text-red-500 hover:text-red-700"
+                        title="Remove"
+                      >
+                        <DeleteOutlineIcon fontSize="small" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                
               </>
             )}
 
@@ -241,6 +242,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setCompanyName(e.target.value)}
                   className="w-full p-2 mb-4 border rounded"
                   placeholder="e.g. Acme Inc."
+                  // not required
                 />
 
                 <label className="block mb-1 font-medium">Company Website</label>
@@ -249,6 +251,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setCompanyWebsite(e.target.value)}
                   className="w-full p-2 mb-4 border rounded"
                   placeholder="https://example.com"
+                  // not required
                 />
               </>
             )}

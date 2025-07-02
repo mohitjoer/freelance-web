@@ -89,14 +89,7 @@ const userSchema = new Schema<IUserData>(
 
     ratings: { type: Number, default: 0 },
 
-    reviews: [
-      {
-        reviewerId: { type: String },
-        comment: String,
-        rating: Number,
-        date: Date,
-      },
-    ],
+    reviews: [{ type: String , unique: true}],
   },
   {
     timestamps: true, 

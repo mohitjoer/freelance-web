@@ -27,15 +27,15 @@ export async function POST(req: Request) {
 
     if (body.role === 'freelancer') {
       await UserData.create({
-      userId: body.userId,
-      userImage: body.userImage,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      role: body.role,
-      bio: body.bio,
-      skills: Array.isArray(body.skills) ? body.skills : [],
-      experienceLevel: body.experienceLevel || 'beginner',
-      portfolio: Array.isArray(body.portfolio) ? body.portfolio : [],
+        userId: body.userId,
+        userImage: body.userImage,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        role: body.role,
+        bio: body.bio,
+        skills: Array.isArray(body.skills) ? body.skills : [],
+        experienceLevel: body.experienceLevel || 'beginner',
+        portfolio: Array.isArray(body.portfolio) ? body.portfolio : [],
       });
     }
 

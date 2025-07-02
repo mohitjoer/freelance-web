@@ -19,6 +19,9 @@ interface IJob extends Document {
   startedAt?: Date;
   finishedAt?: Date;
 
+  references?: string[];       
+  resources?: string[];         
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -29,10 +32,10 @@ const jobSchema = new Schema<IJob>(
     description: { type: String, required: true },
     category: { type: String, required: true },
     budget: { type: Number, required: true },
-    deadline: { type: Date, required: true },
+  
 
     clientId: { type: String, required: true },
-    freelancerId: { type: String }, // Populated once job is accepted
+    freelancerId: { type: String }, 
 
     status: {
       type: String,
@@ -40,9 +43,14 @@ const jobSchema = new Schema<IJob>(
       default: 'open',
     },
 
-    proposals: [{ type: String }], // Array of proposal IDs
-    acceptedProposalId: { type: String }, // ID of the accepted proposal
+    references: [{ type: String }],
+    resources: [{ type: String }], 
 
+    proposals: [{ type: String }], 
+    acceptedProposalId: { type: String }, 
+
+
+    deadline: { type: Date, required: true },
     startedAt: { type: Date },
     finishedAt: { type: Date },
   },
