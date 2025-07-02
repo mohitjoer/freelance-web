@@ -7,15 +7,9 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import { Badge } from "@/components/ui/badge";
 import { SignedIn, UserButton } from "@clerk/clerk-react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
+import ClientJobList from "@/components/client comp/joblist";
+import Image from "next/image";
 
 // Type Definitions
 interface ClientData {
@@ -71,8 +65,8 @@ export default function ClientDashboard() {
 
   if (!isLoaded || loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-lg">Loading your dashboard...</p>
+      <div className="h-screen bg-white flex items-center justify-center">
+        <Skeleton className="w-[95vw] h-[95vh] max-w-full max-h-full bg-gray-700 rounded-xl" />
       </div>
     );
   }
@@ -102,7 +96,13 @@ export default function ClientDashboard() {
         <div className="flex flex-col sm:flex-row justify-between items-center border-b border-neutral-300 pb-4 mb-6 gap-4">
           <div className="flex items-center gap-4">
             {data.image && (
-              <img src={data.image} alt={data.name} className="w-24 h-24 rounded-full object-cover" />
+              <Image
+                src={data.image}
+                alt={data.name}
+                width={96}
+                height={96}
+                className="w-24 h-24 rounded-full object-cover"
+              />
             )}
             <div className="flex flex-col">
               <h1 className="text-3xl font-bold">{data.name}</h1>
@@ -112,7 +112,7 @@ export default function ClientDashboard() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Link href="/jobs/post">
+            <Link href="/jobs/create">
               <button className="p-2 rounded-full text-gray-600 hover:bg-gray-100 shadow">
                 <PostAddOutlinedIcon />
               </button>
@@ -226,27 +226,10 @@ export default function ClientDashboard() {
 
 
         {/* job */}
-        <div className="mb-6 bg-neutral-300 border-neutral-500 border-2 rounded-xl p-4 w-fit">
-          <Table>
-            <TableCaption className="">A list of your recent invoices.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">ID</TableHead>
-                <TableHead>Job Title</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>editing</TableCell>
-                <TableCell>in progress</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
+
+          <ClientJobList/> 
+        {/* ^^^^^^^^^ job posted by the user are in this  */}
+     
       </div>
     </main>
   );

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined';
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge"
 import { SignedIn, UserButton } from "@clerk/clerk-react";
@@ -17,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 // Type definitions
@@ -96,8 +98,8 @@ export default function FreelancerDashboard() {
   // Show loading while Clerk is initializing or while fetching data
   if (!isLoaded || loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-center text-lg">Loading your dashboard...</p>
+      <div className="h-screen bg-white flex items-center justify-center">
+        <Skeleton className="w-[95vw] h-[95vh] max-w-full max-h-full bg-gray-700 rounded-xl" />
       </div>
     );
   }
@@ -136,10 +138,12 @@ export default function FreelancerDashboard() {
           {/* Header Section */}
           <div className="flex items-center gap-4 mb-6">
             {data.image && (
-              <img 
-                src={data.image} 
+              <Image
+                src={data.image}
                 alt={data.name}
-                className="w-36 h-36 rounded-full object-cover"
+                width={96}
+                height={96}
+                className="w-24 h-24 rounded-full object-cover"
               />
             )}
             <div className="flex flex-wrap items-end gap-1 md:gap-2 ">

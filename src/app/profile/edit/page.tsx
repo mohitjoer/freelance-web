@@ -4,6 +4,18 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+// Define the payload type
+interface UpdatePayload {
+  bio: string;
+  firstName: string;
+  lastName: string;
+  skills?: string[];
+  portfolio?: { title: string; link: string }[];
+  experienceLevel?: string;
+  companyName?: string;
+  companyWebsite?: string;
+}
+
 export default function EditProfilePage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -44,9 +56,10 @@ export default function EditProfilePage() {
           companyName: u.companyName || "",
           companyWebsite: u.companyWebsite || "",
         });
-      } catch (err: any) {
-        console.error(err);
-        setMsg("Failed to load profile.");
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : "Failed to load profile.";
+        console.error(errorMsg);
+        setMsg(errorMsg);
       } finally {
         setLoading(false);
       }
@@ -58,7 +71,7 @@ export default function EditProfilePage() {
   const handleUpdate = async () => {
     setMsg(null);
 
-    const payload: any = {
+    const payload: UpdatePayload = {
       bio: form.bio,
       firstName: form.firstName,
       lastName: form.lastName,
@@ -91,8 +104,9 @@ export default function EditProfilePage() {
         setMsg(result.message || "Failed to update.");
       }
     } catch (err) {
-      console.error(err);
-      setMsg("Server error.");
+      const errorMsg = err instanceof Error ? err.message : "Server error.";
+      console.error(errorMsg);
+      setMsg(errorMsg);
     }
   };
 
