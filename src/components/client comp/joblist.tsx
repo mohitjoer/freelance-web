@@ -111,7 +111,7 @@ export default function ClientJobList() {
                       {job.status}
                     </span>
                   </div>
-                  <div className='flex flex-row justify-between'>
+                  <div className='flex flex-col md:flex-row justify-between'>
                     <div className='flex gap-2 flex-row items-center '>
                       <p className="text-sm text-gray-500 ">Budget: ${job.budget}</p>
                       <p className="text-sm text-gray-500">Deadline: {new Date(job.deadline).toDateString()}</p>

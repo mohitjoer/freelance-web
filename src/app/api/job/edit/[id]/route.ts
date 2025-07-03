@@ -41,6 +41,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       console.log('Forbidden: Not your job', { jobClientId: job.clientId, userId });
       return NextResponse.json({ success: false, message: 'Forbidden: Not your job' }, { status: 403 });
     }
+    
+    if (job.status === "cancelled") {
+      return NextResponse.json({ success: false, message: "Cancelled jobs cannot be edited ." }, { status: 400 });
+    }
+
+    
+    if (job.status === "completed") {
+      return NextResponse.json({ success: false, message: "Completed jobs cannot be edited." }, { status: 400 });
+    }
 
     const payload = await req.json();
  

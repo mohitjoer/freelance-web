@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import Link from "next/link";
 
 function Homeheader() {
   return (
@@ -84,6 +85,11 @@ function Homeheader() {
               },
             }}
           />
+          <Link href="/select">
+          <Button className="bg-white px-5 py-2 rounded-full font-semibold hover:text-sky-500 hover:scale-110 transition ml-3">
+            Dashboard
+          </Button>
+          </Link>
         </SignedIn>
       </div>
     </header>

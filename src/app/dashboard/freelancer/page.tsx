@@ -155,7 +155,7 @@ export default function FreelancerDashboard() {
           </div>
           {/* Action Buttons */}
             <div className="flex flex-row gap-2 items-start">
-            <Link href="/jobs" >
+            <Link href="/jobs/open" >
               <button className="w-full sm:w-auto flex items-center justify-center  text-gray-500 font-bold p-1 shadow rounded-full transition-colors">
               <WorkOutlineOutlinedIcon />
               </button>
