@@ -182,49 +182,7 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        {/* Jobs Posted List */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Jobs Posted</h2>
-          {data.jobsPosted.length > 0 ? (
-            <ul className="list-disc list-inside text-gray-700">
-              {data.jobsPosted.map((job, i) => (
-                <li key={i}>{job}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500">No jobs posted yet.</p>
-          )}
-        </div>
-
-        {/* Jobs Ongoing List */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Jobs Ongoing</h2>
-          {data.jobsOngoing.length > 0 ? (
-            <ul className="list-disc list-inside text-gray-700">
-              {data.jobsOngoing.map((job, i) => (
-                <li key={i}>{job}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500">No ongoing jobs.</p>
-          )}
-        </div>
-
-        {/* Jobs Finished List */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Jobs Finished</h2>
-          {data.jobsFinished.length > 0 ? (
-            <ul className="list-disc list-inside text-gray-700">
-              {data.jobsFinished.map((job, i) => (
-                <li key={i}>{job}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500">No finished jobs.</p>
-          )}
-        </div>
-
-
+       
         {/* job */}
 
           <ClientJobList/> 

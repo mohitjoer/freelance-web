@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/mongo/db";
 import Job from "@/mongo/model/jobschema";
+import UserData from "@/mongo/model/user"; // ✅ Make sure this import is correct
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,6 +22,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Create the job
     const job = await Job.create({
       title: body.title,
       description: body.description,
@@ -31,6 +33,12 @@ export async function POST(req: NextRequest) {
       references: body.references || [],
       resources: body.resources || [],
     });
+
+    
+    await UserData.findOneAndUpdate(
+      { userId },
+      { $push: { jobsPosted: job._id.toString() } }
+    );
 
     return NextResponse.json({ success: true, data: job });
   } catch (error) {
