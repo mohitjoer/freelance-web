@@ -48,7 +48,9 @@ export default function EditJobPage() {
       }
     };
 
-    if (jobId) fetchJob();
+    if (jobId) {
+      fetchJob();
+    }
   }, [jobId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -58,7 +60,11 @@ export default function EditJobPage() {
   const handleAddLink = (type: 'references' | 'resources', value: string) => {
     if (!value.trim()) return;
     setForm(prev => ({ ...prev, [type]: [...prev[type], value.trim()] }));
-    type === 'references' ? setReferenceInput('') : setResourceInput('');
+    if (type === 'references') {
+      setReferenceInput('');
+    } else {
+      setResourceInput('');
+    }
   };
 
   const handleRemoveLink = (type: 'references' | 'resources', index: number) => {

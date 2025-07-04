@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import User from '@/mongo/model/user';
 import connectDB from '@/mongo/db';
-import  Job, { IJob } from '@/mongo/model/jobschema';
-
+import Job, { IJob } from '@/mongo/model/jobschema';
 
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = context.params;
+  // Await the params to get the actual values
+  const { id } = await context.params;
 
   try {
     await connectDB();

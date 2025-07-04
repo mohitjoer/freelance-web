@@ -5,10 +5,11 @@ import Job from '@/mongo/model/jobschema';
 
 
 // GET /api/job/[id] → Fetch job details
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     await connectDB();
-    const job = await Job.findById(params.id);
+    const job = await Job.findById(id);
 
     if (!job) {
       return NextResponse.json({ success: false, message: 'Job not found' }, { status: 404 });
@@ -22,8 +23,9 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 }
 
 // PATCH /api/job/[id] → Update job details
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -31,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     await connectDB();
 
-    const job = await Job.findById(params.id);
+    const job = await Job.findById(id);
     if (!job) {
       
       return NextResponse.json({ success: false, message: 'Job not found' }, { status: 404 });

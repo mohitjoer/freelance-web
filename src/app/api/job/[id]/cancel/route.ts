@@ -4,16 +4,18 @@ import connectDB from "@/mongo/db";
 import Job from "@/mongo/model/jobschema";
 
 // PATCH /api/job/[id]/cancel → Cancel a job
-export async function PATCH(_: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
+
     await connectDB();
 
-    const job = await Job.findById(params.id);
+    const job = await Job.findById(id);
     if (!job) {
       return NextResponse.json({ success: false, message: "Job not found" }, { status: 404 });
     }

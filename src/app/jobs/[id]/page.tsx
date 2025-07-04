@@ -44,6 +44,18 @@ export default function JobDetailsPage() {
   const [failureMessage, setFailureMessage] = useState<string>('');
   const [existingProposal, setExistingProposal] = useState<Proposal | null>(null);
 
+  const fetchProposal = async () => {
+    try {
+      const res = await fetch(`/api/proposal/check?jobId=${id}`);
+      const data = await res.json();
+      if (data.success && data.proposal) {
+        setExistingProposal(data.proposal);
+      }
+    } catch (err) {
+      console.error('Failed to fetch proposal:', err);
+    }
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -127,18 +139,6 @@ export default function JobDetailsPage() {
     }
   };
 
-  const fetchProposal = async () => {
-    try {
-      const res = await fetch(`/api/proposal/check?jobId=${id}`);
-      const data = await res.json();
-      if (data.success && data.proposal) {
-        setExistingProposal(data.proposal);
-      }
-    } catch (err) {
-      console.error('Failed to fetch proposal:', err);
-    }
-  };
-
   useEffect(() => {
     if (!id) return;
 
@@ -167,7 +167,21 @@ export default function JobDetailsPage() {
   }, [id, router]);
 
   useEffect(() => {
-    fetchProposal();
+    if (!id) return;
+
+    const fetchProposalForJob = async () => {
+      try {
+        const res = await fetch(`/api/proposal/check?jobId=${id}`);
+        const data = await res.json();
+        if (data.success && data.proposal) {
+          setExistingProposal(data.proposal);
+        }
+      } catch (err) {
+        console.error('Failed to fetch proposal:', err);
+      }
+    };
+
+    fetchProposalForJob();
   }, [id]);
 
   if (loading) {
@@ -189,6 +203,8 @@ export default function JobDetailsPage() {
                 src={job.client.image}
                 alt={job.client.name}
                 className="w-10 h-10 rounded-full border"
+                width={40}
+                height={40}
               />
               <div>
                 <p className=" text-2xl font-semibold">{job.client.name}</p>
