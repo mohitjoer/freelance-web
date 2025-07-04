@@ -42,7 +42,7 @@ export default function OpenJobsPage() {
         } else {
           setMessage(data.message);
         }
-      } catch (err) {
+      } catch {
         setMessage('Failed to load jobs.');
       } finally {
         setLoading(false);

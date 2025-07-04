@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import connectDB from '@/mongo/db';
 import Job from '@/mongo/model/jobschema';
-import UserData from '@/mongo/model/user';
+
 
 // GET /api/job/[id] → Fetch job details
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {

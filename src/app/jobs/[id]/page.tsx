@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Alert, AlertTitle } from "@/components/ui/alert";
+import Image from 'next/image';
 
 interface Job {
   _id: string;
@@ -184,7 +185,7 @@ export default function JobDetailsPage() {
           <h1 className="text-3xl font-bold text-indigo-700 mb-4">{job.title}</h1>
           {job.client && (
             <div className="flex w-fit bg-neutral-400 p-2 pr-4 rounded-full items-center flex-row gap-4 mb-4">
-              <img
+              <Image
                 src={job.client.image}
                 alt={job.client.name}
                 className="w-10 h-10 rounded-full border"
