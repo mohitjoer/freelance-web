@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/mongo/db";
 import Job from "@/mongo/model/jobschema";
-import UserData from "@/mongo/model/user"; // ✅ Make sure this import is correct
+import UserData from "@/mongo/model/user";
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Create the job
     const job = await Job.create({
+      jobId: uuidv4(),
       title: body.title,
       description: body.description,
       category: body.category,
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
     
     await UserData.findOneAndUpdate(
       { userId },
-      { $push: { jobsPosted: job._id.toString() } }
+      { $push: { jobsPosted: job.jobId.toString() } }
     );
 
     return NextResponse.json({ success: true, data: job });

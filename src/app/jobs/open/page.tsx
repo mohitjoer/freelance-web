@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Job {
   _id: string;
@@ -71,8 +72,15 @@ export default function OpenJobsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-r from-cyan-500 to-blue-500 px-2 py-4 flex items-center justify-center">
       <div className="w-full max-w-6xl h-[95vh] max-h-[95vh] mx-auto bg-white rounded-xl p-2 sm:p-6 shadow-md flex flex-col overflow-auto">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-indigo-700 text-center">Explore Open Jobs</h1>
-
+        <h1 className="text-2xl py-4 sm:text-3xl font-bold mb-4 text-indigo-700 text-center">Explore Open Jobs</h1>
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => router.push('/dashboard/freelancer')}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition"
+          >
+            Go to Dashboard
+          </button>
+        </div>
         {message && <p className="text-red-500 mb-4 text-center">{message}</p>}
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -109,11 +117,13 @@ export default function OpenJobsPage() {
         </div>
 
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <div className="h-full w-full bg-white flex items-center justify-center">
+            <Skeleton className="w-full h-full max-w-full max-h-full bg-gray-700 rounded-xl" />
+          </div>
         ) : filteredJobs.length === 0 ? (
           <p className="text-gray-600 text-center">No matching jobs found.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto pr-1 max-h-[60vh]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto pr-1 h-full w-full">
             {filteredJobs.map(job => (
               <div
                 key={job._id}
@@ -126,6 +136,12 @@ export default function OpenJobsPage() {
                   <span>Budget: <span className="font-semibold">${job.budget}</span></span>
                   <span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
                 </div>
+                <button
+                  onClick={() => router.push(`/jobs/${job._id}`)}
+                  className="mt-3 bg-linear-to-t from-sky-500 to-indigo-500 hover:to-indigo-300 hover:from-indigo-300 text-white hover:text-indigo-600 px-4 py-2 rounded-md text-sm font-medium transition"
+                >
+                  View Details
+                </button>
               </div>
             ))}
           </div>

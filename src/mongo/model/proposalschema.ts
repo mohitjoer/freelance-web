@@ -1,9 +1,11 @@
 import { Schema, model, models, Document } from 'mongoose';
 
+
+
 interface IProposal extends Document {
-  jobId: string;              // Job._id
-  freelancerId: string;       // UserData.userId
-  clientId: string;           // UserData.userId (from Job)
+  proposalId: string; 
+  jobId: string;              
+  freelancerId: string;
   message: string;
   proposedAmount: number;
   estimatedDays: number;
@@ -13,9 +15,9 @@ interface IProposal extends Document {
 
 const proposalSchema = new Schema<IProposal>(
   {
+    proposalId:{ type: String,required:true, unique: true}, 
     jobId: { type: String, required: true },
     freelancerId: { type: String, required: true },
-    clientId: { type: String, required: true },
 
     message: { type: String, required: true },
     proposedAmount: { type: Number, required: true },

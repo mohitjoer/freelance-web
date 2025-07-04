@@ -1,7 +1,6 @@
 import { Schema, model, models, Document } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
 
-interface IJob extends Document {
+export interface IJob extends Document {
   jobId: string;
   title: string;
   description: string;
@@ -30,7 +29,7 @@ interface IJob extends Document {
 
 const jobSchema = new Schema<IJob>(
   {
-    jobId: { type: String, default: uuidv4 },
+    jobId: { type: String, required: true, unique: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
     category: { type: String, required: true },
