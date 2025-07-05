@@ -88,9 +88,16 @@ export default function Proposallist() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Your Proposals</h2>
-      
+    <div className="p-6 max-w-4xl mx-auto bg-gray-300 rounded-lg shadow-md">
+      <div className='flex flex-row justify-between'>
+        <h2 className="text-2xl font-bold mb-4">Your Proposals</h2>
+        <Button className='bg-indigo-600 hover:bg-indigo-700 '>
+            <a href="/jobs/open" className="text-white">
+              Find Jobs
+            </a>
+          </Button>
+      </div>
+
       {/* Success/Error Messages */}
       {successMessage && (
         <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
@@ -106,7 +113,7 @@ export default function Proposallist() {
       {loading ? (
         <p>Loading...</p>
       ) : proposals.length === 0 ? (
-        <p className="text-gray-500">You haven&apos;t submitted any proposals yet.</p>
+          <p className="text-gray-500">You haven&apos;t submitted any proposals yet.</p>
       ) : (
         <div className="space-y-4">
           {proposals.map((proposal) => (

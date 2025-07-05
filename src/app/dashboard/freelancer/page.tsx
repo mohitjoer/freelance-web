@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { SignedIn, UserButton } from "@clerk/clerk-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Proposallist from "@/components/freelancer comp/proposallist";
+import JobTaken from "@/components/freelancer comp/jobtaken";
 
 
 // Type definitions
@@ -43,6 +44,7 @@ export default function FreelancerDashboard() {
   const [freelancerData, setFreelancerData] = useState<APIResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<'proposals' | 'jobs'>('proposals');
 
   useEffect(() => {
     // Wait for Clerk to load user data
@@ -243,10 +245,38 @@ export default function FreelancerDashboard() {
           </div>
         </div>
 
-
-        {/* Jobs appyed*/}
-        <div>
-          <Proposallist />
+        {/* Component Switch */}
+        <div className="mb-6">
+          <div className="flex items-center justify-center mb-4">
+            <div className="bg-gray-100 rounded-lg p-1 flex">
+              <button
+                onClick={() => setActiveView('proposals')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeView === 'proposals'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Proposals
+              </button>
+              <button
+                onClick={() => setActiveView('jobs')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeView === 'jobs'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Jobs Taken
+              </button>
+            </div>
+          </div>
+          
+          {/* Component Display */}
+          <div className="transition-all duration-300 ease-in-out">
+            {activeView === 'proposals' && <Proposallist />}
+            {activeView === 'jobs' && <JobTaken />}
+          </div>
         </div>
       </div>
     </main>
