@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/popover"
 
 interface Job {
+  jobId: string;
+  clientId: string;
   _id: string;
   title: string;
   status: string;
@@ -49,28 +51,27 @@ export default function ClientJobList() {
   }, [isLoaded, user]);
 
   const handleCancel = async (jobId: string) => {
-  try {
-    const res = await fetch(`/api/job/${jobId}/cancel`, {
-      method: "PATCH",
-    });
+    try {
+      const res = await fetch(`/api/job/${jobId}/cancel`, {
+        method: "PATCH",
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (result.success) {
-      setJobs((prev) =>
-        prev.map((job) =>
-          job._id === jobId ? { ...job, status: "cancelled" } : job
-        )
-      );
-    } else {
-      alert(result.message || "Failed to cancel job.");
+      if (result.success) {
+        setJobs((prev) =>
+          prev.map((job) =>
+            job.jobId === jobId ? { ...job, status: "cancelled" } : job
+          )
+        );
+      } else {
+        alert(result.message || "Failed to cancel job.");
+      }
+    } catch (err) {
+      console.error("Cancel job error:", err);
+      alert("Server error.");
     }
-  } catch (err) {
-    console.error("Cancel job error:", err);
-    alert("Server error.");
-  }
-};
-
+  };
 
   return (
     <main className="w-full mx-auto p-6 bg-blue-300 shadow-md rounded">
@@ -90,7 +91,7 @@ export default function ClientJobList() {
           </div>
 
           {jobs.length === 0 ? (
-            <p className="text-gray-600">You haven’t posted any jobs yet.</p>
+            <p className="text-gray-600">You haven't posted any jobs yet.</p>
           ) : (
             <div className="space-y-4">
               {jobs.map((job) => (
@@ -119,25 +120,32 @@ export default function ClientJobList() {
                     </div>
                     <div className='flex gap-2 flex-row items-center'>
                       {job.status !== 'cancelled' && (
-                      <Link href={`/jobs/edit/${job._id}`}>
+                      <Link href={`/jobs/edit/${job.jobId}`}>
                         <button className="text-blue-600 text-sm underline hover:text-blue-800">
                           <EditOutlinedIcon/>
                         </button>
                       </Link>
                       )}
                       {job.status === 'open' && (
-                        <Popover>
-                          <PopoverTrigger className='text-red-600'><CancelOutlinedIcon/></PopoverTrigger>
-                          <PopoverContent className="bg-white w-fit h-fit">
-                            <p>Are you sure you want to Cancel this job.</p>
-                            <button
-                              onClick={() => handleCancel(job._id)}
-                              className="text-sm px-3 py-1 mt-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                            >
-                              Cancel Job
-                            </button>
-                            </PopoverContent>
-                          </Popover>
+                        <div>
+                            <Link href={`/jobs/${job.jobId}`}>
+                              <button className="text-blue-600 text-sm underline hover:text-blue-800">
+                                View Proposals
+                              </button>
+                            </Link>
+                            <Popover>
+                              <PopoverTrigger className='text-red-600'><CancelOutlinedIcon/></PopoverTrigger>
+                              <PopoverContent className="bg-white w-fit h-fit">
+                                <p>Are you sure you want to Cancel this job.</p>
+                                <button
+                                  onClick={() => handleCancel(job.jobId)}
+                                  className="text-sm px-3 py-1 mt-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                                >
+                                  Cancel Job
+                                </button>
+                                </PopoverContent>
+                              </Popover>
+                          </div>
                         )}
                       </div>
                   </div>

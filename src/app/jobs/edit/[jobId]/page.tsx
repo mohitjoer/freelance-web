@@ -7,7 +7,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 export default function EditJobPage() {
   const router = useRouter();
   const params = useParams();
-  const jobId = params.id as string;
+  const jobId = params.jobId as string; // ✅ This is correct for [jobId] route
 
   const [form, setForm] = useState({
     title: '',
@@ -27,7 +27,7 @@ export default function EditJobPage() {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const res = await fetch(`/api/job/edit/${jobId}`);
+        const res = await fetch(`/api/job/edit/${jobId}`); // ✅ This matches /api/job/edit/[jobId]
         const data = await res.json();
         if (data.success) {
           const job = data.data;
@@ -36,7 +36,7 @@ export default function EditJobPage() {
             description: job.description,
             category: job.category,
             budget: job.budget.toString(),
-            deadline: job.deadline.split('T')[0],
+            deadline: job.deadline?.split('T')[0] || '',
             references: job.references || [],
             resources: job.resources || [],
           });
@@ -60,11 +60,7 @@ export default function EditJobPage() {
   const handleAddLink = (type: 'references' | 'resources', value: string) => {
     if (!value.trim()) return;
     setForm(prev => ({ ...prev, [type]: [...prev[type], value.trim()] }));
-    if (type === 'references') {
-      setReferenceInput('');
-    } else {
-      setResourceInput('');
-    }
+    type === 'references' ? setReferenceInput('') : setResourceInput('');
   };
 
   const handleRemoveLink = (type: 'references' | 'resources', index: number) => {
@@ -79,7 +75,7 @@ export default function EditJobPage() {
     setMessage(null);
 
     try {
-      const res = await fetch(`/api/job/edit/${jobId}`, {
+      const res = await fetch(`/api/job/edit/${jobId}`, { // ✅ This matches /api/job/edit/[jobId]
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -113,59 +109,31 @@ export default function EditJobPage() {
         )}
 
         <div className="space-y-5">
-          <div>
-            <label className="block font-semibold mb-1 text-gray-700">Title</label>
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-lg"
-              placeholder="Job Title"
-            />
-          </div>
-          <div>
-            <label className="block font-semibold mb-1 text-gray-700">Description</label>
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              rows={4}
-              className="w-full border border-gray-300 p-2 rounded-lg"
-              placeholder="Job Description"
-            />
-          </div>
-          <div>
-            <label className="block font-semibold mb-1 text-gray-700">Category</label>
-            <input
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-lg"
-              placeholder="e.g. Web Design"
-            />
-          </div>
-          <div>
-            <label className="block font-semibold mb-1 text-gray-700">Budget (USD)</label>
-            <input
-              name="budget"
-              type="number"
-              value={form.budget}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-lg"
-              placeholder="1000"
-              min={0}
-            />
-          </div>
-          <div>
-            <label className="block font-semibold mb-1 text-gray-700">Deadline</label>
-            <input
-              name="deadline"
-              type="date"
-              value={form.deadline}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-lg"
-            />
-          </div>
+          {/* Form Inputs */}
+          {['title', 'description', 'category', 'budget', 'deadline'].map(field => (
+            <div key={field}>
+              <label className="block font-semibold mb-1 text-gray-700 capitalize">{field}</label>
+              {field === 'description' ? (
+                <textarea
+                  name={field}
+                  value={form[field as keyof typeof form]}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                  placeholder={`Job ${field}`}
+                />
+              ) : (
+                <input
+                  name={field}
+                  type={field === 'budget' ? 'number' : field === 'deadline' ? 'date' : 'text'}
+                  value={form[field as keyof typeof form]}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                  placeholder={field === 'budget' ? '1000' : `Job ${field}`}
+                />
+              )}
+            </div>
+          ))}
 
           {/* References */}
           <div>
@@ -187,7 +155,10 @@ export default function EditJobPage() {
             </div>
             <div className="space-y-1">
               {form.references.map((ref, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-200">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-200"
+                >
                   <span className="text-sm break-all">{ref}</span>
                   <button
                     onClick={() => handleRemoveLink('references', idx)}
@@ -220,7 +191,10 @@ export default function EditJobPage() {
             </div>
             <div className="space-y-1">
               {form.resources.map((res, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-200">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-200"
+                >
                   <span className="text-sm break-all">{res}</span>
                   <button
                     onClick={() => handleRemoveLink('resources', idx)}

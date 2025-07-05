@@ -10,6 +10,8 @@ import { SignedIn, UserButton } from "@clerk/clerk-react";
 import { Skeleton } from "@/components/ui/skeleton"
 import ClientJobList from "@/components/client comp/joblist";
 import Image from "next/image";
+import JobOngoing from "@/components/client comp/jobongoing";
+import JobFinshed from "@/components/client comp/jobfinshed";
 
 // Type Definitions
 interface ClientData {
@@ -36,6 +38,7 @@ export default function ClientDashboard() {
   const [clientData, setClientData] = useState<APIResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<'posted' | 'ongoing' | 'finished'>('posted');
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -182,12 +185,50 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-       
-        {/* job */}
-
-          <ClientJobList/> 
-        {/* ^^^^^^^^^ job posted by the user are in this  */}
-     
+        {/* Component Switch */}
+        <div className="mb-6">
+          <div className="flex items-center justify-center mb-4">
+            <div className="bg-gray-100 rounded-lg p-1 flex flex-wrap gap-1">
+              <button
+                onClick={() => setActiveView('posted')}
+                className={`px-3 py-2 rounded-md font-medium transition-colors text-sm ${
+                  activeView === 'posted'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Posted 
+              </button>
+              <button
+                onClick={() => setActiveView('ongoing')}
+                className={`px-3 py-2 rounded-md font-medium transition-colors text-sm ${
+                  activeView === 'ongoing'
+                    ? 'bg-yellow-500 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Ongoing 
+              </button>
+              <button
+                onClick={() => setActiveView('finished')}
+                className={`px-3 py-2 rounded-md font-medium transition-colors text-sm ${
+                  activeView === 'finished'
+                    ? 'bg-green-500 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Finished 
+              </button>
+            </div>
+          </div>
+          
+          {/* Component Display */}
+          <div className="transition-all duration-300 ease-in-out">
+            {activeView === 'posted' && <ClientJobList />}
+            {activeView === 'ongoing' && <JobOngoing />}
+            {activeView === 'finished' && <JobFinshed />}
+          </div>
+        </div>
       </div>
     </main>
   );

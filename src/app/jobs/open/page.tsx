@@ -7,6 +7,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Job {
+  jobId: string;
   _id: string;
   title: string;
   description: string;
@@ -137,7 +138,7 @@ export default function OpenJobsPage() {
                   <span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
                 </div>
                 <button
-                  onClick={() => router.push(`/jobs/${job._id}`)}
+                  onClick={() => router.push(`/jobs/${job.jobId}`)}
                   className="mt-3 bg-linear-to-t from-sky-500 to-indigo-500 hover:to-indigo-300 hover:from-indigo-300 text-white hover:text-indigo-600 px-4 py-2 rounded-md text-sm font-medium transition"
                 >
                   View Details

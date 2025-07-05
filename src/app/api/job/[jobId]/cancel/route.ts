@@ -3,19 +3,22 @@ import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/mongo/db";
 import Job from "@/mongo/model/jobschema";
 
-// PATCH /api/job/[id]/cancel → Cancel a job
-export async function PATCH(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+// PATCH /api/job/[jobId]/cancel
+export async function PATCH(
+  _: NextRequest,
+  context: { params: Promise<{ jobId: string }> }
+) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { jobId } = await context.params; 
 
     await connectDB();
 
-    const job = await Job.findById(id);
+    const job = await Job.findOne({ jobId: jobId }); 
     if (!job) {
       return NextResponse.json({ success: false, message: "Job not found" }, { status: 404 });
     }

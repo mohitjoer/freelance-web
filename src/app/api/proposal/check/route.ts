@@ -12,11 +12,7 @@ export async function GET(req: NextRequest) {
 
   const url = new URL(req.url);
   const jobId = url.searchParams.get('jobId');
-  const job = await Job.findById(jobId);
-  if (!job || job.status !== 'open') {
-      return NextResponse.json({ success: false, message: 'Invalid or closed job' }, { status: 400 });
-  }
-
+  
   if (!jobId) {
     return NextResponse.json({ success: false, message: 'Missing jobId' }, { status: 400 });
   }
@@ -24,8 +20,15 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
+    // Use findOne instead of find to get a single document
+    const job = await Job.findOne({ jobId: jobId });
+    
+    if (!job || job.status !== 'open') {
+      return NextResponse.json({ success: false, message: 'Invalid or closed job' }, { status: 400 });
+    }
+
     const existingProposal = await Proposal.findOne({
-      jobId:job.jobId,
+      jobId: job.jobId,
       freelancerId: userId,
     });
 
