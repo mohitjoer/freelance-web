@@ -36,7 +36,6 @@ interface Proposal {
 }
 
 export default function JobDetailsPage() {
-  // Fixed: Use jobId instead of id to match your route parameter
   const { jobId } = useParams<{ jobId: string }>();
   const router = useRouter();
   const { user } = useUser();
@@ -49,20 +48,6 @@ export default function JobDetailsPage() {
   const [failureMessage, setFailureMessage] = useState<string>('');
   const [existingProposal, setExistingProposal] = useState<Proposal | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const fetchProposal = async () => {
-    if (!jobId) return;
-    
-    try {
-      const res = await fetch(`/api/proposal/check?jobId=${jobId}`);
-      const data = await res.json();
-      if (data.success && data.proposal) {
-        setExistingProposal(data.proposal);
-      }
-    } catch (err) {
-      console.error('Failed to fetch proposal:', err);
-    }
-  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,7 +117,16 @@ export default function JobDetailsPage() {
         if (existingProposal) {
           setExistingProposal(result.proposal);
         } else {
-          await fetchProposal();
+          // Inline fetch proposal after successful submission
+          try {
+            const res = await fetch(`/api/proposal/check?jobId=${job.jobId}`);
+            const data = await res.json();
+            if (data.success && data.proposal) {
+              setExistingProposal(data.proposal);
+            }
+          } catch (err) {
+            console.error('Failed to fetch proposal:', err);
+          }
         }
 
         if (formRef.current) {
@@ -219,10 +213,23 @@ export default function JobDetailsPage() {
     fetchJob();
   }, [jobId, router]);
 
+  // Fixed useEffect - moved fetchProposal logic inside
   useEffect(() => {
-    if (job) {
-      fetchProposal();
-    }
+    if (!job || !jobId) return;
+    
+    const fetchProposal = async () => {
+      try {
+        const res = await fetch(`/api/proposal/check?jobId=${jobId}`);
+        const data = await res.json();
+        if (data.success && data.proposal) {
+          setExistingProposal(data.proposal);
+        }
+      } catch (err) {
+        console.error('Failed to fetch proposal:', err);
+      }
+    };
+
+    fetchProposal();
   }, [job, jobId]);
 
   if (loading) {

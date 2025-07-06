@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
+import Link from 'next/link';
 
 interface Job {
     _id: string;
@@ -92,9 +93,9 @@ export default function Proposallist() {
       <div className='flex flex-row justify-between'>
         <h2 className="text-2xl font-bold mb-4">Your Proposals</h2>
         <Button className='bg-indigo-600 hover:bg-indigo-700 '>
-            <a href="/jobs/open" className="text-white">
+            <Link href="/jobs/open" className="text-white">
               Find Jobs
-            </a>
+            </Link>
           </Button>
       </div>
 

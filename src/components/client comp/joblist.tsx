@@ -91,7 +91,7 @@ export default function ClientJobList() {
           </div>
 
           {jobs.length === 0 ? (
-            <p className="text-gray-600">You haven't posted any jobs yet.</p>
+            <p className="text-gray-600">You haven&apos;t posted any jobs yet.</p>
           ) : (
             <div className="space-y-4">
               {jobs.map((job) => (

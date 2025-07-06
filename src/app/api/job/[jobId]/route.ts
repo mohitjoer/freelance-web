@@ -46,9 +46,10 @@ export async function GET(
       );
     }
 
-    // Type assertion to access clientId property
-    const jobData = job as any;
-    const client = await User.findOne({ userId: jobData.clientId }).select('firstName lastName userImage');
+    // Safest approach - convert to unknown first, then access property
+    const jobData = job as unknown;
+    const clientId = (jobData as { clientId: string }).clientId;
+    const client = await User.findOne({ userId: clientId }).select('firstName lastName userImage');
 
     const jobWithClient = {
       ...job,
