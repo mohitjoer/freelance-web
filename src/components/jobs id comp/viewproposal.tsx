@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface User {
@@ -166,7 +167,7 @@ export default function ViewProposal({ jobId }: ViewProposalProps) {
             <div className="relative">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'amount' | 'days' | 'rating' | 'date')}
                 className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-2 pr-8 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200 shadow-md text-sm"
               >
                 <option value="date">📅 Recent First</option>
@@ -197,7 +198,7 @@ export default function ViewProposal({ jobId }: ViewProposalProps) {
           </div>
         ) : (
           <div className="grid gap-4">
-            {sortedProposals.map((proposal, index) => (
+            {sortedProposals.map((proposal) => (
               <div
                 key={proposal._id}
                 className="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
@@ -207,9 +208,11 @@ export default function ViewProposal({ jobId }: ViewProposalProps) {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-4">
                       <div className="relative">
-                        <img
+                        <Image
                           src={proposal.freelancerId?.image || '/api/placeholder/48/48'}
                           alt={proposal.freelancerId?.name || 'Unknown Freelancer'}
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-full border-2 border-white shadow-lg object-cover"
                         />
                         {proposal.freelancerId?.rating && (

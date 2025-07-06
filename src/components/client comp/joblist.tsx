@@ -6,7 +6,6 @@ import Link from 'next/link';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import AddIcon from '@mui/icons-material/Add';
-import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
