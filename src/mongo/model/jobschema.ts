@@ -14,7 +14,7 @@ export interface IJob extends Document {
   status: 'open' | 'in-progress' | 'completed' | 'cancelled';
 
   proposals: string[];          // Proposal._id references
-  acceptedProposalId?: string;  // When client accepts one
+  acceptedProposalId: string;  // When client accepts one
 
   // Optional tracking fields
   startedAt?: Date;

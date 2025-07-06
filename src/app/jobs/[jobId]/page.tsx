@@ -326,6 +326,17 @@ export default function JobDetailsPage() {
             </div>
           </div>
         )}
+
+        {isJobOwner && (
+          <div className='flex flex-row justify-start items-center'>
+             <Link href="/dashboard/client">
+            <Button variant="outline" className="text-indigo-600 border-indigo-600 hover:bg-indigo-50">
+              &larr; Back to Dashboard
+            </Button>
+          </Link>
+
+          </div>
+        )}
         {!isJobOwner && (
         <div className="flex flex-row justify-between items-center mt-6">
           

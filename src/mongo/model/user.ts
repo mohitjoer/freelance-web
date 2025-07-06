@@ -41,7 +41,6 @@ interface IUserData extends Document {
   ratings?: number;
   reviews?: IReview[];
 
-  wishlist?: { spotId: string }[];
 
   createdAt: Date;
   updatedAt: Date;

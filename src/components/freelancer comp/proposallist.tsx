@@ -88,6 +88,40 @@ export default function Proposallist() {
     }
   };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            Pending
+          </span>
+        );
+      case 'accepted':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Accepted
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            Rejected
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            Unknown
+          </span>
+        );
+    }
+  };
+
+  const canDeleteProposal = (proposal: Proposal) => {
+    
+    return proposal.status === 'pending' && proposal.job?.jobId;
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto bg-gray-300 rounded-lg shadow-md">
       <div className='flex flex-row justify-between'>
@@ -121,9 +155,29 @@ export default function Proposallist() {
             <div key={proposal._id} className="bg-white shadow p-4 rounded-lg border">
               <div className="flex flex-row justify-between items-start">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-indigo-700">
-                    Job: {proposal.job?.title || 'Job No Longer Available'}
-                  </h3>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-indigo-700">
+                      Job: {proposal.job?.title || 'Job No Longer Available'}
+                    </h3>
+                    {getStatusBadge(proposal.status)}
+                  </div>
+
+                  {proposal.status === 'accepted' && (
+                    <div className="mb-2 p-2 bg-green-50 border border-green-200 rounded">
+                      <p className="text-sm text-green-700 font-medium">
+                        🎉 Congratulations! Your proposal has been accepted. You can start working on this project.
+                      </p>
+                    </div>
+                  )}
+
+                  {proposal.status === 'rejected' && (
+                    <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded">
+                      <p className="text-sm text-red-700">
+                        Unfortunately, this proposal was not selected. Keep trying!
+                      </p>
+                    </div>
+                  )}
+
                   <p className="text-gray-700 mt-2">{proposal.message}</p>
                   <div className="text-sm text-gray-600 mt-2">
                     Amount: <strong>${proposal.proposedAmount}</strong> | Estimated Days: <strong>{proposal.estimatedDays}</strong>
@@ -150,15 +204,32 @@ export default function Proposallist() {
                     </Button>
                   )}
                   
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="text-red-600 border-red-500 hover:bg-red-50"
-                    onClick={() => handleDeleteProposal(proposal.proposalId, proposal.job?.jobId || '')}
-                    disabled={deletingProposalId === proposal.proposalId || !proposal.job?.jobId}
-                  >
-                    {deletingProposalId === proposal.proposalId ? 'Deleting...' : 'Delete Proposal'}
-                  </Button>
+                  {proposal.status === 'accepted' && (
+                    <p className='text-sm font-semibold text-gray-500'>View it on current jobs</p>
+                  )}
+                  
+                  {canDeleteProposal(proposal) && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="text-red-600 border-red-500 hover:bg-red-50"
+                      onClick={() => handleDeleteProposal(proposal.proposalId, proposal.job?.jobId || '')}
+                      disabled={deletingProposalId === proposal.proposalId}
+                    >
+                      {deletingProposalId === proposal.proposalId ? 'Deleting...' : 'Delete Proposal'}
+                    </Button>
+                  )}
+
+                  
+
+                  {proposal.status === 'rejected' && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                      onClick={() => handleDeleteProposal(proposal.proposalId, proposal.job?.jobId || '')}
+                    > remove</Button>
+                  )}
                 </div>
               </div>
             </div>

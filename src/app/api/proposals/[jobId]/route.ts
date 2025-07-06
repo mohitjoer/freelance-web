@@ -39,10 +39,35 @@ export async function GET(
     const proposals = await Proposal.find({ jobId: jobId });
 
     if (!proposals || proposals.length === 0) {
-      return NextResponse.json({ success: true, message: 'No proposals found' });
+      return NextResponse.json({ success: true, message: 'No proposals found', data: [] });
     }
 
-    return NextResponse.json({ success: true, data: proposals });
+    // Populate user details for each proposal
+    const populatedProposals = await Promise.all(
+      proposals.map(async (proposal) => {
+        const freelancer = await UserData.findOne({ userId: proposal.freelancerId });
+        
+        // Transform the proposal to match the frontend expected structure
+        const proposalObject = proposal.toObject();
+        
+        return {
+          ...proposalObject,
+          freelancerId: {
+            freelancerId: freelancer ? freelancer.userId : null,
+            name: freelancer ? `${freelancer.firstName} ${freelancer.lastName || ''}`.trim() : 'Unknown Freelancer',
+            image: freelancer ? freelancer.userImage : null,
+            email: freelancer ? freelancer.userId : null, // Using userId as email placeholder
+            rating: freelancer ? freelancer.ratings : null,
+            completedProjects: freelancer ? freelancer.projects_done : 0,
+            skills: freelancer ? freelancer.skills : [],
+            location: freelancer ? freelancer.bio : null, // Using bio as location placeholder
+            memberSince: freelancer ? freelancer.createdAt : null,
+          }
+        };
+      })
+    );
+
+    return NextResponse.json({ success: true, data: populatedProposals });
   } catch (error) {
     console.error('Proposals fetch error:', error);
     return NextResponse.json({ success: false, message: 'Failed to fetch proposals' }, { status: 500 });
