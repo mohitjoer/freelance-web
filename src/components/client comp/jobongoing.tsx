@@ -22,6 +22,7 @@ interface Job {
   budget: number;
   deadline: string;
   createdAt: string;
+  clientMarkedComplete?: boolean;
   acceptedProposalId?: string;
 }
 
@@ -54,89 +55,122 @@ export default function JobOngoing() {
   }, [isLoaded, user]);
 
   const handleMarkComplete = async (jobId: string) => {
-    try {
-      const res = await fetch(`/api/job/${jobId}/complete`, {
-        method: "PATCH",
-      });
+  try {
+    const res = await fetch(`/api/job/${jobId}/confirm-completion`, {
+      method: "PATCH",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        role: 'client' 
+      }),
+    });
 
-      const result = await res.json();
+    const result = await res.json();
 
-      if (result.success) {
-        setJobs((prev) =>
-          prev.map((job) =>
-            job.jobId === jobId ? { ...job, status: "completed" } : job
-          )
-        );
-      } else {
-        alert(result.message || "Failed to mark job as complete.");
-      }
-    } catch (err) {
-      console.error("Complete job error:", err);
-      alert("Server error.");
+    if (result.success) {
+      setJobs((prev) =>
+        prev.map((job) =>
+          job.jobId === jobId ? { ...job, status: "completed" } : job
+        )
+      );
+    } else {
+      alert(result.message || "Failed to mark job as complete.");
     }
-  };
+  } catch (err) {
+    console.error("Complete job error:", err);
+    alert("Server error.");
+  }
+};
 
-  // Filter jobs to show only those with "in-progress" status
   const inProgressJobs = jobs.filter(job => job.status === 'in-progress');
 
   return (
-    <main className="w-full mx-auto p-6 bg-yellow-300 shadow-md rounded">
+    <main className="w-full mx-auto p-4 sm:p-6 bg-gradient-to-b from-yellow-300 to-orange-300 shadow-md rounded-lg">
       {loading ? (
-        <p>Loading ongoing jobs...</p>
+        <p className="text-center">Loading ongoing jobs...</p>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-500 text-center">{error}</p>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Your Ongoing Jobs</h2>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
+            <h2 className="text-xl sm:text-2xl font-semibold">Your Ongoing Jobs</h2>
             <Link href="/jobs/create">
-              <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+              <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 w-full sm:w-auto">
                 + New Job
               </button>
             </Link>
           </div>
 
           {inProgressJobs.length === 0 ? (
-            <p className="text-gray-600">You don&apos;t have any ongoing jobs at the moment.</p>
+            <p className="text-gray-600 text-center">You don&apos;t have any ongoing jobs at the moment.</p>
           ) : (
             <div className="space-y-4">
               {inProgressJobs.map((job) => (
-                <div key={job._id} className="p-4 border-neutral-300 rounded-xl bg-white shadow-sm shadow-white hover:scale-101">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-bold">{job.title}</h3>
-                    <span
-                      className={`text-sm font-semibold capitalize text-yellow-600`}
-                    >
+                <div key={job._id} className="p-4 border-neutral-300 rounded-xl bg-white shadow-sm shadow-white hover:scale-101 transition-transform">
+                  {/* Header */}
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
+                    <h3 className="text-lg font-bold break-words">{job.title}</h3>
+                    <span className="text-sm font-semibold capitalize text-yellow-600 self-start sm:self-center">
                       {job.status}
                     </span>
                   </div>
-                  <div className='flex flex-col md:flex-row justify-between'>
-                    <div className='flex gap-2 flex-row items-center'>
+
+                  {/* Details */}
+                  <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center">
                       <p className="text-sm text-gray-500">Budget: ${job.budget}</p>
                       <p className="text-sm text-gray-500">Deadline: {new Date(job.deadline).toDateString()}</p>
                       <p className="text-xs text-gray-400">Started: {new Date(job.createdAt).toLocaleString()}</p>
                     </div>
+
+                    {/* Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                      <Button
+                        variant="outline"
+                        className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 w-full sm:w-auto"
+                      >
+                        Chat with Freelancer
+                      </Button>
+
+                      { job.clientMarkedComplete === true ? (
+                        <p className="text-gray-500 border-gray-200 w-full sm:w-auto flex text-center justify-center"                        >
+                          Waiting for Freelancer to mark complete.
+                        </p>
+                      ) : (
+                        
                     
-                    <div className='flex gap-2 flex-row items-center'>
                       <Popover>
-                        <PopoverTrigger className='text-green-600'>
-                          <CheckCircleOutlineIcon/>
-                        </PopoverTrigger>
-                        <PopoverContent className="bg-white w-fit h-fit">
-                          <p>Mark this job as completed?</p>
-                          <button
-                            onClick={() => handleMarkComplete(job.jobId)}
-                            className="text-sm px-3 py-1 mt-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300 w-full sm:w-auto"
                           >
-                            Mark Complete
-                          </button>
+                            <CheckCircleOutlineIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">Mark Complete</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="bg-white w-fit p-4 shadow-lg">
+                          <p className="mb-3 text-sm text-gray-700">Are you sure you want to mark this job as completed?</p>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => handleMarkComplete(job.jobId)}
+                            >
+                              Yes, Complete
+                            </Button>
+                          </div>
                         </PopoverContent>
                       </Popover>
-                      
+                        )}
                       <Link href={`/jobs/${job.jobId}`}>
-                        <Button variant={'outline'} className="text-blue-600 text-sm border-2 hover:text-blue-800">
-                          <VisibilityIcon className="mr-1" />
-                          View Details
+                        <Button
+                          variant={'outline'}
+                          className="text-blue-600 text-sm border-2 hover:text-blue-800 w-full sm:w-auto"
+                        >
+                          <VisibilityIcon className="mr-1 flex-shrink-0" />
+                          <span className="truncate">View Details</span>
                         </Button>
                       </Link>
                     </div>

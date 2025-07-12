@@ -231,7 +231,7 @@ export default function Proposallist() {
                       {proposal.status === 'rejected' && (
                         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                           <p className="text-sm text-red-700">
-                            This proposal was not selected. Don't worry - keep applying to find the right match!
+                            This proposal was not selected. Don&apos;t worry - keep applying to find the right match!
                           </p>
                         </div>
                       )}

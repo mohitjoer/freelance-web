@@ -16,7 +16,9 @@ export interface IJob extends Document {
   proposals: string[];          // Proposal._id references
   acceptedProposalId: string;  // When client accepts one
 
-  // Optional tracking fields
+  clientMarkedComplete?: boolean;
+  freelancerMarkedComplete?: boolean;
+  
   startedAt?: Date;
   finishedAt?: Date;
 
@@ -51,6 +53,8 @@ const jobSchema = new Schema<IJob>(
     proposals: [{ type: String }], 
     acceptedProposalId: { type: String }, 
 
+    clientMarkedComplete: { type: Boolean, default: false },
+    freelancerMarkedComplete: { type: Boolean, default: false },
 
     deadline: { type: Date, required: true },
     startedAt: { type: Date },
