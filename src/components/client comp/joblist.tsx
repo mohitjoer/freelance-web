@@ -127,31 +127,24 @@ export default function ClientJobList() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
+    <main className="min-h-screen bg-linear-to-tl from-cyan-500 to-blue-500 rounded-lg p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 sm:mb-6 md:mb-8">
-          <div className="px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-              <div className="w-full sm:w-auto">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">Job Management</h1>
-                <p className="text-sm sm:text-base text-gray-600">Manage and track all your posted jobs</p>
-              </div>
-              <div className="w-full sm:w-auto">
-                <Link href="/jobs/create" className="block w-full sm:w-auto">
-                  <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
-                    <AddIcon className="w-4 h-4" />
-                    <span className="hidden xs:inline">Post New Job</span>
-                    <span className="xs:hidden">New Job</span>
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-col mb-4 sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">            
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">Job Management</h1>
+          <Link href="/jobs/create" className="block w-full sm:w-auto">
+            <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
+              <AddIcon className="w-4 h-4" />
+                <span className="hidden xs:inline">Post New Job</span>
+                <span className="xs:hidden">New Job</span>
+            </Button>
+          </Link>
         </div>
+          
+       
 
         {/* Jobs Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div>
 
           <div className="p-4 sm:p-6 md:p-8">
             {jobs.length === 0 ? (
@@ -166,17 +159,17 @@ export default function ClientJobList() {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-2 sm:space-y-3">
                 {jobs.map((job) => (
                   <div 
                     key={job._id} 
-                    className="border border-gray-200 rounded-xl p-4 sm:p-5 md:p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300 bg-white"
+                    className="border border-gray-200 rounded-xl p-2 sm:p-3 md:p-4 hover:shadow-md transition-all duration-200 hover:border-gray-300 bg-white"
                   >
                     {/* Job Header */}
-                    <div className="flex flex-col gap-3 sm:gap-4 mb-3 sm:mb-4">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                    <div className="flex flex-col gap-1 mb-1 sm:mb-2">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 break-words">{job.title}</h3>
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 break-words">{job.title}</h3>
                           <div className="flex items-center gap-2">
                             <span className={`inline-flex items-center px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-medium border ${getStatusColor(job.status)}`}>
                               {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
@@ -186,18 +179,18 @@ export default function ClientJobList() {
                         
                         {/* Action Buttons */}
                         {job.status === 'open' && (
-                          <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                          <div className="flex flex-col xs:flex-row gap-1 sm:gap-2 w-full sm:w-auto">
                             <Link href={`/jobs/edit/${job.jobId}`} className="w-full xs:w-auto">
-                              <Button variant="outline" className="w-full xs:w-auto border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-colors text-xs sm:text-sm">
-                                <EditOutlinedIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                              <Button variant="outline" className="w-full xs:w-auto border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-colors text-xs py-1 px-2 sm:py-2 sm:px-3">
+                                <EditOutlinedIcon className="w-3 h-3 mr-1" />
                                 Edit
                               </Button>
                             </Link>
                             
                             <Popover>
                               <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full xs:w-auto border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors text-xs sm:text-sm">
-                                  <CancelOutlinedIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                <Button variant="outline" className="w-full xs:w-auto border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors text-xs py-1 px-2 sm:py-2 sm:px-3">
+                                  <CancelOutlinedIcon className="w-3 h-3 mr-1" />
                                   Cancel
                                 </Button>
                               </PopoverTrigger>
@@ -216,7 +209,7 @@ export default function ClientJobList() {
                             </Popover>
                             
                             <Link href={`/jobs/${job.jobId}`} className="w-full xs:w-auto">
-                              <Button className="w-full xs:w-auto bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 rounded-lg font-medium transition-colors text-xs sm:text-sm">
+                              <Button className="w-full xs:w-auto bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-xs">
                                 <span className="hidden sm:inline">View Proposals</span>
                                 <span className="sm:hidden">Proposals</span>
                               </Button>
@@ -227,21 +220,21 @@ export default function ClientJobList() {
                     </div>
 
                     {/* Job Details */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-xs sm:text-sm">
-                      <div className="flex items-center gap-2 text-gray-600 min-w-0">
-                        <AttachMoneyIcon className="w-4 h-4 flex-shrink-0" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-2 text-xs">
+                      <div className="flex items-center gap-1 text-gray-600 min-w-0">
+                        <AttachMoneyIcon className="w-3 h-3 flex-shrink-0" />
                         <span className="font-medium flex-shrink-0">Budget:</span>
                         <span className="text-gray-900 font-semibold truncate">${job.budget.toLocaleString()}</span>
                       </div>
                       
-                      <div className="flex items-center gap-2 text-gray-600 min-w-0">
-                        <CalendarTodayIcon className="w-4 h-4 flex-shrink-0" />
+                      <div className="flex items-center gap-1 text-gray-600 min-w-0">
+                        <CalendarTodayIcon className="w-3 h-3 flex-shrink-0" />
                         <span className="font-medium flex-shrink-0">Deadline:</span>
                         <span className="text-gray-900 truncate">{new Date(job.deadline).toLocaleDateString()}</span>
                       </div>
                       
-                      <div className="flex items-center gap-2 text-gray-600 min-w-0">
-                        <AccessTimeIcon className="w-4 h-4 flex-shrink-0" />
+                      <div className="flex items-center gap-1 text-gray-600 min-w-0">
+                        <AccessTimeIcon className="w-3 h-3 flex-shrink-0" />
                         <span className="font-medium flex-shrink-0">Posted:</span>
                         <span className="text-gray-900 truncate">{new Date(job.createdAt).toLocaleDateString()}</span>
                       </div>

@@ -51,7 +51,7 @@ export default function JobFinished() {
   const completedJobs = jobs.filter(job => job.status === 'completed');
 
   return (
-    <main className="w-full mx-auto p-6 bg-green-300 shadow-md rounded">
+    <main className="w-full mx-auto p-6 bg-linear-to-tr from-emerald-400 to-green-300 shadow-md rounded">
       {loading ? (
         <p>Loading finished jobs...</p>
       ) : error ? (
@@ -59,7 +59,7 @@ export default function JobFinished() {
       ) : (
         <>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Your Finished Jobs</h2>
+            <h2 className="text-xl text-white font-bold">Your Finished Jobs</h2>
             <Link href="/jobs/create">
               <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                 + New Job

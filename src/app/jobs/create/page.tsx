@@ -80,149 +80,192 @@ export default function CreateJobPage() {
   if (!isLoaded || !user) return <div className="p-8 text-center">Loading...</div>;
 
 return (
-    <main className="min-h-screen bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center px-4">
-        <div className="w-full max-w-lg my-6 bg-white rounded-2xl shadow-2xl p-8">
-            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-700">Create a New Job</h1>
-
-            {message && (
-                <div className="mb-4 px-4 py-2 bg-red-100 text-red-700 rounded text-center text-sm">
-                    {message}
-                </div>
-            )}
-
-            <div className="space-y-5">
-                <div>
-                    <label className="block font-semibold mb-1 text-gray-700">Title <span className="text-red-500">*</span></label>
-                    <input
-                        name="title"
-                        value={form.title}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Job Title"
-                    />
+    <main className="min-h-screen bg-gradient-to-br from-cyan-100 via-blue-50 to-teal-100 py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg border border-cyan-200 p-8 backdrop-blur-sm">
+                {/* Header */}
+                <div className="mb-8 text-center">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent mb-2">Create New Job Posting</h1>
+                    <p className="text-cyan-700">Fill out the form below to post a new job opportunity</p>
                 </div>
 
-                <div>
-                    <label className="block font-semibold mb-1 text-gray-700">Description <span className="text-red-500">*</span></label>
-                    <textarea
-                        name="description"
-                        value={form.description}
-                        onChange={handleChange}
-                        rows={4}
-                        className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="Job Description"
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-semibold mb-1 text-gray-700">Category <span className="text-red-500">*</span></label>
-                    <input
-                        name="category"
-                        value={form.category}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                        placeholder="e.g. Web Design"
-                    />
-                </div>
-
-                <div className="flex gap-4">
-                    <div className="flex-1">
-                        <label className="block font-semibold mb-1 text-gray-700">Budget (USD) <span className="text-red-500">*</span></label>
-                        <input
-                            name="budget"
-                            type="number"
-                            value={form.budget}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                            placeholder="1000"
-                            min={0}
-                        />
+                {message && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-lg shadow-sm">
+                        <div className="flex">
+                            <div className="text-red-800 text-sm">{message}</div>
+                        </div>
                     </div>
-                    <div className="flex-1">
-                        <label className="block font-semibold mb-1 text-gray-700">Deadline <span className="text-red-500">*</span></label>
-                        <input
-                            name="deadline"
-                            type="date"
-                            value={form.deadline}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                        />
+                )}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Left Column */}
+                    <div className="space-y-6">
+                        {/* Job Title */}
+                        <div>
+                            <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                Job Title <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                name="title"
+                                value={form.title}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
+                                placeholder="Enter job title"
+                            />
+                        </div>
+
+                        {/* Category */}
+                        <div>
+                            <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                Category <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                name="category"
+                                value={form.category}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
+                                placeholder="e.g. Web Development, Design, Marketing"
+                            />
+                        </div>
+
+                        {/* Budget and Deadline */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                    Budget (USD) <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    name="budget"
+                                    type="number"
+                                    value={form.budget}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
+                                    placeholder="1000"
+                                    min={0}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                    Deadline <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    name="deadline"
+                                    type="date"
+                                    value={form.deadline}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="space-y-6">
+                        {/* Job Description */}
+                        <div>
+                            <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                Job Description <span className="text-red-500">*</span>
+                            </label>
+                            <textarea
+                                name="description"
+                                value={form.description}
+                                onChange={handleChange}
+                                rows={6}
+                                className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
+                                placeholder="Describe the job requirements, expectations, and deliverables..."
+                            />
+                        </div>
                     </div>
                 </div>
 
-                {/* References */}
-                <div>
-                    <label className="block font-semibold mb-1 text-gray-700">Reference Links <span className="text-gray-400">(Optional)</span></label>
-                    <div className="flex gap-2 mb-2">
-                        <input
-                            value={referenceInput}
-                            onChange={e => setReferenceInput(e.target.value)}
-                            placeholder="https://..."
-                            className="flex-1 border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => handleAddLink('references', referenceInput)}
-                            className="bg-linear-to-r from-cyan-500 to-blue-500 px-3 pr-5 flex items-center justify-center  rounded-full text-white font-bold shadow-lg hover:from-white hover:to-white hover:text-cyan-500 transition-colors duration-300"
-                        >
-                            +Add
-                        </button>
-                    </div>
-                    <div className="space-y-1">
-                        {form.references.map((ref, idx) => (
-                            <div key={idx} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-200">
-                                <span className="text-sm break-all">{ref}</span>
+                {/* References Section */}
+                <div className="mt-8 pt-6 border-t border-cyan-200">
+                    <h3 className="text-lg font-medium text-cyan-800 mb-4">Additional Information</h3>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Reference Links */}
+                        <div>
+                            <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                Reference Links <span className="text-teal-600">(Optional)</span>
+                            </label>
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    value={referenceInput}
+                                    onChange={e => setReferenceInput(e.target.value)}
+                                    placeholder="https://example.com"
+                                    className="flex-1 px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
+                                />
                                 <button
-                                    onClick={() => handleRemoveLink('references', idx)}
-                                    className="ml-2 text-xs text-red-500 hover:underline"
+                                    type="button"
+                                    onClick={() => handleAddLink('references', referenceInput)}
+                                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white text-sm font-medium rounded-md hover:from-cyan-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-md transition-all"
                                 >
-                                    <DeleteOutlineIcon fontSize="small" />
+                                    Add
                                 </button>
                             </div>
-                        ))}
-                    </div>
-                </div>
+                            <div className="space-y-2 max-h-32 overflow-y-auto">
+                                {form.references.map((ref, idx) => (
+                                    <div key={idx} className="flex items-center justify-between bg-cyan-50 p-2 rounded-md border border-cyan-200">
+                                        <span className="text-sm text-cyan-800 break-all mr-2">{ref}</span>
+                                        <button
+                                            onClick={() => handleRemoveLink('references', idx)}
+                                            className="text-red-500 hover:text-red-700 flex-shrink-0"
+                                        >
+                                            <DeleteOutlineIcon fontSize="small" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
-                {/* Resources */}
-                <div>
-                    <label className="block font-semibold mb-1 text-gray-700">Resource Links <span className="text-gray-400">(Optional)</span></label>
-                    <div className="flex gap-2 mb-2">
-                        <input
-                            value={resourceInput}
-                            onChange={e => setResourceInput(e.target.value)}
-                            placeholder="https://..."
-                            className="flex-1 border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => handleAddLink('resources', resourceInput)}
-                            className="bg-linear-to-r from-cyan-500 to-blue-500 px-3 pr-5 flex items-center justify-center  rounded-full text-white font-bold shadow-lg hover:from-white hover:to-white hover:text-cyan-500 transition-colors duration-300"
-                        >
-                            +Add
-                        </button>
-                    </div>
-                    <div className="space-y-1">
-                        {form.resources.map((res, idx) => (
-                            <div key={idx} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-200">
-                                <span className="text-sm break-all">{res}</span>
+                        {/* Resource Links */}
+                        <div>
+                            <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                Resource Links <span className="text-teal-600">(Optional)</span>
+                            </label>
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    value={resourceInput}
+                                    onChange={e => setResourceInput(e.target.value)}
+                                    placeholder="https://example.com"
+                                    className="flex-1 px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
+                                />
                                 <button
-                                    onClick={() => handleRemoveLink('resources', idx)}
-                                    className="ml-2 text-xs text-red-500 hover:underline"
+                                    type="button"
+                                    onClick={() => handleAddLink('resources', resourceInput)}
+                                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white text-sm font-medium rounded-md hover:from-cyan-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-md transition-all"
                                 >
-                                    <DeleteOutlineIcon fontSize="small" />
+                                    Add
                                 </button>
                             </div>
-                        ))}
+                            <div className="space-y-2 max-h-32 overflow-y-auto">
+                                {form.resources.map((res, idx) => (
+                                    <div key={idx} className="flex items-center justify-between bg-cyan-50 p-2 rounded-md border border-cyan-200">
+                                        <span className="text-sm text-cyan-800 break-all mr-2">{res}</span>
+                                        <button
+                                            onClick={() => handleRemoveLink('resources', idx)}
+                                            className="text-red-500 hover:text-red-700 flex-shrink-0"
+                                        >
+                                            <DeleteOutlineIcon fontSize="small" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="w-full mt-4 bg-linear-to-bl from-lime-500 to-emerald-400 bg- hover:to-lime-200 hover:from-lime-200 text-white hover:text-green-600 font-semibold py-3 px-6 rounded-lg shadow transition disabled:opacity-60"
-                >
-                    {loading ? 'Creating...' : 'Post Job'}
-                </button>
+                {/* Submit Button */}
+                <div className="mt-8 pt-6 border-t border-cyan-200">
+                    <div className="flex justify-center">
+                        <button
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            className="px-8 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-medium rounded-lg hover:from-cyan-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg transform hover:scale-[1.02]"
+                        >
+                            {loading ? 'Creating Job...' : 'Post Job'}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>

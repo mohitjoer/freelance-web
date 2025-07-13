@@ -86,7 +86,7 @@ export default function JobOngoing() {
   const inProgressJobs = jobs.filter(job => job.status === 'in-progress');
 
   return (
-    <main className="w-full mx-auto p-4 sm:p-6 bg-gradient-to-b from-yellow-300 to-orange-300 shadow-md rounded-lg">
+    <main className="w-full mx-auto p-4 sm:p-6 bg-gradient-to-tl from-yellow-300 to-orange-300 shadow-md rounded-lg">
       {loading ? (
         <p className="text-center">Loading ongoing jobs...</p>
       ) : error ? (
@@ -94,7 +94,7 @@ export default function JobOngoing() {
       ) : (
         <>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-            <h2 className="text-xl sm:text-2xl font-semibold">Your Ongoing Jobs</h2>
+            <h2 className="text-xl sm:text-2xl text-white font-bold">Your Ongoing Jobs</h2>
             <Link href="/jobs/create">
               <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 w-full sm:w-auto">
                 + New Job
