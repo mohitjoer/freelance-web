@@ -29,7 +29,7 @@ interface FreelancerData {
   skills: string[];
   portfolio: PortfolioItem[];
   experienceLevel: string;
-  jobsTaken: string[];
+  jobsInProgress: string[];
   jobsProposed: string[];
 }
 
@@ -290,7 +290,7 @@ export default function FreelancerDashboard() {
                 </div>
                 <h3 className="font-semibold text-green-900 mb-1">Active Jobs</h3>
                 <p className="text-3xl font-bold text-green-600">
-                  {data.jobsTaken?.length || 0}
+                  {data.jobsInProgress?.length || 0}
                 </p>
               </div>
               

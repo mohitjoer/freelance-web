@@ -23,7 +23,7 @@ interface ClientData {
   companyName?: string;
   companyWebsite?: string;
   jobsPosted: string[];
-  jobsOngoing: string[];
+  jobsInProgress: string[];
   jobsFinished: string[];
 }
 
@@ -248,7 +248,7 @@ export default function ClientDashboard() {
                 </div>
                 <h3 className="font-semibold text-yellow-900 mb-1">Jobs Ongoing</h3>
                 <p className="text-3xl font-bold text-yellow-600">
-                  {data.jobsOngoing?.length || 0}
+                  {data.jobsInProgress?.length || 0}
                 </p>
               </div>
               

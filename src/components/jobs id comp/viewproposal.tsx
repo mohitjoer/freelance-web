@@ -297,14 +297,7 @@ export default function ViewProposal({ jobId }: ViewProposalProps) {
                       <div className="text-lg font-bold text-blue-700">
                         {proposal.estimatedDays}
                       </div>
-                      <div className="text-xs text-blue-600">Days</div>
-                    </div>
-
-                    <div className="bg-purple-50 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-purple-700">
-                        ${Math.round(proposal.proposedAmount / proposal.estimatedDays)}
-                      </div>
-                      <div className="text-xs text-purple-600">Per Day</div>
+                      <div className="text-xs text-blue-600">Estimated Days</div>
                     </div>
                   </div>
 

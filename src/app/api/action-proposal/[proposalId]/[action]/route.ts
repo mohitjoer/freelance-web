@@ -75,16 +75,17 @@ export async function PATCH(
         acceptedProposalId: proposalId,
       });
 
-      // Add job to client's ongoing jobs
+      // Add job to client's in progress jobs
       await User.findOneAndUpdate(
         { userId: job.clientId },
-        { $push: { jobsOngoing: job.jobId } }
+        { $push: {jobsInProgress: job.jobId } }
       );
 
-      // Add job to freelancer's working jobs
+
+      // Add job to freelancer's in progress jobs
       await User.findOneAndUpdate(
         { userId: proposal.freelancerId },
-        { $push: { jobsTaken: job.jobId } }
+        { $push: { jobsInProgress: job.jobId } }
       );
 
       // Update proposal status to accepted

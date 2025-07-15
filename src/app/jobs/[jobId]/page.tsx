@@ -15,6 +15,7 @@ interface Job {
   jobId: string;
   clientId: string;
   title: string;
+  status: string;
   description: string;
   category: string;
   budget: number;
@@ -346,7 +347,7 @@ export default function JobDetailsPage() {
             </Button>
           </Link>
 
-          
+          {job.status === "open" &&(
             <Popover>
               <PopoverTrigger asChild>
                 <Button 
@@ -448,6 +449,7 @@ export default function JobDetailsPage() {
                 </p>
               </PopoverContent>
             </Popover>
+            )}
         </div>
         )}
 

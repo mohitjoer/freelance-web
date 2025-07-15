@@ -9,7 +9,7 @@ interface IProposal extends Document {
   message: string;
   proposedAmount: number;
   estimatedDays: number;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' |'completed';
   createdAt: Date;
 }
 
@@ -25,7 +25,7 @@ const proposalSchema = new Schema<IProposal>(
 
     status: {
       type: String,
-      enum: ['pending', 'accepted', 'rejected'],
+      enum: ['pending', 'accepted', 'rejected' , 'completed'],
       default: 'pending',
     },
   },

@@ -28,14 +28,13 @@ interface IUserData extends Document {
   portfolio?: IPortfolio[];
 
   // Client fields
-  companyName?: string;
+  companyName?: string;  
   companyWebsite?: string;
 
   // Shared activity fields
-  jobsPosted?: string[]; // Only used by client
-  jobsOngoing?: string[];
-  jobsFinished?: string[];
-  jobsTaken?: string[];  // Only used by freelancer
+  jobsPosted?: string[];  //only used by client
+  jobsInProgress?: string[];// for both
+  jobsFinished?: string[];// for both
   jobsProposed?: string[]; // Only used by freelancer
 
   ratings?: number;
@@ -79,11 +78,12 @@ const userSchema = new Schema<IUserData>(
     companyName: { type: String },
     companyWebsite: { type: String },
     jobsPosted: [{ type: String }],
-    jobsOngoing: [{ type: String }],
+
+    //for both
+    jobsInProgress: [{ type: String }],
     jobsFinished: [{ type: String }],
 
     // freelancer-only
-    jobsTaken: [{ type: String }],
     jobsProposed: [{ type: String }],
 
     ratings: { type: Number, default: 0 },

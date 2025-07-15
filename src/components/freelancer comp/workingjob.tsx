@@ -3,14 +3,19 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import {Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+  
 interface Job {
     _id: string;
     jobId: string;
     title: string;
     description: string;
     category: string;
+    status:string;
     budget: number;
+    clientMarkedComplete?: boolean;
+    freelancerMarkedComplete?: boolean;
     deadline: Date;
 }
 
@@ -30,6 +35,7 @@ interface Proposal {
 export default function WorkingJob() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -53,8 +59,51 @@ export default function WorkingJob() {
     fetchWorkingJobs();
   }, []);
 
-  // Filter proposals to show only accepted ones
-  const acceptedProposals = proposals.filter(proposal => proposal.status === 'accepted');
+
+  const handleMarkComplete = async (jobId: string) => {
+  try {
+    const res = await fetch(`/api/job/${jobId}/confirm-completion`, {
+      method: "PATCH",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        role: 'freelancer' 
+      }),
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      // Update the proposals state to mark the job as completed by freelancer
+      setProposals((prev: Proposal[]) =>
+        prev.map((proposal) =>
+          proposal.job?.jobId === jobId 
+            ? { 
+                ...proposal, 
+                job: proposal.job ? { 
+                  ...proposal.job, 
+                  freelancerMarkedComplete: true 
+                } : null 
+              } 
+            : proposal
+        )
+      );
+    } else {
+      alert(result.message || "Failed to mark job as complete.");
+    }
+  } catch (err) {
+    console.error("Complete job error:", err);
+    alert("Server error.");
+  }
+};
+
+  // Filter proposals to show only accepted ones with job status "in-progress"
+  const acceptedProposals = proposals.filter(proposal => 
+    proposal.status === 'accepted' && 
+    proposal.job && 
+    proposal.job.status === 'in-progress'
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -123,8 +172,7 @@ export default function WorkingJob() {
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                          <div className="flex-1 flex items-center gap-3 mb-2">
                               <h3 className="text-xl font-semibold text-gray-900">
                                 {proposal.job?.title || 'Job No Longer Available'}
                               </h3>
@@ -132,18 +180,6 @@ export default function WorkingJob() {
                                 <div className="w-2 h-2 bg-emerald-400 rounded-full mr-1.5"></div>
                                 In Progress
                               </span>
-                            </div>
-                            
-                            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
-                              <div className="flex items-center gap-2">
-                                <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <p className="text-sm font-medium text-emerald-800">
-                                  Congratulations! You&apos;re working on this project. Keep up the excellent work.
-                                </p>
-                              </div>
-                            </div>
                           </div>
                         </div>
 
@@ -230,6 +266,38 @@ export default function WorkingJob() {
                             Project Chat
                           </Link>
                         </Button>
+
+                        { proposal.job?.freelancerMarkedComplete === true ? (
+                        <p className="text-gray-500 border-gray-200 w-full sm:w-auto flex text-center justify-center"                        >
+                          Waiting for Client to mark complete.
+                        </p>
+                      ) : (
+                        proposal.job && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300 w-full sm:w-auto"
+                          >
+                            <CheckCircleOutlineIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">Mark Complete</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="bg-white w-fit p-4 shadow-lg">
+                          <p className="mb-3 text-sm text-gray-700">Are you sure you want to mark this job as completed?</p>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => handleMarkComplete(proposal.job!.jobId)}
+                            >
+                              Yes, Complete
+                            </Button>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                        )
+                        )}
                       </div>
                     </div>
                   </div>

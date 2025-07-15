@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/mongo/db';
 import Job from '@/mongo/model/jobschema';
 import { auth } from '@clerk/nextjs/server';
+import Proposal from '@/mongo/model/proposalschema';
+import UserData from '@/mongo/model/user';
 
 async function handleJobCompletion(
   req: NextRequest,
@@ -58,11 +60,34 @@ async function handleJobCompletion(
     } else if (role === 'freelancer') {
       job.freelancerMarkedComplete = true;
     }
-
+    
     // Mark fully completed
     if (job.clientMarkedComplete && job.freelancerMarkedComplete) {
       job.status = 'completed';
       job.finishedAt = new Date();
+      
+
+      
+
+       // Update the accepted proposal's status to completed
+     if (job.acceptedProposalId) {
+        const proposal = await Proposal.findOne({ proposalId: job.acceptedProposalId });
+        if (proposal) {
+          proposal.status = 'completed';
+          await proposal.save();
+        }
+      }
+      await UserData.updateOne(
+        { userId: job.clientId },
+        { $addToSet: { jobsFinished: jobId },
+          $pull: { jobsInProgress: jobId } }
+      );
+
+      await UserData.updateOne(
+          { userId: job.freelancerId },
+          { $addToSet: { jobsFinished: jobId } ,
+         $pull: { jobsInProgress: jobId }}
+        );
     }
 
     await job.save();

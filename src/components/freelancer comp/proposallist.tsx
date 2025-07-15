@@ -109,6 +109,14 @@ export default function Proposallist() {
             Rejected
           </span>
         );
+
+      case 'completed':
+        return (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-700 border border-sky-200">
+            <div className="w-2 h-2 bg-sky-600 rounded-full mr-1.5"></div>
+            completed
+          </span>
+        );
       default:
         return (
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
@@ -218,12 +226,9 @@ export default function Proposallist() {
                       {/* Status-specific messages */}
                       {proposal.status === 'accepted' && (
                         <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">🎉</span>
-                            <div>
+                          <div className="flex items-center gap-2">                
                               <p className="text-sm font-semibold text-emerald-800">Congratulations!</p>
-                              <p className="text-sm text-emerald-700">Your proposal has been accepted. You can start working on this project.</p>
-                            </div>
+                              <p className="text-sm text-emerald-700">Your proposal has been accepted.</p>
                           </div>
                         </div>
                       )}

@@ -50,7 +50,6 @@ export default function JobOngoing() {
         setLoading(false);
       }
     };
-
     fetchOngoingJobs();
   }, [isLoaded, user]);
 
