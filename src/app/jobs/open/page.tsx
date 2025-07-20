@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { Skeleton } from '@/components/ui/skeleton';
+import BackButton from '@/components/backbutton';
 
 interface Job {
   jobId: string;
@@ -73,15 +74,11 @@ export default function OpenJobsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-r from-cyan-500 to-blue-500 px-2 py-4 flex items-center justify-center">
       <div className="w-full max-w-6xl h-[95vh] max-h-[95vh] mx-auto bg-white rounded-xl p-2 sm:p-6 shadow-md flex flex-col overflow-auto">
-        <h1 className="text-2xl py-4 sm:text-3xl font-bold mb-4 text-indigo-700 text-center">Explore Open Jobs</h1>
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => router.push('/dashboard/freelancer')}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition"
-          >
-            Go to Dashboard
-          </button>
+        <div className="flex justify-start ">
+          <BackButton/>
         </div>
+        <h1 className="text-2xl py-4 sm:text-3xl font-bold mb-4 text-indigo-700 text-center">Explore Open Jobs</h1>
+        
         {message && <p className="text-red-500 mb-4 text-center">{message}</p>}
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">

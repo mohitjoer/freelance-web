@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import Image from 'next/image';
 import ViewProposal from '@/components/jobs id comp/viewproposal'; 
+import BackButton from '@/components/backbutton';
 
 interface Job {
   _id: string;
@@ -260,18 +261,21 @@ export default function JobDetailsPage() {
             <h1 className="text-3xl font-bold text-indigo-700 mb-2">{job.title}</h1>
           </div>
           {job.client && (
-            <div className="flex w-fit bg-neutral-100 p-2 pr-4 rounded-full items-center flex-row gap-3 ml-4">
-              <Image
-                src={job.client.image}
-                alt={job.client.name}
-                className="w-10 h-10 rounded-full border"
-                width={40}
-                height={40}
-              />
-              <div>
-                <p className="text-lg font-semibold">{job.client.name}</p>
+            <Link href={`/profile/${job.clientId}`} className="text-blue-500 underline">
+              <div className="flex w-fit bg-neutral-100 p-2 pr-4 rounded-full items-center flex-row gap-3 ml-4"> 
+                <Image
+                  src={job.client.image}
+                  alt={job.client.name}
+                  className="w-10 h-10 rounded-full border"
+                  width={40}
+                  height={40}
+                />
+                <div>
+                  <p className="text-lg font-semibold">{job.client.name}</p>
+                </div>
+                
               </div>
-            </div>
+            </Link>
           )}
         </div>
 
@@ -330,23 +334,12 @@ export default function JobDetailsPage() {
 
         {isJobOwner && (
           <div className='flex flex-row justify-start items-center'>
-             <Link href="/dashboard/client">
-            <Button variant="outline" className="text-indigo-600 border-indigo-600 hover:bg-indigo-50">
-              &larr; Back to Dashboard
-            </Button>
-          </Link>
-
+            <BackButton/>
           </div>
         )}
         {!isJobOwner && (
         <div className="flex flex-row justify-between items-center mt-6">
-          
-          <Link href="/jobs/open">
-            <Button variant="outline" className="text-indigo-600 border-indigo-600 hover:bg-indigo-50">
-              &larr; Back to Open Jobs
-            </Button>
-          </Link>
-
+          <BackButton/>
           {job.status === "open" &&(
             <Popover>
               <PopoverTrigger asChild>
