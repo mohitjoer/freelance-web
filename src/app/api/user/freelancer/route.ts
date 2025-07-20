@@ -30,8 +30,9 @@ export async function GET() {
         portfolio: user.portfolio || [],
         experienceLevel: user.experienceLevel,
         projects_done: user.projects_done || 0,
-        jobsTaken: user.jobsTaken || [],
+        jobsongoing: user.jobsongoing || [],
         jobsProposed: user.jobsProposed || [],
+        jobsInProgress: user.jobsInProgress || [], 
       },
     });
   } catch (error) {
