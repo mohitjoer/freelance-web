@@ -260,8 +260,8 @@ export default function JobDetailsPage() {
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-indigo-700 mb-2">{job.title}</h1>
           </div>
-          {job.client && (
-            <Link href={`/profile/${job.clientId}`} className="text-blue-500 underline">
+          {job.clientId !== user?.id && job.client &&  (
+            <Link href={`/profile/${job.clientId}`} >
               <div className="flex w-fit bg-neutral-100 p-2 pr-4 rounded-full items-center flex-row gap-3 ml-4"> 
                 <Image
                   src={job.client.image}

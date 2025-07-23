@@ -1,16 +1,19 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 interface User {
+  freelancerId?: string; // From API response
+  userId?: string;       // From API response
   name: string;
   image?: string;
   email?: string;
   rating?: number;
   completedProjects?: number;
   skills?: string[];
-  location?: string;
+  bio?: string;
   memberSince?: string;
 }
 
@@ -119,6 +122,11 @@ export default function ViewProposal({ jobId }: ViewProposalProps) {
     }
   };
 
+  // Helper function to get freelancer ID
+  const getFreelancerId = (freelancer: User) => {
+    return freelancer.freelancerId || freelancer.userId || '';
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4">
@@ -127,7 +135,8 @@ export default function ViewProposal({ jobId }: ViewProposalProps) {
             <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl w-1/3 mb-6"></div>
             <div className="grid gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
+              <div key={`loading-${i}`} 
+                className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
                   <div className="flex items-center space-x-4 mb-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full"></div>
                     <div className="flex-1 space-y-2">
@@ -198,34 +207,61 @@ export default function ViewProposal({ jobId }: ViewProposalProps) {
           </div>
         ) : (
           <div className="grid gap-4">
-            {sortedProposals.map((proposal) => (
-              <div
-                key={proposal._id}
-                className="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+           {sortedProposals.map((proposal, idx) => (
+            <div 
+              key={proposal._id || `proposal-${idx}`}
+              className="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
               >
                 <div className="p-4">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-4">
-                      <div className="relative">
-                        <Image
-                          src={proposal.freelancerId?.image || '/api/placeholder/48/48'}
-                          alt={proposal.freelancerId?.name || 'Unknown Freelancer'}
-                          width={48}
-                          height={48}
-                          className="w-12 h-12 rounded-full border-2 border-white shadow-lg object-cover"
-                        />
-                        {proposal.freelancerId?.rating && (
-                          <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
-                            {proposal.freelancerId.rating.toFixed(1)}
+                      {getFreelancerId(proposal.freelancerId) ? (
+                        <Link href={`/profile/${getFreelancerId(proposal.freelancerId)}`}>
+                          <div className="relative">
+                            <Image
+                              src={proposal.freelancerId?.image || '/api/placeholder/48/48'}
+                              alt={proposal.freelancerId?.name || 'Unknown Freelancer'}
+                              width={48}
+                              height={48}
+                              className="w-12 h-12 rounded-full border-2 border-white shadow-lg object-cover"
+                            />
+                            {proposal.freelancerId?.rating && (
+                              <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
+                                {proposal.freelancerId.rating.toFixed(1)}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
+                        </Link>
+                      ) : (
+                        <div className="relative">
+                          <Image
+                            src={proposal.freelancerId?.image || '/api/placeholder/48/48'}
+                            alt={proposal.freelancerId?.name || 'Unknown Freelancer'}
+                            width={48}
+                            height={48}
+                            className="w-12 h-12 rounded-full border-2 border-white shadow-lg object-cover"
+                          />
+                          {proposal.freelancerId?.rating && (
+                            <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
+                              {proposal.freelancerId.rating.toFixed(1)}
+                            </div>
+                          )}
+                        </div>
+                      )}
                       
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-800 mb-1">
-                          {proposal.freelancerId?.name || 'Unknown Freelancer'}
-                        </h3>
+                        {getFreelancerId(proposal.freelancerId) ? (
+                          <Link href={`/profile/${getFreelancerId(proposal.freelancerId)}`}>
+                            <h3 className="text-lg font-bold text-gray-800 mb-1 hover:text-blue-600 transition-colors">
+                              {proposal.freelancerId?.name || 'Unknown Freelancer'}
+                            </h3>
+                          </Link>
+                        ) : (
+                          <h3 className="text-lg font-bold text-gray-800 mb-1">
+                            {proposal.freelancerId?.name || 'Unknown Freelancer'}
+                          </h3>
+                        )}
                         <div className="flex items-center space-x-3 text-sm">
                           {proposal.freelancerId?.completedProjects && (
                             <div className="flex items-center space-x-1 text-green-600">

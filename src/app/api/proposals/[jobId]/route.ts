@@ -56,11 +56,11 @@ export async function GET(
             freelancerId: freelancer ? freelancer.userId : null,
             name: freelancer ? `${freelancer.firstName} ${freelancer.lastName || ''}`.trim() : 'Unknown Freelancer',
             image: freelancer ? freelancer.userImage : null,
-            email: freelancer ? freelancer.userId : null, // Using userId as email placeholder
+            userId: freelancer ? freelancer.userId : null, 
             rating: freelancer ? freelancer.ratings : null,
             completedProjects: freelancer ? freelancer.projects_done : 0,
             skills: freelancer ? freelancer.skills : [],
-            location: freelancer ? freelancer.bio : null, // Using bio as location placeholder
+            bio: freelancer ? freelancer.bio : null, 
             memberSince: freelancer ? freelancer.createdAt : null,
           }
         };
