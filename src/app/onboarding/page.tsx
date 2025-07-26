@@ -8,6 +8,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import PersonIcon from '@mui/icons-material/Person';
 import BusinessIcon from '@mui/icons-material/Business';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import Image from 'next/image';
 
 export default function OnboardingPage() {
   const { user } = useUser();
@@ -107,7 +108,7 @@ export default function OnboardingPage() {
         {/* Left Side - Image */}
         <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 z-10"></div>
-          <img
+          <Image
             src="https://res.cloudinary.com/dipugmopt/image/upload/v1753531097/ChatGPT_Image_Jul_26_2025_05_27_45_PM_fklgic.png"
             alt="Professional workspace"
             className="w-full h-full object-cover"
@@ -135,7 +136,7 @@ export default function OnboardingPage() {
                   >
                     <div className="flex items-center justify-center space-x-2">
                       <PersonIcon className="text-xl" />
-                      <span className="text-base">I'm looking for Freelance Work</span>
+                      <span className="text-base">I&apos;m looking for Freelance Work</span>
                     </div>
                   </button>
                   
@@ -145,7 +146,7 @@ export default function OnboardingPage() {
                   >
                     <div className="flex items-center justify-center space-x-2">
                       <BusinessIcon className="text-xl" />
-                      <span className="text-base">I'm looking to Hire</span>
+                      <span className="text-base">I&apos;m looking to Hire</span>
                     </div>
                   </button>
                 </div>
@@ -369,7 +370,7 @@ export default function OnboardingPage() {
         {/* Mobile Image Overlay */}
         <div className="lg:hidden absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-white/95 z-10"></div>
-          <img
+          <Image
             src="https://res.cloudinary.com/dipugmopt/image/upload/v1753531097/ChatGPT_Image_Jul_26_2025_05_27_45_PM_fklgic.png"
             alt="Professional workspace"
             className="w-full h-full object-cover opacity-10"
