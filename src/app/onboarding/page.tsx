@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PersonIcon from '@mui/icons-material/Person';
+import BusinessIcon from '@mui/icons-material/Business';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
 
 export default function OnboardingPage() {
   const { user } = useUser();
@@ -58,7 +59,6 @@ export default function OnboardingPage() {
         return;
       }
     }
-    
 
     setIsSubmitting(true);
 
@@ -102,178 +102,279 @@ export default function OnboardingPage() {
   };
 
   return (
-    <main className="h-screen bg-linear-to-r from-cyan-500 to-blue-500 flex flex-col items-center justify-center">
-      <div className="w-full max-w-3xl sm:p-8 p-6 bg-white shadow-xl rounded-xl transition-all duration-300">
-        {!role && (
-          <>
-            <h1 className="scroll-m-20 pb-6 text-center text-2xl font-bold tracking-tight text-balance">Choose Your Role</h1>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => setRole('freelancer')}
-                className="w-1/2 bg-linear-to-br from-cyan-500 to-blue-700 hover:to-blue-200 hover:from-blue-200 hover:text-blue-500 text-white font-semibold py-2 px-4 rounded-full"
-              >
-                I&apos;m looking for Freelance Work
-              </button>
-              <button
-                onClick={() => setRole('client')}
-                className="w-1/2 bg-linear-to-br from-green-500 to-emerald-700 hover:to-lime-200 hover:from-lime-200 hover:text-emerald-700 text-white font-semibold py-2 px-4 rounded-full"
-              >
-                I&apos;m looking to Hire
-              </button>
-            </div>
-          </>
-        )}
+    <main className="h-screen bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
+      <div className="flex h-screen">
+        {/* Left Side - Image */}
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 z-10"></div>
+          <img
+            src="https://res.cloudinary.com/dipugmopt/image/upload/v1753531097/ChatGPT_Image_Jul_26_2025_05_27_45_PM_fklgic.png"
+            alt="Professional workspace"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute bottom-8 left-8 right-8 z-20 bg-white/80 rounded-2xl p-3 text-neutral-600">
+            <h2 className="text-2xl font-bold mb-2">Welcome to <span className='text-sky-800'>FreeLanceBase</span> Network</h2>
+            <p className="text-base opacity-90">Connect with top talent or find your next great opportunity</p>
+          </div>
+        </div>
 
-        {role && (
-          <>
-            <h2 className="scroll-m-20 text-center text-4xl font-bold tracking-tight text-balance">
-              {role === 'freelancer' ? 'Freelancer Profile' : 'Client Profile'}
-            </h2>
-
-            {alertMessage && (
-              <Alert variant="destructive" className="text-red-600">
-                <AlertDescription>Error : {alertMessage}</AlertDescription>
-              </Alert>
-            )}
-
-            {/* First Name */}
-            <label className="block mb-1 font-medium">First Name</label>
-            <input
-              value={firstName}
-              onChange={e => setFirstName(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
-              placeholder="First Name"
-              required
-            />
-
-            {/* Last Name */}
-            <label className="block mb-1 font-medium">Last Name</label>
-            <input
-              value={lastName}
-              onChange={e => setLastName(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
-              placeholder="Last Name"
-              required
-            />
-
-            {/* Bio */}
-            <label className="block mb-1 font-medium">Bio</label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              className="w-full p-2 mb-4 border rounded h-24"
-              placeholder="Tell us about yourself"
-              required
-            />
-
-            {/* Freelancer Section */}
-            {role === 'freelancer' && (
-              <>
-                <label className="block mb-1 font-medium">Skills (comma-separated)</label>
-                <input
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                  className="w-full p-2 mb-4 border rounded"
-                  placeholder="e.g. Video editor, Web developer, React"
-                  required
-                />
-
-                <label className="block mb-1 font-medium">Experience Level</label>
-                <select
-                  value={experienceLevel}
-                  onChange={e => setExperienceLevel(e.target.value as 'beginner' | 'intermediate' | 'expert')}
-                  className="w-full p-2 mb-4 border rounded"
-                  required
-                >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="expert">Expert</option>
-                </select>
-
-                {/* Portfolio Section */}
-                <label className="block mb-1 font-medium">Portfolio Links</label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={portfolioTitle}
-                    onChange={(e) => setPortfolioTitle(e.target.value)}
-                    placeholder="Title"
-                    className="w-1/2 p-2 border rounded"
-                  />
-                  <input
-                    type="url"
-                    value={portfolioLink}
-                    onChange={(e) => setPortfolioLink(e.target.value)}
-                    placeholder="https://yourproject.com"
-                    className="w-1/2 p-2 border rounded"
-                  />
+        {/* Right Side - Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8 overflow-y-auto">
+          <div className="w-full max-w-md max-h-full">
+            {!role && (
+              <div className="text-center space-y-6">
+                <div className="space-y-2">
+                  <h1 className="text-2xl font-bold text-gray-900">Welcome!</h1>
+                  <p className="text-sm text-gray-600">Choose your role to get started</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleAddPortfolio}
-                  className="bg-blue-500 text-white px-3 py-1 rounded"
-                >
-                  Add
-                </button>
-                <ul className="list-disc pl-5 mt-2 mb-4">
-                  {portfolio.map((item, idx) => (
-                    <li key={idx} className="flex justify-between items-center">
-                      <span className="text-sm">{item.title} - {item.link}</span>
-                      <button
-                        onClick={() => setPortfolio(portfolio.filter((_, i) => i !== idx))}
-                        className="text-red-500 hover:text-red-700"
-                        title="Remove"
-                      >
-                        <DeleteOutlineIcon fontSize="small" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
                 
-              </>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setRole('freelancer')}
+                    className="w-full group relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  >
+                    <div className="flex items-center justify-center space-x-2">
+                      <PersonIcon className="text-xl" />
+                      <span className="text-base">I'm looking for Freelance Work</span>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => setRole('client')}
+                    className="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  >
+                    <div className="flex items-center justify-center space-x-2">
+                      <BusinessIcon className="text-xl" />
+                      <span className="text-base">I'm looking to Hire</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
             )}
 
-            {/* Client Section */}
-            {role === 'client' && (
-              <>
-                <label className="block mb-1 font-medium">Company Name</label>
-                <input
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full p-2 mb-4 border rounded"
-                  placeholder="e.g. Acme Inc."
-                  // not required
-                />
+            {role && (
+              <div className="space-y-4 max-h-full overflow-y-auto">
+                <div className="text-center space-y-1">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {role === 'freelancer' ? 'Freelancer Profile' : 'Client Profile'}
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    {role === 'freelancer' 
+                      ? 'Tell us about your skills and experience' 
+                      : 'Set up your company profile'
+                    }
+                  </p>
+                </div>
 
-                <label className="block mb-1 font-medium">Company Website</label>
-                <input
-                  value={companyWebsite}
-                  onChange={(e) => setCompanyWebsite(e.target.value)}
-                  className="w-full p-2 mb-4 border rounded"
-                  placeholder="https://example.com"
-                  // not required
-                />
-              </>
+                {alertMessage && (
+                  <Alert variant="destructive" className="border-red-200 bg-red-50 py-2">
+                    <AlertDescription className="text-red-700 text-sm">
+                      <strong>Error:</strong> {alertMessage}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-3">
+                  {/* Name Fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-700">First Name</label>
+                      <input
+                        value={firstName}
+                        onChange={e => setFirstName(e.target.value)}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your first name"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-700">Last Name</label>
+                      <input
+                        value={lastName}
+                        onChange={e => setLastName(e.target.value)}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your last name"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bio */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">Bio</label>
+                    <textarea
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                      placeholder="Tell us about yourself..."
+                      rows={3}
+                      required
+                    />
+                  </div>
+
+                  {/* Freelancer Section */}
+                  {role === 'freelancer' && (
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <label className="block text-xs font-semibold text-gray-700">Skills</label>
+                        <input
+                          value={skills}
+                          onChange={(e) => setSkills(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="e.g. Video editing, Web development, React"
+                          required
+                        />
+                        <p className="text-xs text-gray-500">Separate skills with commas</p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="block text-xs font-semibold text-gray-700">Experience Level</label>
+                        <select
+                          value={experienceLevel}
+                          onChange={e => setExperienceLevel(e.target.value as 'beginner' | 'intermediate' | 'expert')}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          required
+                        >
+                          <option value="beginner">Beginner (0-2 years)</option>
+                          <option value="intermediate">Intermediate (2-5 years)</option>
+                          <option value="expert">Expert (5+ years)</option>
+                        </select>
+                      </div>
+
+                      {/* Portfolio Section */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-gray-700">Portfolio Links</label>
+                        <div className="space-y-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              value={portfolioTitle}
+                              onChange={(e) => setPortfolioTitle(e.target.value)}
+                              placeholder="Project title"
+                              className="px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                            <input
+                              type="url"
+                              value={portfolioLink}
+                              onChange={(e) => setPortfolioLink(e.target.value)}
+                              placeholder="https://yourproject.com"
+                              className="px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleAddPortfolio}
+                            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md transition-colors duration-200 font-medium text-sm"
+                          >
+                            Add Portfolio Item
+                          </button>
+                        </div>
+                        
+                        {portfolio.length > 0 && (
+                          <div className="space-y-1 max-h-32 overflow-y-auto">
+                            <h4 className="text-xs font-medium text-gray-700">Your Portfolio:</h4>
+                            <div className="space-y-1">
+                              {portfolio.map((item, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded-md border">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-medium text-gray-900 truncate">{item.title}</p>
+                                    <p className="text-xs text-gray-500 truncate">{item.link}</p>
+                                  </div>
+                                  <button
+                                    onClick={() => setPortfolio(portfolio.filter((_, i) => i !== idx))}
+                                    className="ml-2 text-red-500 hover:text-red-700 transition-colors duration-200"
+                                    title="Remove portfolio item"
+                                  >
+                                    <DeleteOutlineIcon style={{ fontSize: '16px' }} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Client Section */}
+                  {role === 'client' && (
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <label className="block text-xs font-semibold text-gray-700">Company Name</label>
+                        <input
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="e.g. Acme Inc."
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="block text-xs font-semibold text-gray-700">Company Website</label>
+                        <input
+                          value={companyWebsite}
+                          onChange={(e) => setCompanyWebsite(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                  <button
+                    onClick={() => setRole('')}
+                    className="flex items-center justify-center gap-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-all duration-200 border border-gray-300 text-sm"
+                  >
+                    <ArrowLeftIcon style={{ fontSize: '18px' }} />
+                    Change Role
+                  </button>
+                  
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform disabled:transform-none shadow-lg hover:shadow-xl disabled:shadow-none text-sm"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Submitting...
+                      </div>
+                    ) : (
+                      'Continue'
+                    )}
+                  </button>
+                </div>
+                 {/* Terms and Conditions */}
+                <div className="py-2 border-t border-gray-200">
+                  <p className="text-xs text-gray-500 text-center">
+                    By registering, you have accepted our{' '}
+                    <a href="/terms" className="text-blue-600 hover:text-blue-800 underline">
+                      Terms and Conditions
+                    </a>
+                    {' '}and{' '}
+                    <a href="/privacy" className="text-blue-600 hover:text-blue-800 underline">
+                      Privacy Policy
+                    </a>
+                  </p>
+                </div>
+              </div>
             )}
+          </div>
+        </div>
 
-            {/* Footer Buttons */}
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={() => setRole('')}
-                className="bg-linear-to-r from-cyan-500 to-blue-500 px-3 pr-5 flex items-center justify-center  rounded-full text-white font-bold shadow-lg hover:from-white hover:to-white hover:text-cyan-500 transition-colors duration-300"
-              >
-                <ArrowLeftIcon sx={{ fontSize: 30 }} />Change Role
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="bg-linear-to-t from-sky-500 to-indigo-500 px-3 py-2 rounded-full text-white font-bold shadow-lg hover:from-white hover:to-white hover:text-indigo-500"
-              >
-                {isSubmitting ? 'Submitting...' : 'Continue'}
-              </button>
-            </div>
-          </>
-        )}
+        {/* Mobile Image Overlay */}
+        <div className="lg:hidden absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-white/95 z-10"></div>
+          <img
+            src="https://res.cloudinary.com/dipugmopt/image/upload/v1753531097/ChatGPT_Image_Jul_26_2025_05_27_45_PM_fklgic.png"
+            alt="Professional workspace"
+            className="w-full h-full object-cover opacity-10"
+          />
+        </div>
       </div>
     </main>
   );

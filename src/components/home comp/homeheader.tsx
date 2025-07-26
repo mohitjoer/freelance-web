@@ -42,7 +42,7 @@ function Homeheader() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex  items-center gap-1">
             {["Find Jobs", "Hire Freelancers", "How It Works", "About"].map((label) => (
               <Button
                 key={label}
@@ -55,7 +55,7 @@ function Homeheader() {
           </nav>
 
           {/* Mobile Dropdown */}
-          <div className="flex lg:hidden">
+          <div className="hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
