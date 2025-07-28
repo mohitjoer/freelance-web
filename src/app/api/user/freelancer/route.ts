@@ -33,6 +33,7 @@ export async function GET() {
         jobsongoing: user.jobsongoing || [],
         jobsProposed: user.jobsProposed || [],
         jobsInProgress: user.jobsInProgress || [], 
+        jobsFinished : user.jobsFinished||[],
       },
     });
   } catch (error) {

@@ -10,6 +10,12 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 import Image from 'next/image';
 import ViewProposal from '@/components/jobs id comp/viewproposal'; 
 import BackButton from '@/components/backbutton';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CategoryIcon from '@mui/icons-material/Category';
+import LinkIcon from '@mui/icons-material/Link';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 interface Job {
   _id: string;
@@ -236,16 +242,24 @@ export default function JobDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-bl from-cyan-500 to-indigo-600 flex items-center justify-center">
-        <div className="text-white text-xl">Loading job details...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading job details...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-gradient-to-bl from-cyan-500 to-indigo-600 flex items-center justify-center">
-        <div className="text-red-200 text-xl">{error || 'Job not found.'}</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-500 text-2xl">!</span>
+          </div>
+          <p className="text-red-600 text-lg">{error || 'Job not found.'}</p>
+        </div>
       </div>
     );
   }
@@ -254,206 +268,353 @@ export default function JobDetailsPage() {
   const isJobOwner = user?.id === job.clientId;
 
   return (
-    <main className="min-h-screen bg-gradient-to-bl from-cyan-500 to-indigo-600 px-4 py-8 flex justify-center">
-      <div className="bg-white max-w-3xl w-full p-6 rounded-xl shadow-lg">
-        <div className='flex flex-row justify-between items-start mb-6'>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-indigo-700 mb-2">{job.title}</h1>
-          </div>
-          {job.clientId !== user?.id && job.client &&  (
-            <Link href={`/profile/${job.clientId}`} >
-              <div className="flex w-fit bg-neutral-100 p-2 pr-4 rounded-full items-center flex-row gap-3 ml-4"> 
+    <div className="min-h-screen bg-gray-50">
+      {/* Full Header Section */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Top Header Bar */}
+          <div className="flex items-center justify-between h-16 border-b border-gray-100">
+            <div className="flex items-center space-x-4">
+              <BackButton/>
+              <div className="flex items-center space-x-3">
                 <Image
-                  src={job.client.image}
-                  alt={job.client.name}
-                  className="w-10 h-10 rounded-full border"
+                  src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png"
+                  alt="FreeLanceBase Logo"
                   width={40}
                   height={40}
+                  className="rounded-lg"
                 />
                 <div>
-                  <p className="text-lg font-semibold">{job.client.name}</p>
+                  <h1 className="text-xl font-bold text-gray-900">FreeLanceBase</h1>
+                  <p className="text-xs text-gray-500">Professional Freelance Network</p>
                 </div>
-                
               </div>
-            </Link>
-          )}
-        </div>
-
-        <div className="text-sm text-gray-600 mb-6 grid grid-cols-2 gap-4">
-          <p><strong>Category:</strong> {job.category}</p>
-          <p><strong>Budget:</strong> ${job.budget.toLocaleString()}</p>
-          <p><strong>Deadline:</strong> {new Date(job.deadline).toLocaleDateString()}</p>
-          <p><strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}</p>
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Description</h2>
-          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.description}</p>
-        </div>
-
-        {Array.isArray(job.references) && job.references.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Reference Links</h2>
-            <ul className="list-disc list-inside text-blue-600 space-y-1">
-              {job.references.map((url, idx) => (
-                <li key={idx}>
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="hover:underline break-all">
-                    {url}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {Array.isArray(job.resources) && job.resources.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Resource Links</h2>
-            <ul className="list-disc list-inside text-green-600 space-y-1">
-              {job.resources.map((url, idx) => (
-                <li key={idx}>
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="hover:underline break-all">
-                    {url}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {existingProposal && !isJobOwner && (
-          <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <h3 className="font-semibold text-gray-800 mb-2">Your Current Proposal</h3>
-            <div className="space-y-1 text-sm">
-              <p><strong>Message:</strong> {existingProposal.message}</p>
-              <p><strong>Proposed Amount:</strong> ${existingProposal.proposedAmount.toLocaleString()}</p>
-              <p><strong>Estimated Days:</strong> {existingProposal.estimatedDays} days</p>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 px-3 py-1 bg-blue-50 rounded-full">
+                <div className={`w-2 h-2 rounded-full ${job.status === 'open' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className="text-sm font-medium text-gray-700 capitalize">{job.status}</span>
+              </div>
             </div>
           </div>
-        )}
 
-        {isJobOwner && (
-          <div className='flex flex-row justify-start items-center'>
-            <BackButton/>
+          {/* Job Title Section */}
+          <div className="py-6">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  {job.title}
+                </h2>
+                <div className="flex items-center space-x-1 text-blue-700">
+                  <CategoryIcon style={{ fontSize: 16 }} />
+                  <span className="text-sm font-medium">{job.category}</span>
+                </div>
+              </div>
+              
+              {job.clientId !== user?.id && job.client && (
+                <Link href={`/profile/${job.clientId}`}>
+                  <div className="flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 transition-colors p-4 rounded-xl border border-gray-200">
+                    <div className="relative">
+                      <Image
+                        src={job.client.image}
+                        alt={job.client.name}
+                        className="w-12 h-12 rounded-full border-2 border-gray-200"
+                        width={48}
+                        height={48}
+                      />
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{job.client.name}</p>
+                      <p className="text-xs text-gray-500 flex items-center gap-1">
+                        <PersonOutlineIcon style={{ fontSize: 12 }} />
+                        Client Profile
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              )}
+            </div>
           </div>
-        )}
-        {!isJobOwner && (
-        <div className="flex flex-row justify-between items-center mt-6">
-          <BackButton/>
-          {job.status === "open" &&(
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button 
-                  className="bg-indigo-600 text-white hover:bg-indigo-700"
-                  disabled={isSubmitting}
-                >
-                  {existingProposal ? 'Edit Proposal' : 'Make a Proposal'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-4 bg-white rounded-lg shadow-lg">
-                <h3 className="text-lg font-semibold mb-4">
-                  {existingProposal ? 'Edit your Proposal' : 'Submit your Proposal'}
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Job Overview Card */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <DescriptionIcon className="text-blue-600" />
+                Job Overview
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <AttachMoneyIcon className="text-green-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Budget</p>
+                  <p className="font-bold text-green-600">${job.budget.toLocaleString()}</p>
+                </div>
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <CalendarTodayIcon className="text-blue-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Deadline</p>
+                  <p className="font-bold text-blue-600">{new Date(job.deadline).toLocaleDateString()}</p>
+                </div>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <CategoryIcon className="text-purple-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Category</p>
+                  <p className="font-bold text-purple-600">{job.category}</p>
+                </div>
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <CalendarTodayIcon className="text-gray-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Posted</p>
+                  <p className="font-bold text-gray-600">{new Date(job.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Description Card */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Description</h3>
+              <div className="prose prose-gray max-w-none">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.description}</p>
+              </div>
+            </div>
+
+            {/* References and Resources */}
+            {((Array.isArray(job.references) && job.references.length > 0) || 
+              (Array.isArray(job.resources) && job.resources.length > 0)) && (
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <LinkIcon className="text-blue-600" />
+                  Additional Resources
                 </h3>
-
-                {successMessage && (
-                  <Alert className="mb-4 border-green-200 bg-green-50">
-                    <AlertTitle className="text-green-800">{successMessage}</AlertTitle>
-                  </Alert>
+                
+                {Array.isArray(job.references) && job.references.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="font-medium text-gray-800 mb-3">Reference Links</h4>
+                    <div className="space-y-2">
+                      {job.references.map((url, idx) => (
+                        <a
+                          key={idx}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group"
+                        >
+                          <LinkIcon className="text-blue-600 flex-shrink-0" style={{ fontSize: 16 }} />
+                          <span className="text-blue-600 hover:text-blue-800 text-sm break-all group-hover:underline">
+                            {url}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                {failureMessage && (
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertTitle>{failureMessage}</AlertTitle>
-                  </Alert>
-                )}
 
-                <form ref={formRef} onSubmit={onSubmit} className="space-y-4">
+                {Array.isArray(job.resources) && job.resources.length > 0 && (
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium mb-1">
-                      Message <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      defaultValue={existingProposal?.message || ''}
-                      required
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      rows={3}
-                      placeholder="Explain why you're the best fit for this job..."
-                    />
+                    <h4 className="font-medium text-gray-800 mb-3">Resource Links</h4>
+                    <div className="space-y-2">
+                      {job.resources.map((url, idx) => (
+                        <a
+                          key={idx}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors group"
+                        >
+                          <LinkIcon className="text-green-600 flex-shrink-0" style={{ fontSize: 16 }} />
+                          <span className="text-green-600 hover:text-green-800 text-sm break-all group-hover:underline">
+                            {url}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
                   </div>
-                  
+                )}
+              </div>
+            )}
+
+            {/* Existing Proposal Display */}
+            {existingProposal && !isJobOwner && (
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Current Proposal</h3>
+                <div className="bg-blue-50 p-4 rounded-lg space-y-3">
                   <div>
-                    <label htmlFor="proposedAmount" className="block text-sm font-medium mb-1">
-                      Proposed Amount ($) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="proposedAmount"
-                      name="proposedAmount"
-                      type="number"
-                      min="1"
-                      step="0.01"
-                      required
-                      defaultValue={existingProposal?.proposedAmount || ''}
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="Enter your proposed amount"
-                    />
+                    <p className="text-sm font-medium text-gray-700">Message:</p>
+                    <p className="text-gray-900">{existingProposal.message}</p>
                   </div>
-                  
-                  <div>
-                    <label htmlFor="estimatedDays" className="block text-sm font-medium mb-1">
-                      Estimated Days to Complete <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="estimatedDays"
-                      name="estimatedDays"
-                      type="number"
-                      min="1"
-                      required
-                      defaultValue={existingProposal?.estimatedDays || ''}
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="Enter estimated days"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Proposed Amount:</p>
+                      <p className="text-lg font-bold text-green-600">${existingProposal.proposedAmount.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Estimated Days:</p>
+                      <p className="text-lg font-bold text-blue-600">{existingProposal.estimatedDays} days</p>
+                    </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* View Proposals for Job Owner */}
+            {isJobOwner && (
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <ViewProposal jobId={job.jobId} />
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              {/* Action Card */}
+              {!isJobOwner && job.status === "open" && (
+                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Apply for This Job</h3>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Submit your proposal to show interest in this project.
+                  </p>
                   
-                  <div className='flex flex-row items-center justify-center gap-2 w-full'>
-                    <Button 
-                      type="submit" 
-                      className="flex-1 bg-indigo-600 text-white hover:bg-indigo-700"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Processing...' : (existingProposal ? 'Update Proposal' : 'Submit Proposal')}
-                    </Button>
-                    {existingProposal && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="flex-1 text-red-600 border-red-500 hover:bg-red-50"
-                        onClick={handleDeleteProposal}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                         disabled={isSubmitting}
                       >
-                        {isSubmitting ? 'Deleting...' : 'Delete'}
+                        {existingProposal ? 'Edit Proposal' : 'Make a Proposal'}
                       </Button>
-                    )}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-4 bg-white rounded-lg shadow-lg">
+                      <h3 className="text-lg font-semibold mb-4">
+                        {existingProposal ? 'Edit your Proposal' : 'Submit your Proposal'}
+                      </h3>
+
+                      {successMessage && (
+                        <Alert className="mb-4 border-green-200 bg-green-50">
+                          <AlertTitle className="text-green-800">{successMessage}</AlertTitle>
+                        </Alert>
+                      )}
+                      {failureMessage && (
+                        <Alert variant="destructive" className="mb-4">
+                          <AlertTitle>{failureMessage}</AlertTitle>
+                        </Alert>
+                      )}
+
+                      <form ref={formRef} onSubmit={onSubmit} className="space-y-4">
+                        <div>
+                          <label htmlFor="message" className="block text-sm font-medium mb-1">
+                            Message <span className="text-red-500">*</span>
+                          </label>
+                          <textarea
+                            id="message"
+                            name="message"
+                            defaultValue={existingProposal?.message || ''}
+                            required
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows={3}
+                            placeholder="Explain why you're the best fit for this job..."
+                          />
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="proposedAmount" className="block text-sm font-medium mb-1">
+                            Proposed Amount ($) <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            id="proposedAmount"
+                            name="proposedAmount"
+                            type="number"
+                            min="1"
+                            step="0.01"
+                            required
+                            defaultValue={existingProposal?.proposedAmount || ''}
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter your proposed amount"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="estimatedDays" className="block text-sm font-medium mb-1">
+                            Estimated Days to Complete <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            id="estimatedDays"
+                            name="estimatedDays"
+                            type="number"
+                            min="1"
+                            required
+                            defaultValue={existingProposal?.estimatedDays || ''}
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter estimated days"
+                          />
+                        </div>
+                        
+                        <div className='flex flex-row items-center justify-center gap-2 w-full'>
+                          <Button 
+                            type="submit" 
+                            className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? 'Processing...' : (existingProposal ? 'Update Proposal' : 'Submit Proposal')}
+                          </Button>
+                          {existingProposal && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="flex-1 text-red-600 border-red-500 hover:bg-red-50"
+                              onClick={handleDeleteProposal}
+                              disabled={isSubmitting}
+                            >
+                              {isSubmitting ? 'Deleting...' : 'Delete'}
+                            </Button>
+                          )}
+                        </div>
+                      </form>
+                      
+                      <p className="text-xs text-gray-500 mt-3">
+                        You can only submit one proposal per job. You can edit or delete it anytime.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              )}
+
+              {/* Job Stats */}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Statistics</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Status</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      job.status === 'open' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                    </span>
                   </div>
-                </form>
-                
-                <p className="text-xs text-gray-500 mt-3">
-                  You can only submit one proposal per job. You can edit or delete it anytime.
-                </p>
-              </PopoverContent>
-            </Popover>
-            )}
-        </div>
-        )}
-
-
-        {isJobOwner && (
-          <div className="mt-8">
-            <ViewProposal jobId={job.jobId} />
-            
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Posted</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {new Date(job.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Budget</span>
+                    <span className="text-sm font-bold text-green-600">
+                      ${job.budget.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   );
 }
