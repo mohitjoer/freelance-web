@@ -192,6 +192,8 @@ export default function ClientDashboard() {
               <Image
                 src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png" 
                 alt="Logo" 
+                width={100}
+                height={100}
                 className="w-10 h-10 object-contain"
               />
               <span className="text-xl font-bold text-gray-900">FreeLanceBase</span>

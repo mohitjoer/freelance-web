@@ -73,6 +73,8 @@ export async function PATCH(
         status: 'in-progress',
         freelancerId: proposal.freelancerId,
         acceptedProposalId: proposalId,
+        budget: proposal.proposedAmount,
+        startedAt: new Date(),
       });
 
       // Add job to client's in progress jobs

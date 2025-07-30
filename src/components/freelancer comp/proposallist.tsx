@@ -40,7 +40,11 @@ export default function Proposallist() {
         const res = await fetch('/api/proposals/user');
         const data = await res.json();
         if (data.success) {
-          setProposals(data.data);
+          // Filter to show only pending and rejected proposals
+          const filteredProposals = data.data.filter(
+            (proposal: Proposal) => proposal.status === 'pending' || proposal.status === 'rejected'
+          );
+          setProposals(filteredProposals);
         }
       } catch (error) {
         console.error('Error fetching proposals:', error);
@@ -90,45 +94,25 @@ export default function Proposallist() {
     switch (status) {
       case 'pending':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">
-            <div className="w-2 h-2 bg-amber-500 rounded-full mr-1.5"></div>
-            Pending
-          </span>
-        );
-      case 'accepted':
-        return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-1.5"></div>
-            Accepted
+          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2"></div>
+            Pending Review
           </span>
         );
       case 'rejected':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
-            <div className="w-2 h-2 bg-red-500 rounded-full mr-1.5"></div>
-            Rejected
-          </span>
-        );
-
-      case 'completed':
-        return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-700 border border-sky-200">
-            <div className="w-2 h-2 bg-sky-600 rounded-full mr-1.5"></div>
-            completed
+          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
+            Not Selected
           </span>
         );
       default:
-        return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-            <div className="w-2 h-2 bg-gray-500 rounded-full mr-1.5"></div>
-            Unknown
-          </span>
-        );
+        return null;
     }
   };
 
   const canDeleteProposal = (proposal: Proposal) => {
-    return proposal.status === 'pending' && proposal.job?.jobId;
+    return (proposal.status === 'pending' || proposal.status === 'rejected') && proposal.job?.jobId;
   };
 
   const formatCurrency = (amount: number) => {
@@ -148,200 +132,218 @@ export default function Proposallist() {
     });
   };
 
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Less than 1 hour ago';
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    if (diffInHours < 48) return 'Yesterday';
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    
+    return formatDate(dateString);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">My Proposals</h1>
-              <p className="text-slate-600">Track and manage your job proposals</p>
-            </div>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
-              <Link href="/jobs/open" className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Find New Jobs
-              </Link>
-            </Button>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">My Proposals</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            {proposals.length} proposal{proposals.length !== 1 ? 's' : ''} awaiting response or review
+          </p>
         </div>
-
-        {/* Success/Error Messages */}
-        {successMessage && (
-          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg flex items-center gap-3">
-            <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <Link href="/jobs/open">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            {successMessage}
-          </div>
-        )}
-        {failureMessage && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3">
-            <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {failureMessage}
-          </div>
-        )}
+            Find New Jobs
+          </Button>
+        </Link>
+      </div>
 
-        {/* Loading State */}
-        {loading ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-              <span className="ml-3 text-slate-600">Loading proposals...</span>
+      {/* Messages */}
+      {successMessage && (
+        <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-3">
+          <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {successMessage}
+        </div>
+      )}
+      {failureMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3">
+          <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {failureMessage}
+        </div>
+      )}
+
+      {/* Content */}
+      {loading ? (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 animate-pulse">
+              <div className="flex justify-between items-start mb-4">
+                <div className="space-y-2 flex-1">
+                  <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </div>
+                <div className="h-6 bg-gray-200 rounded-full w-20"></div>
+              </div>
+              <div className="h-20 bg-gray-100 rounded-lg mb-4"></div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="h-16 bg-gray-100 rounded-lg"></div>
+                <div className="h-16 bg-gray-100 rounded-lg"></div>
+                <div className="h-16 bg-gray-100 rounded-lg"></div>
+              </div>
             </div>
+          ))}
+        </div>
+      ) : proposals.length === 0 ? (
+        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
           </div>
-        ) : proposals.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No proposals yet</h3>
-            <p className="text-slate-600 mb-6">Start by browsing available jobs and submitting your first proposal.</p>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors">
-              <Link href="/jobs/open">Browse Jobs</Link>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No pending proposals</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            You don&apos;t have any proposals awaiting response. Start browsing jobs to submit new proposals.
+          </p>
+          <Link href="/jobs/open">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors">
+              Browse Available Jobs
             </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {proposals.map((proposal) => (
-              <div key={proposal._id} className="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow duration-200">
-                <div className="p-6">
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Main Content */}
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-                        <h3 className="text-xl font-semibold text-slate-900 flex-1">
-                          {proposal.job?.title || 'Job No Longer Available'}
-                        </h3>
-                        {getStatusBadge(proposal.status)}
-                      </div>
-
-                      {/* Status-specific messages */}
-                      {proposal.status === 'accepted' && (
-                        <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                          <div className="flex items-center gap-2">                
-                              <p className="text-sm font-semibold text-emerald-800">Congratulations!</p>
-                              <p className="text-sm text-emerald-700">Your proposal has been accepted.</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {proposal.status === 'rejected' && (
-                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <p className="text-sm text-red-700">
-                            This proposal was not selected. Don&apos;t worry - keep applying to find the right match!
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Proposal Details */}
-                      <div className="bg-slate-50 rounded-lg p-4 mb-4">
-                        <h4 className="font-medium text-slate-900 mb-2">Proposal Message</h4>
-                        <p className="text-slate-700 leading-relaxed">{proposal.message}</p>
-                      </div>
-
-                      {/* Proposal Stats */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                        <div className="bg-slate-50 rounded-lg p-3">
-                          <div className="text-sm text-slate-600">Proposed Amount</div>
-                          <div className="text-lg font-semibold text-slate-900">{formatCurrency(proposal.proposedAmount)}</div>
-                        </div>
-                        <div className="bg-slate-50 rounded-lg p-3">
-                          <div className="text-sm text-slate-600">Estimated Duration</div>
-                          <div className="text-lg font-semibold text-slate-900">{proposal.estimatedDays} days</div>
-                        </div>
-                        <div className="bg-slate-50 rounded-lg p-3">
-                          <div className="text-sm text-slate-600">Submitted</div>
-                          <div className="text-lg font-semibold text-slate-900">{formatDate(proposal.createdAt)}</div>
-                        </div>
-                      </div>
-
-                      {/* Warning for deleted jobs */}
-                      {!proposal.job && (
-                        <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {proposals.map((proposal) => (
+            <div key={proposal._id} className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition-all duration-200">
+              <div className="p-6">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-start gap-3 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900 leading-tight">
+                        {proposal.job?.title || 'Job No Longer Available'}
+                      </h3>
+                      {getStatusBadge(proposal.status)}
+                    </div>
+                    <p className="text-sm text-gray-500">{formatTimeAgo(proposal.createdAt)}</p>
+                  </div>
+                  
+                  {/* Quick Actions */}
+                  <div className="flex items-center gap-2">
+                    {proposal.job && (
+                      <Link href={`/jobs/${proposal.job.jobId}`}>
+                        <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
-                          <span>The job associated with this proposal is no longer available.</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col gap-3 lg:w-48">
-                      {proposal.job && (
-                        <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
-                          <Link href={`/jobs/${proposal.job.jobId}`} className="flex items-center justify-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            View Job
-                          </Link>
+                          View Job
                         </Button>
-                      )}
-                      
-                      {proposal.status === 'accepted' && (
-                        <div className="text-center p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
-                          <p className="text-sm font-medium text-emerald-800">Active Project</p>
-                          <p className="text-xs text-emerald-600">Check current jobs</p>
-                        </div>
-                      )}
-                      
-                      {canDeleteProposal(proposal) && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
-                          onClick={() => handleDeleteProposal(proposal.proposalId, proposal.job?.jobId || '')}
-                          disabled={deletingProposalId === proposal.proposalId}
-                        >
-                          {deletingProposalId === proposal.proposalId ? (
-                            <div className="flex items-center gap-2">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
-                              Deleting...
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                              Delete Proposal
-                            </div>
-                          )}
-                        </Button>
-                      )}
-
-                      {proposal.status === 'rejected' && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full text-gray-600 border-gray-300 hover:bg-gray-50"
-                          onClick={() => handleDeleteProposal(proposal.proposalId, proposal.job?.jobId || '')}
-                        >
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Remove
+                      </Link>
+                    )}
+                    
+                    {canDeleteProposal(proposal) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                        onClick={() => handleDeleteProposal(proposal.proposalId, proposal.job?.jobId || '')}
+                        disabled={deletingProposalId === proposal.proposalId}
+                      >
+                        {deletingProposalId === proposal.proposalId ? (
+                          <div className="flex items-center">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1"></div>
+                            Deleting...
                           </div>
-                        </Button>
-                      )}
-                    </div>
+                        ) : (
+                          <div className="flex items-center">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            {proposal.status === 'rejected' ? 'Remove' : 'Delete'}
+                          </div>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </div>
+
+                {/* Status Message */}
+                {proposal.status === 'rejected' && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-700">
+                      This proposal was not selected. Keep applying to find the right match!
+                    </p>
+                  </div>
+                )}
+
+                {/* Proposal Details Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+                  <div className="lg:col-span-2">
+                    <div className="bg-gray-50 rounded-lg p-4 h-full">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Proposal Message</h4>
+                      <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
+                        {proposal.message}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3 lg:col-span-2">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">Proposed Amount</div>
+                        <div className="text-lg font-semibold text-gray-900 mt-1">{formatCurrency(proposal.proposedAmount)}</div>
+                      </div>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">Duration</div>
+                        <div className="text-lg font-semibold text-gray-900 mt-1">{proposal.estimatedDays} days</div>
+                      </div>
+                    </div>
+                    
+                    {/* Job Budget Comparison if available */}
+                    {proposal.job?.budget && (
+                      <div className="bg-blue-50 rounded-lg p-3">
+                        <div className="text-xs text-blue-600 uppercase tracking-wide font-medium">Job Budget</div>
+                        <div className="text-sm font-medium text-blue-900 mt-1">
+                          {formatCurrency(proposal.job.budget)}
+                          <span className="text-xs text-blue-600 ml-2">
+                            ({proposal.proposedAmount <= proposal.job.budget ? 'Within budget' : 'Above budget'})
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Warning for deleted jobs */}
+                {!proposal.job && (
+                  <div className="flex items-start gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <div>
+                      <p className="font-medium">Job No Longer Available</p>
+                      <p className="text-xs mt-1">The job associated with this proposal has been removed or closed.</p>
+                    </div>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

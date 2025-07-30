@@ -19,6 +19,7 @@ import { SignedIn, SignOutButton, UserButton } from "@clerk/clerk-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Proposallist from "@/components/freelancer comp/proposallist";
 import WorkingJob from "@/components/freelancer comp/workingjob";
+import CompletedJob from "@/components/freelancer comp/completedjob";
 
 // Type definitions
 interface PortfolioItem {
@@ -90,7 +91,7 @@ export default function FreelancerDashboard() {
   const [freelancerData, setFreelancerData] = useState<APIResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<'proposals' | 'jobs'>('proposals');
+  const [activeView, setActiveView] = useState<'proposals' | 'jobs' | 'completed'>('proposals');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -215,6 +216,8 @@ export default function FreelancerDashboard() {
               <Image
                 src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png" 
                 alt="Logo" 
+                width={100}
+                height={100}
                 className="w-10 h-10 object-contain"
               />
               <span className="text-xl font-bold text-gray-900">FreeLanceBase</span>
@@ -457,6 +460,16 @@ export default function FreelancerDashboard() {
                   >
                     Active Jobs
                   </button>
+                  <button
+                    onClick={() => setActiveView('completed')}
+                    className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
+                      activeView === 'completed'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Completed
+                  </button>
                 </div>
               </div>
               
@@ -464,6 +477,7 @@ export default function FreelancerDashboard() {
               <div>
                 {activeView === 'proposals' && <Proposallist />}
                 {activeView === 'jobs' && <WorkingJob />}
+                {activeView === 'completed' && <CompletedJob/>}
               </div>
             </div>
           </div>
