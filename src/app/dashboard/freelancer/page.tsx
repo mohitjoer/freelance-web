@@ -27,6 +27,18 @@ interface PortfolioItem {
   link: string;
 }
 
+interface Proposal {
+    _id: string;
+    proposalId: string;
+    jobId: string;
+    freelancerId: string;
+    message: string;
+    proposedAmount: number;
+    estimatedDays: number;
+    status: 'pending' | 'accepted' | 'completed';
+    createdAt: string;
+}
+
 interface FreelancerData {
   userId: string;
   name: string;
@@ -89,16 +101,21 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, href, active, on
 export default function FreelancerDashboard() {
   const { user, isLoaded } = useUser();
   const [freelancerData, setFreelancerData] = useState<APIResponse | null>(null);
+  const [proposalCounts, setProposalCounts] = useState({
+    pending: 0,
+    accepted: 0,
+    completed: 0,
+    total: 0
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<'proposals' | 'jobs' | 'completed'>('proposals');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Fetch freelancer data
   useEffect(() => {
-    // Wait for Clerk to load user data
     if (!isLoaded) return;
     
-    // If no user is authenticated, stop loading
     if (!user) {
       setLoading(false);
       setError("User not authenticated");
@@ -110,7 +127,6 @@ export default function FreelancerDashboard() {
         setLoading(true);
         setError(null);
         
-        // Remove userId from query params since API gets it from auth()
         const res = await fetch('/api/user/freelancer');
         
         if (!res.ok) {
@@ -119,7 +135,6 @@ export default function FreelancerDashboard() {
         
         const data: APIResponse = await res.json();
         
-        // Check if the API returned a success response
         if (!data.success) {
           throw new Error(data.message || 'Failed to fetch freelancer data');
         }
@@ -136,6 +151,36 @@ export default function FreelancerDashboard() {
 
     fetchData();
   }, [user, isLoaded]);
+
+  // Fetch proposals and update counts
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchProposals = async () => {
+      try {
+        const res = await fetch('/api/proposals/user');
+        const data = await res.json();
+        
+        if (data.success) {
+          const allProposals = data.data;
+          
+          // Calculate proposal counts by status
+          const counts = {
+            pending: allProposals.filter((p: Proposal) => p.status === 'pending').length,
+            accepted: allProposals.filter((p: Proposal) => p.status === 'accepted').length,
+            completed: allProposals.filter((p: Proposal) => p.status === 'completed').length,
+            total: allProposals.length
+          };
+          
+          setProposalCounts(counts);
+        }
+      } catch (error) {
+        console.error('Error fetching proposals:', error);
+      }
+    };
+
+    fetchProposals();
+  }, [user]);
 
   const sidebarItems = [
     { icon: <DashboardOutlinedIcon />, label: "Dashboard", href: "/dashboard", active: true },
@@ -327,7 +372,7 @@ export default function FreelancerDashboard() {
               </div>
             )}
 
-            {/* Statistics Cards */}
+            {/* Statistics Cards - Updated with actual proposal counts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-4">
@@ -338,7 +383,7 @@ export default function FreelancerDashboard() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Proposals</h3>
-                    <p className="text-2xl font-bold text-blue-600">{data.jobsProposed?.length || 0}</p>
+                    <p className="text-2xl font-bold text-blue-600">{proposalCounts.pending}</p>
                   </div>
                 </div>
               </div>
@@ -352,7 +397,7 @@ export default function FreelancerDashboard() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Active Jobs</h3>
-                    <p className="text-2xl font-bold text-green-600">{data.jobsInProgress?.length || 0}</p>
+                    <p className="text-2xl font-bold text-green-600">{proposalCounts.accepted}</p>
                   </div>
                 </div>
               </div>
@@ -366,7 +411,7 @@ export default function FreelancerDashboard() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Completed</h3>
-                    <p className="text-2xl font-bold text-purple-600">{data.jobsFinished?.length || 0}</p>
+                    <p className="text-2xl font-bold text-purple-600">{proposalCounts.completed}</p>
                   </div>
                 </div>
               </div>

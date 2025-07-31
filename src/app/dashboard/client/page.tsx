@@ -28,11 +28,22 @@ interface ClientData {
   role: string;
   image: string | null;
   bio?: string;
+  status: string;
   companyName?: string;
   companyWebsite?: string;
-  jobsPosted: string[];
-  jobsInProgress: string[];
-  jobsFinished: string[];
+}
+
+interface Job {
+  jobId: string;
+  clientId: string;
+  freelancerId: string;
+  _id: string;
+  title: string;
+  status: string;
+  budget: number;
+  deadline: string;
+  createdAt: string;
+  acceptedProposalId?: string;
 }
 
 interface APIResponse {
@@ -86,6 +97,12 @@ export default function ClientDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<'posted' | 'ongoing' | 'finished'>('posted');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [jobs, setJobs] = useState<Job[]>([]);
+
+  // Calculate job statistics
+  const openJobs = jobs.filter(job => job.status === 'open').length;
+  const ongoingJobs = jobs.filter(job => job.status === 'in-progress' || job.status === 'ongoing').length;
+  const completedJobs = jobs.filter(job => job.status === 'completed' || job.status === 'finished').length;
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -96,12 +113,29 @@ export default function ClientDashboard() {
     }
 
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const res = await fetch("/api/user/client");
-        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-        const data: APIResponse = await res.json();
-        if (!data.success) throw new Error(data.message || "Failed to load client data");
-        setClientData(data);
+        // Fetch both client data and jobs in parallel
+        const [clientRes, jobsRes] = await Promise.all([
+          fetch("/api/user/client"),
+          fetch('/api/user/client-jobs')
+        ]);
+
+        // Handle client data
+        if (!clientRes.ok) throw new Error(`HTTP error ${clientRes.status}`);
+        const clientData: APIResponse = await clientRes.json();
+        if (!clientData.success) throw new Error(clientData.message || "Failed to load client data");
+        setClientData(clientData);
+
+        // Handle jobs data
+        const jobsData = await jobsRes.json();
+        if (jobsData.success) {
+          setJobs(jobsData.data);
+        } else {
+          console.warn('Failed to load jobs:', jobsData.message);
+          // Don't throw error for jobs, just log warning
+        }
+        
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Unknown error";
         setError(msg);
@@ -363,8 +397,8 @@ export default function ClientDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Jobs Posted</h3>
-                    <p className="text-2xl font-bold text-blue-600">{data.jobsPosted?.length || 0}</p>
+                    <h3 className="font-semibold text-gray-900">Open Jobs</h3>
+                    <p className="text-2xl font-bold text-blue-600">{openJobs}</p>
                   </div>
                 </div>
               </div>
@@ -378,7 +412,7 @@ export default function ClientDashboard() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Ongoing</h3>
-                    <p className="text-2xl font-bold text-yellow-600">{data.jobsInProgress?.length || 0}</p>
+                    <p className="text-2xl font-bold text-yellow-600">{ongoingJobs}</p>
                   </div>
                 </div>
               </div>
@@ -392,7 +426,7 @@ export default function ClientDashboard() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Completed</h3>
-                    <p className="text-2xl font-bold text-green-600">{data.jobsFinished?.length || 0}</p>
+                    <p className="text-2xl font-bold text-green-600">{completedJobs}</p>
                   </div>
                 </div>
               </div>
