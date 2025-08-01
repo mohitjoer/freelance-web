@@ -112,6 +112,8 @@ export default function OnboardingPage() {
             src="https://res.cloudinary.com/dipugmopt/image/upload/v1753531097/ChatGPT_Image_Jul_26_2025_05_27_45_PM_fklgic.png"
             alt="Professional workspace"
             className="w-full h-full object-cover"
+            width={1000}
+            height={1000}
           />
           <div className="absolute bottom-8 left-8 right-8 z-20 bg-white/80 rounded-2xl p-3 text-neutral-600">
             <h2 className="text-2xl font-bold mb-2">Welcome to <span className='text-sky-800'>FreeLanceBase</span> Network</h2>
@@ -374,6 +376,8 @@ export default function OnboardingPage() {
             src="https://res.cloudinary.com/dipugmopt/image/upload/v1753531097/ChatGPT_Image_Jul_26_2025_05_27_45_PM_fklgic.png"
             alt="Professional workspace"
             className="w-full h-full object-cover opacity-10"
+            width={100}
+            height={100}
           />
         </div>
       </div>
