@@ -256,7 +256,7 @@ export default function FreelancerDashboard() {
       `}>
         <div className="flex flex-col h-full">
           {/* Logo Section */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between pt-5 pb-6 px-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
               <Image
                 src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png" 
