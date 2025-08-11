@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       bio: body.bio,
       companyName: body.companyName ? body.companyName : "",
       companyWebsite: body.companyWebsite ? body.companyWebsite : "",
+      reviews: [],
     })
     } 
 
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
         skills: Array.isArray(body.skills) ? body.skills : [],
         experienceLevel: body.experienceLevel || 'beginner',
         portfolio: Array.isArray(body.portfolio) ? body.portfolio : [],
+        reviews: [],
       });
     }
 

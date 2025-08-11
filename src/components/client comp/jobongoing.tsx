@@ -185,15 +185,16 @@ export default function JobOngoing() {
                     
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-2 lg:flex-nowrap">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-                      >
-                        <ChatOutlinedIcon className="w-4 h-4 mr-2" />
-                        Chat
-                      </Button>
-                      
+                      <Link href={`/room/${job.jobId}`}>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                        >
+                          <ChatOutlinedIcon className="w-4 h-4 mr-2" />
+                          Chat
+                        </Button>
+                      </Link>
                       {job.clientMarkedComplete ? (
                         <Button 
                           variant="outline" 
