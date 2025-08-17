@@ -12,12 +12,14 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WorkIcon from '@mui/icons-material/Work';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import ReportIcon from '@mui/icons-material/Report';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Button } from '../ui/button';
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 interface Job {
   jobId: string;
@@ -31,7 +33,7 @@ interface Job {
   createdAt: string;
   clientMarkedComplete?: boolean;
   acceptedProposalId?: string;
-  startedat:Date;
+  startedat: Date;
 }
 
 export default function JobOngoing() {
@@ -39,6 +41,10 @@ export default function JobOngoing() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Report functionality states
+  const [reportDetails, setReportDetails] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -87,6 +93,40 @@ export default function JobOngoing() {
     } catch (err) {
       console.error("Complete job error:", err);
       alert("Server error.");
+    }
+  };
+
+  const handleReportUser = async (freelancerId: string, jobId: string) => {
+    if (!reportDetails.trim()) {
+      alert('Please provide a reason for reporting.');
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/user/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reporterId: user?.id,
+          reportedId: freelancerId,
+          reason: reportDetails,
+          details: reportDetails,
+          jobId: jobId,
+        }),
+      });
+      
+      if (res.ok) {
+        setSuccessMessage("Report submitted successfully!");
+        setReportDetails('');
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        const errorData = await res.json();
+        alert(errorData.message || "Failed to submit report.");
+      }
+    } catch (error) {
+      console.error('Report submission error:', error);
+      alert("Server error occurred while submitting report.");
     }
   };
 
@@ -195,6 +235,7 @@ export default function JobOngoing() {
                           Chat
                         </Button>
                       </Link>
+                      
                       {job.clientMarkedComplete ? (
                         <Button 
                           variant="outline" 
@@ -236,6 +277,58 @@ export default function JobOngoing() {
                           </PopoverContent>
                         </Popover>
                       )}
+                      
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 transition-colors"
+                          >
+                            <ReportIcon className="w-4 h-4 mr-2" />
+                            Report User
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-96 p-0 bg-white">
+                          <div className="p-6">
+                            <h4 className="font-semibold text-gray-900 mb-4">Report Freelancer</h4>
+                            
+                            {successMessage && (
+                              <Alert className="mb-4 border-green-200 bg-green-50">
+                                <AlertTitle className="text-green-800">{successMessage}</AlertTitle>
+                              </Alert>
+                            )}
+                            
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Reason for reporting *
+                              </label>
+                              <textarea
+                                value={reportDetails}
+                                onChange={(e) => setReportDetails(e.target.value)}
+                                placeholder="Provide the reason and context for reporting this freelancer..."
+                                rows={4}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                              />
+                            </div>
+
+                            <div className="flex gap-3">
+                              <Button
+                                onClick={() => handleReportUser(job.freelancerId, job.jobId)}
+                                className="bg-red-600 hover:bg-red-700 text-white flex-1"
+                                size="sm"
+                                disabled={!reportDetails.trim()}
+                              >
+                                Submit Report
+                              </Button>
+                            </div>
+                            
+                            <p className="text-xs text-gray-500 mt-3">
+                              Reports are reviewed by our team and this job will be marked as Cancelled. False reports may result in account restrictions.
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                       
                       <Link href={`/jobs/${job.jobId}`}>
                         <Button 

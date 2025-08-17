@@ -397,7 +397,7 @@ export default function FreelancerDashboard() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Active Jobs</h3>
-                    <p className="text-2xl font-bold text-green-600">{proposalCounts.accepted}</p>
+                    <p className="text-2xl font-bold text-green-600">{proposalCounts.pending}</p>
                   </div>
                 </div>
               </div>
