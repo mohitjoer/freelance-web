@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "../ui/button";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 import {
   SignInButton,
   SignedIn,
