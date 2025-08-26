@@ -9,13 +9,6 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import Link from "next/link";
 import Image from "next/image";
 
