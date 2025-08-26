@@ -24,7 +24,6 @@ function Homeheader() {
     <header className="w-full bg-white shadow-lg border-b border-gray-100 px-4 py-3 sm:px-8 sm:py-4">
       <div className=" mx-auto flex items-center justify-between">
         {/* Brand + Navigation */}
-        <div className="flex items-center gap-8">
           {/* Brand Name */}
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -41,43 +40,6 @@ function Homeheader() {
             </h1>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex  items-center gap-1">
-            {["Find Jobs", "Hire Freelancers", "How It Works", "About"].map((label) => (
-              <Button
-                key={label}
-                variant="ghost"
-                className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium px-4 py-2 text-sm transition-colors duration-200"
-              >
-                {label}
-              </Button>
-            ))}
-          </nav>
-
-          {/* Mobile Dropdown */}
-          <div className="hidden">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-                >
-                  Menu <ArrowDropDownIcon className="ml-1 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 bg-white shadow-lg border border-gray-200" align="start">
-                <DropdownMenuGroup>
-                  {["Find Jobs", "Hire Freelancers", "How It Works", "About"].map((label) => (
-                    <DropdownMenuItem key={label} className="text-gray-700 hover:bg-gray-50 cursor-pointer">
-                      {label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
 
         {/* Auth Section */}
         <div className="flex items-center gap-3">
