@@ -319,19 +319,19 @@ function HomeFeature() {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-20 bg-gray-50">
+    <section ref={containerRef} className="py-20 bg-background dark:bg-background transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div ref={sectionHeaderRef} className="text-center mb-16">
-          <div ref={badgeRef} className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div ref={badgeRef} className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Zap className="w-4 h-4" />
             Platform Features
           </div>
-          <h2 ref={titleRef} className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 ref={titleRef} className="text-4xl md:text-5xl font-bold text-foreground mb-6">
             Everything you need to
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent bg-[length:200%_100%]"> succeed</span>
           </h2>
-          <p ref={subtitleRef} className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p ref={subtitleRef} className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Our comprehensive platform provides all the tools and features both clients and freelancers need for successful project collaboration.
           </p>
         </div>
@@ -346,17 +346,17 @@ function HomeFeature() {
                 ref={el => { featureCardsRefs.current[index] = el; }}
                 className="group relative"
               >
-                <div className="card-content bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 h-full relative overflow-hidden">
+                <div className="card-content bg-card dark:bg-card/80 rounded-2xl p-8 shadow-sm border border-border hover:shadow-lg hover:border-border/80 transition-all duration-300 h-full relative overflow-hidden">
                   {/* Icon */}
                   <div className={`feature-icon w-14 h-14 ${feature.bgColor} rounded-xl flex items-center justify-center mb-6 transition-transform duration-300`}>
                     <IconComponent className={`w-7 h-7 ${feature.iconColor}`} />
                   </div>
                   
                   {/* Content */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-gray-700 transition-colors">
+                  <h3 className="text-xl font-bold text-foreground mb-4 group-hover:text-muted-foreground transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
 
@@ -369,7 +369,7 @@ function HomeFeature() {
         </div>
 
         {/* Bottom CTA Section */}
-        <div ref={ctaSectionRef} className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden">
+  <div ref={ctaSectionRef} className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="bg-pattern absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-20 -translate-y-20"></div>

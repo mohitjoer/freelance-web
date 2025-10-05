@@ -232,3 +232,53 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 Made with ❤️ by the FreelanceBase team
 
 </div>
+
+## 🌗 Dark / Light Mode
+
+The application now supports a persistent light and dark theme.
+
+### How It Works
+- Tailwind is configured with `darkMode: 'class'` in `tailwind.config.ts`.
+- Design tokens are defined as CSS variables in `src/app/globals.css` for both `:root` (light) and `.dark` (dark) scopes.
+- A `ThemeProvider` (`src/components/theme-provider.tsx`) manages the chosen theme: `light`, `dark`, or `system`.
+- The initial theme is applied before React hydration via an inline no-flash `<script>` (`<ThemeScript />`) in `layout.tsx`.
+- User preference is stored in `localStorage` under the key `freelancebase-theme`.
+
+### Components
+- `ThemeToggle` (`src/components/theme-toggle.tsx`) renders a button in the bottom-right corner to switch between light and dark.
+- Existing UI components (buttons, alerts, etc.) automatically adapt because they use semantic color tokens (e.g. `bg-background`, `text-foreground`, `bg-primary`).
+
+### Adding Theme Awareness
+Use Tailwind's `dark:` modifier or rely on existing semantic tokens. Examples:
+
+```tsx
+<div className="bg-card text-card-foreground p-4 rounded-md">
+   <h2 className="text-lg font-semibold">Card</h2>
+   <p className="text-muted-foreground">Adaptive text color.</p>
+</div>
+
+<p className="text-sm text-foreground dark:text-primary">This text becomes primary in dark mode.</p>
+```
+
+### Programmatic Theme Control
+```tsx
+import { useTheme } from "@/components/theme-provider";
+
+function ThemeSwitcher() {
+   const { theme, setTheme, toggleTheme, resolvedTheme } = useTheme();
+   return (
+      <div>
+         <p>Current: {theme} (resolved: {resolvedTheme})</p>
+         <button onClick={toggleTheme}>Toggle</button>
+         <button onClick={() => setTheme('system')}>System</button>
+      </div>
+   );
+}
+```
+
+### Future Enhancements
+- Persist theme preference server-side per authenticated user.
+- Add system theme option in user settings UI.
+- Animated theme transitions (currently simple fades via CSS transitions).
+- Optional high-contrast mode.
+

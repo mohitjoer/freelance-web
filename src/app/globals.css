@@ -1,3 +1,78 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Theme design tokens (light) */
+:root {
+	--background: 0 0% 100%;
+	--foreground: 222 47% 11%;
+
+	--card: 0 0% 100%;
+	--card-foreground: 222 47% 11%;
+
+	--popover: 0 0% 100%;
+	--popover-foreground: 222 47% 11%;
+
+	--primary: 222 89% 55%; /* blue-ish */
+	--primary-foreground: 0 0% 100%;
+
+	--secondary: 240 5% 96%;
+	--secondary-foreground: 222 47% 11%;
+
+	--muted: 240 5% 96%;
+	--muted-foreground: 215 16% 47%;
+
+	--accent: 222 89% 55%;
+	--accent-foreground: 0 0% 100%;
+
+	--destructive: 0 84% 60%;
+	--destructive-foreground: 0 0% 100%;
+
+	--border: 214 32% 91%;
+	--input: 214 32% 91%;
+	--ring: 222 89% 55%;
+
+	--radius: 0.5rem;
+}
+
+/* Dark theme overrides */
+.dark {
+	--background: 222 47% 7%;
+	--foreground: 0 0% 98%;
+
+	--card: 222 47% 9%;
+	--card-foreground: 0 0% 98%;
+
+	--popover: 222 47% 9%;
+	--popover-foreground: 0 0% 98%;
+
+	--primary: 222 89% 63%;
+	--primary-foreground: 0 0% 100%;
+
+	--secondary: 217 33% 17%;
+	--secondary-foreground: 0 0% 98%;
+
+	--muted: 217 33% 17%;
+	--muted-foreground: 215 20% 65%;
+
+	--accent: 222 89% 63%;
+	--accent-foreground: 0 0% 100%;
+
+	--destructive: 0 63% 50%;
+	--destructive-foreground: 0 0% 98%;
+
+	--border: 217 33% 22%;
+	--input: 217 33% 22%;
+	--ring: 222 89% 63%;
+}
+
+body { 
+	background-color: hsl(var(--background));
+	color: hsl(var(--foreground));
+	font-feature-settings: "rlig" 1, "calt" 1;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Utility for smooth theme transition */
+/* Limit theme transition to body to avoid whole-page flashing animations */
+body { transition: background-color 0.25s ease, color 0.25s ease; }
+

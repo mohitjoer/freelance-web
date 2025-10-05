@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "../ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 import {
   SignInButton,
@@ -14,7 +15,7 @@ import Image from "next/image";
 
 function Homeheader() {
   return (
-    <header className="w-full bg-white shadow-lg border-b border-gray-100 px-4 py-3 sm:px-8 sm:py-4">
+    <header className="w-full bg-background shadow-lg border-b border-border px-4 py-3 sm:px-8 sm:py-4 dark:shadow-none supports-[backdrop-filter]:bg-background/80 backdrop-blur">
       <div className=" mx-auto flex items-center justify-between">
         {/* Brand + Navigation */}
           {/* Brand Name */}
@@ -28,7 +29,7 @@ function Homeheader() {
                 className="rounded-lg"
               />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">
               FreeLancBase
             </h1>
           </div>
@@ -38,7 +39,7 @@ function Homeheader() {
         <div className="flex items-center gap-3">
           <SignedOut>
             <SignInButton mode="redirect" forceRedirectUrl="/select">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-colors duration-200">
+              <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-primary dark:hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-colors duration-200">
                 Sign In
               </Button>
             </SignInButton>
@@ -46,9 +47,9 @@ function Homeheader() {
 
           <SignedIn>
             <Link href="/select">
-              <Button 
-                variant="outline" 
-                className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+              <Button
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-primary-foreground px-6 py-2 rounded-lg font-medium transition-colors duration-200"
               >
                 Dashboard
               </Button>
@@ -65,6 +66,9 @@ function Homeheader() {
               }}
             />
           </SignedIn>
+          <div className="ml-2">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>
