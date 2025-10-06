@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
-import { Star, Users, CheckCircle, ArrowRight, Play } from "lucide-react";
+import { Star, Users, CheckCircle, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -261,7 +262,7 @@ function HomeHero() {
   }, []);
 
   return (
-    <main ref={containerRef} className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-16 pb-20 overflow-hidden">
+  <main ref={containerRef} className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 pt-16 pb-20 overflow-hidden transition-colors">
       {/* Background Elements */}
       <div ref={backgroundRef} className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
@@ -273,38 +274,38 @@ function HomeHero() {
           {/* Left Column - Content */}
           <div className="space-y-8">
             {/* Trust Badge */}
-            <div ref={trustBadgeRef} className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100 w-fit">
+            <div ref={trustBadgeRef} className="flex items-center gap-2 bg-card dark:bg-card/80 rounded-full px-4 py-2 shadow-sm border border-border w-fit">
              <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 border-2 border-white"></div>
-              <span className="text-sm font-medium text-gray-700">Trusted by clients & freelancers worldwide</span>
+              <span className="text-sm font-medium text-muted-foreground">Trusted by clients & freelancers worldwide</span>
             </div>
 
             {/* Main Headline */}
             <div className="space-y-4">
-              <h1 ref={headlineRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 ref={headlineRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gray-900 dark:text-white">
                 Where
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent bg-[length:200%_100%]"> talent </span>
                 meets
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent bg-[length:200%_100%]"> opportunity</span>
               </h1>
-              <p ref={subtitleRef} className="text-xl text-gray-600 leading-relaxed max-w-2xl">
+              <p ref={subtitleRef} className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl">
                 Whether you&apos;re hiring top talent or showcasing your skills, FreeLancBase connects the right people for every project. Join millions of freelancers and clients worldwide.
               </p>
             </div>
 
             {/* Popular Searches */}
             <div ref={popularSectionRef} className="space-y-3">
-              <p className="text-sm text-gray-500 font-medium">Popular for clients:</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Popular for clients:</p>
               <div className="flex flex-wrap gap-2">
                 {["Web Development", "Logo Design", "Content Writing", "Mobile Apps", "SEO"].map((tag) => (
-                  <button key={tag} className="px-4 py-2 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 text-blue-600 rounded-full text-sm font-medium transition-colors duration-200 border border-blue-200 hover:border-blue-300">
+                  <button key={tag} className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:hover:bg-blue-900/60 dark:text-blue-300 rounded-full text-sm font-medium transition-colors duration-200 border border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700">
                     {tag}
                   </button>
                 ))}
               </div>
-              <p className="text-sm text-gray-500 font-medium mt-4">Popular for freelancers:</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-4">Popular for freelancers:</p>
               <div className="flex flex-wrap gap-2">
                 {["Remote Jobs", "Part-time Work", "Project Based", "Long-term", "Entry Level"].map((tag) => (
-                  <button key={tag} className="px-4 py-2 bg-purple-50 hover:bg-purple-100 hover:text-purple-700 text-purple-600 rounded-full text-sm font-medium transition-colors duration-200 border border-purple-200 hover:border-purple-300">
+                  <button key={tag} className="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:hover:bg-purple-800/60 dark:text-purple-300 rounded-full text-sm font-medium transition-colors duration-200 border border-purple-200 dark:border-purple-800 hover:border-purple-300 dark:hover:border-purple-700">
                     {tag}
                   </button>
                 ))}
@@ -313,18 +314,16 @@ function HomeHero() {
 
             {/* CTA Buttons */}
             <div ref={ctaButtonsRef} className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 text-lg group">
-                Start as Client
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 text-lg group">
-                Join as Freelancer
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold transition-colors duration-200 text-lg group">
-                <Play className="mr-2 w-5 h-5" />
-                Watch Demo
-              </Button>
+              <Link href="/select" passHref legacyBehavior>
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 text-lg group" asChild={false}>
+                  <span className="inline-flex items-center">Start as Client<ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
+                </Button>
+              </Link>
+              <Link href="/select" passHref legacyBehavior>
+                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 text-lg group" asChild={false}>
+                  <span className="inline-flex items-center">Join as Freelancer<ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -344,38 +343,38 @@ function HomeHero() {
             </div>
 
             {/* Floating Stats Cards */}
-            <div ref={floatingCard1Ref} className="absolute -top-6 -left-6 bg-white rounded-2xl shadow-lg p-4 border border-gray-100">
+            <div ref={floatingCard1Ref} className="absolute -top-6 -left-6 bg-white dark:bg-gray-900/70 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">Verified</p>
-                  <p className="text-sm text-gray-600">Talent Profiles</p>
+                  <p className="font-bold text-gray-900 dark:text-white">Verified</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Talent Profiles</p>
                 </div>
               </div>
             </div>
 
-            <div ref={floatingCard2Ref} className="absolute -bottom-6 -right-6 bg-white rounded-2xl shadow-lg p-4 border border-gray-100">
+            <div ref={floatingCard2Ref} className="absolute -bottom-6 -right-6 bg-white dark:bg-gray-900/70 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
                   <Star className="w-6 h-6 text-yellow-600 fill-current" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">Based on</p>
-                  <p className="text-sm text-gray-600">Reviews & Ratings</p>
+                  <p className="font-bold text-gray-900 dark:text-white">Based on</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Reviews & Ratings</p>
                 </div>
               </div>
             </div>
 
-            <div ref={floatingCard3Ref} className="absolute top-1/2 -left-8 bg-white rounded-2xl shadow-lg p-4 border border-gray-100">
+            <div ref={floatingCard3Ref} className="absolute top-1/2 -left-8 bg-white dark:bg-gray-900/70 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                   <Users className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">2K+</p>
-                  <p className="text-sm text-gray-600">Active Community Users</p>
+                  <p className="font-bold text-gray-900 dark:text-white">2K+</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Active Community Users</p>
                 </div>
               </div>
             </div>
@@ -392,8 +391,8 @@ function HomeHero() {
               { label: "Countries", value: "150+" }
             ].map((stat, index) => (
               <div key={index} className="space-y-2">
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-gray-600 font-medium">{stat.label}</p>
+                <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-muted-foreground font-medium">{stat.label}</p>
               </div>
             ))}
           </div>
