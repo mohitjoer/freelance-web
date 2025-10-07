@@ -1,4 +1,3 @@
-// src/app/page.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -18,6 +17,7 @@ export default function HomePage() {
         >
           Empowering <span className="text-blue-600">Freelancers</span> & Clients
         </motion.h1>
+
         <motion.p
           className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-8"
           initial={{ opacity: 0 }}
@@ -26,6 +26,7 @@ export default function HomePage() {
         >
           Find the right job, hire the perfect freelancer — all in one modern platform.
         </motion.p>
+
         <motion.div
           className="flex justify-center gap-4"
           initial={{ opacity: 0 }}
@@ -74,7 +75,13 @@ export default function HomePage() {
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
           >
-            <Image src={item.icon} alt={item.title} width={48} height={48} className="mb-4" />
+            <Image
+              src={item.icon}
+              alt={item.title}
+              width={48}
+              height={48}
+              className="mb-4"
+            />
             <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">{item.desc}</p>
           </motion.div>
