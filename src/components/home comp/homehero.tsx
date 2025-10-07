@@ -345,7 +345,7 @@ function HomeHero() {
             </div>
 
             {/* Floating Stats Cards */}
-            <div ref={floatingCard1Ref} className="absolute -top-6 -left-6 bg-white dark:bg-gray-800/90 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+            <div ref={floatingCard1Ref} className="hidden lg:block absolute -top-6 -left-4 lg:-left-6 bg-white dark:bg-gray-800/90 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center transition-colors duration-300">
                   <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 transition-colors duration-300" />
@@ -357,7 +357,7 @@ function HomeHero() {
               </div>
             </div>
 
-            <div ref={floatingCard2Ref} className="absolute -bottom-6 -right-6 bg-white dark:bg-gray-800/90 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+            <div ref={floatingCard2Ref} className="hidden lg:block absolute -bottom-6 -right-4 lg:-right-6 bg-white dark:bg-gray-800/90 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center transition-colors duration-300">
                   <Star className="w-6 h-6 text-yellow-600 dark:text-yellow-400 fill-current transition-colors duration-300" />
@@ -369,7 +369,7 @@ function HomeHero() {
               </div>
             </div>
 
-            <div ref={floatingCard3Ref} className="absolute top-1/2 -left-8 bg-white dark:bg-gray-800/90 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+            <div ref={floatingCard3Ref} className="hidden lg:block absolute top-1/2 -left-6 lg:-left-8 -translate-y-1/2 transform bg-white dark:bg-gray-800/90 backdrop-blur rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center transition-colors duration-300">
                   <Users className="w-6 h-6 text-blue-600 dark:text-blue-400 transition-colors duration-300" />
