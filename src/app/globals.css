@@ -1,78 +1,68 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Theme design tokens (light) */
-:root {
-	--background: 0 0% 100%;
-	--foreground: 222 47% 11%;
-
-	--card: 0 0% 100%;
-	--card-foreground: 222 47% 11%;
-
-	--popover: 0 0% 100%;
-	--popover-foreground: 222 47% 11%;
-
-	--primary: 222 89% 55%; /* blue-ish */
-	--primary-foreground: 0 0% 100%;
-
-	--secondary: 240 5% 96%;
-	--secondary-foreground: 222 47% 11%;
-
-	--muted: 240 5% 96%;
-	--muted-foreground: 215 16% 47%;
-
-	--accent: 222 89% 55%;
-	--accent-foreground: 0 0% 100%;
-
-	--destructive: 0 84% 60%;
-	--destructive-foreground: 0 0% 100%;
-
-	--border: 214 32% 91%;
-	--input: 214 32% 91%;
-	--ring: 222 89% 55%;
-
-	--radius: 0.5rem;
+html {
+  scroll-behavior: smooth;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Dark theme overrides */
-.dark {
-	--background: 222 47% 7%;
-	--foreground: 0 0% 98%;
-
-	--card: 222 47% 9%;
-	--card-foreground: 0 0% 98%;
-
-	--popover: 222 47% 9%;
-	--popover-foreground: 0 0% 98%;
-
-	--primary: 222 89% 63%;
-	--primary-foreground: 0 0% 100%;
-
-	--secondary: 217 33% 17%;
-	--secondary-foreground: 0 0% 98%;
-
-	--muted: 217 33% 17%;
-	--muted-foreground: 215 20% 65%;
-
-	--accent: 222 89% 63%;
-	--accent-foreground: 0 0% 100%;
-
-	--destructive: 0 63% 50%;
-	--destructive-foreground: 0 0% 98%;
-
-	--border: 217 33% 22%;
-	--input: 217 33% 22%;
-	--ring: 222 89% 63%;
+body {
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-50 transition-colors duration-300;
+  font-feature-settings: "kern";
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-body { 
-	background-color: hsl(var(--background));
-	color: hsl(var(--foreground));
-	font-feature-settings: "rlig" 1, "calt" 1;
-	-webkit-font-smoothing: antialiased;
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold text-gray-900 dark:text-gray-100;
 }
 
-/* Utility for smooth theme transition */
-/* Limit theme transition to body to avoid whole-page flashing animations */
-body { transition: background-color 0.25s ease, color 0.25s ease; }
+p {
+  @apply text-gray-700 dark:text-gray-300 leading-relaxed;
+}
+
+a {
+  @apply transition-colors duration-200;
+}
+
+a:hover {
+  @apply text-blue-600;
+}
+
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-full px-5 py-2.5 font-medium transition-all duration-200;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800;
+}
+
+.btn-outline {
+  @apply border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800;
+}
+
+
+.card {
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200;
+}
+
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
+
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 dark:bg-gray-700 rounded-full hover:bg-gray-500 dark:hover:bg-gray-600;
+}
 
