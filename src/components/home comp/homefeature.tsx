@@ -390,12 +390,16 @@ function HomeFeature() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/select">
               <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl">
                 Start as Client
               </button>
+              </Link>
+              <Link href="/select">
               <button className="bg-white/10 backdrop-blur text-white border border-white/20 px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all duration-200 shadow-lg hover:shadow-xl">
                 Join as Freelancer
               </button>
+              </Link>
             </div>
           </div>
         </div>
