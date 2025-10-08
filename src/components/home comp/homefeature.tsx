@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Clock, FileText, Shield, MessageCircle, Star, Zap, Users, DollarSign } from "lucide-react";
 import { gsap } from "gsap";
+import Link from "next/link";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Register GSAP plugins
@@ -258,7 +259,7 @@ function HomeFeature() {
       }
 
       // CTA buttons animation
-      const ctaButtons = ctaSectionRef.current?.querySelectorAll('button');
+      const ctaButtons = ctaSectionRef.current?.querySelectorAll('a');
       ctaButtons?.forEach((button, index) => {
         gsap.fromTo(button, {
           opacity: 0,
@@ -390,12 +391,12 @@ function HomeFeature() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl">
-                Start as Client
-              </button>
-              <button className="bg-white/10 backdrop-blur text-white border border-white/20 px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <Link href="/select" className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl inline-block text-center">                
+            Start as Client
+              </Link>
+              <Link href="/select" className="bg-white/10 backdrop-blur text-white border border-white/20 px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all duration-200 shadow-lg hover:shadow-xl inline-block text-center">
                 Join as Freelancer
-              </button>
+              </Link>
             </div>
           </div>
         </div>
