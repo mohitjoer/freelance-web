@@ -143,7 +143,29 @@ bun start            # Start production server
 bun server/server.ts # Start websockit server
 
 ```
+##  Additional Feature: Chrome Extension Integration
 
+To enhance accessibility and improve user experience, FreelanceBase now includes a lightweight Chrome Extension that provides one-click access to the platform.
+
+⚡ Key Highlights
+
+- Quick Launch: Instantly open FreelanceBase directly from your browser toolbar.
+
+- Lightweight: Built using HTML, CSS, and JavaScript with a clean, minimal design.
+
+- Seamless Access: Opens your FreelanceBase dashboard in a new tab.
+
+- Secure Permissions: Uses only the necessary tabs permission for tab management.
+
+## 🧩 How to Test
+
+- Clone the repository 
+
+- Open Chrome → Extensions → Enable Developer Mode → Load Unpacked → Select the extension folder from the project folder
+
+- Click the FreelanceBase icon → the popup appears → click “Open FreelanceBase”
+
+- the deployed site opens in a new tab 🎉
 ## 📈 Roadmap & Future Features
 
 ### Phase 1 (Current)
