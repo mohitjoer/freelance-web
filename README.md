@@ -1,6 +1,6 @@
 # FreelanceBase 🚀
 
-> A modern, full-stack freelance marketplace connecting clients with skilled freelancers worldwide.
+> A modern, full-stack freelance marketplace connecting both clients and freelancers worldwide.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
