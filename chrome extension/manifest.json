@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "FreelanceBase - Connect, Collaborate, Create",
+  "version": "1.0.0",
+  "description": "Quick access to FreelanceBase. Connect clients and freelancers instantly.",
+  "permissions": ["tabs"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FreelanceBase"
+  }
+ 
+}
