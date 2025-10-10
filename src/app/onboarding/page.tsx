@@ -185,7 +185,7 @@ export default function OnboardingPage() {
                       <input
                         value={firstName}
                         onChange={e => setFirstName(e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 text-gray-700  rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                         placeholder="Enter your first name"
                         required
                       />
@@ -196,7 +196,7 @@ export default function OnboardingPage() {
                       <input
                         value={lastName}
                         onChange={e => setLastName(e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                         placeholder="Enter your last name"
                         required
                       />
@@ -209,7 +209,7 @@ export default function OnboardingPage() {
                     <textarea
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 text-gray-700  rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                       placeholder="Tell us about yourself..."
                       rows={3}
                       required
@@ -224,7 +224,7 @@ export default function OnboardingPage() {
                         <input
                           value={skills}
                           onChange={(e) => setSkills(e.target.value)}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           placeholder="e.g. Video editing, Web development, React"
                           required
                         />
@@ -236,7 +236,7 @@ export default function OnboardingPage() {
                         <select
                           value={experienceLevel}
                           onChange={e => setExperienceLevel(e.target.value as 'beginner' | 'intermediate' | 'expert')}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           required
                         >
                           <option value="beginner">Beginner (0-2 years)</option>
@@ -255,14 +255,14 @@ export default function OnboardingPage() {
                               value={portfolioTitle}
                               onChange={(e) => setPortfolioTitle(e.target.value)}
                               placeholder="Project title"
-                              className="px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="px-2 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                             <input
                               type="url"
                               value={portfolioLink}
                               onChange={(e) => setPortfolioLink(e.target.value)}
                               placeholder="https://yourproject.com"
-                              className="px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="px-2 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                           </div>
                           <button
@@ -308,7 +308,7 @@ export default function OnboardingPage() {
                         <input
                           value={companyName}
                           onChange={(e) => setCompanyName(e.target.value)}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           placeholder="e.g. Acme Inc."
                         />
                       </div>
@@ -318,7 +318,7 @@ export default function OnboardingPage() {
                         <input
                           value={companyWebsite}
                           onChange={(e) => setCompanyWebsite(e.target.value)}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           placeholder="https://example.com"
                         />
                       </div>
