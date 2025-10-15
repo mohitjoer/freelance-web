@@ -11,6 +11,19 @@ interface IPortfolio {
   description?: string;
 }
 
+interface IReview {
+  _id: string;
+  rating: number;
+  comment: string;
+  revieweeRole: 'freelancer' | 'client';
+  reviewerId: {
+    firstName: string;
+    lastName: string;
+    userImage: string;
+  };
+  createdAt: string;
+}
+
 interface IUser {
   userId: string;               
   userImage: string;             
@@ -30,6 +43,9 @@ interface IUser {
   jobsProposed?: string[];
   ratings?: number;
   reviews?: string[];
+  receivedReviews?: IReview[];
+  averageRating?: number;
+  totalReviews?: number;
   createdAt: string;
   updatedAt: string;
 }
