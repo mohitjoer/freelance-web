@@ -3,27 +3,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ExternalLink, Briefcase,Calendar, Award } from 'lucide-react';
 import BackButton from '@/components/backbutton';
-import ProfileProgress from '@/components/ui/profile-progress';
-import { currentUser } from '@clerk/nextjs/server';
 
 
 interface IPortfolio {
   title: string;
   link: string;
   description?: string;
-}
-
-interface IReview {
-  _id: string;
-  rating: number;
-  comment: string;
-  revieweeRole: 'freelancer' | 'client';
-  reviewerId: {
-    firstName: string;
-    lastName: string;
-    userImage: string;
-  };
-  createdAt: string;
 }
 
 interface IUser {
@@ -45,9 +30,6 @@ interface IUser {
   jobsProposed?: string[];
   ratings?: number;
   reviews?: string[];
-  receivedReviews?: IReview[];
-  averageRating?: number;
-  totalReviews?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -107,10 +89,6 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
   const fullName = `${user.firstName}${user.lastName ? ` ${user.lastName}` : ''}`;
 
-  // Check if viewing own profile
-  const currentUser = await currentUser();
-  const isOwnProfile = currentUser?.id === user.userId;
-
   return (
     <main>
       <div className="w-full overflow-hidden">
@@ -140,14 +118,11 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                 <p className="text-lg text-neutral-300 mb-4 max-w-2xl">{user.bio}</p>
               )}
               
-              <div className="mb-4">
-                <RatingStars rating={user.averageRating || 0} />
-                {user.totalReviews > 0 && (
-                  <p className="text-sm text-neutral-400 mt-1">
-                    Based on {user.totalReviews} review{user.totalReviews !== 1 ? 's' : ''}
-                  </p>
-                )}
-              </div>
+              {user.ratings === 0 && (
+                <div className="mb-4">
+                  <RatingStars rating={user.ratings} />
+                </div>
+              )}
               
               {user.role === 'freelancer' && user.experienceLevel && (
                 <div className="mb-4">
@@ -180,21 +155,6 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
           {/* Left Column */}
           <div className="space-y-8">
             
-            {/* Profile Progress Bar - Only for own profile */}
-            {isOwnProfile && (
-              <ProfileProgress
-                user={{
-                  bio: user.bio,
-                  skills: user.skills,
-                  portfolio: user.portfolio,
-                  experienceLevel: user.experienceLevel,
-                  companyName: user.companyName,
-                  companyWebsite: user.companyWebsite,
-                }}
-                showSuggestions={true}
-              />
-            )}
-
             {/* Skills (Freelancers) */}
             {user.role === 'freelancer' && user.skills && user.skills.length > 0 && (
               <div>
@@ -288,20 +248,20 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
             {/* Reviews Section */}
             <div>
               <h2 className="text-2xl font-semibold mb-4">Reviews & Feedback</h2>
-              {user.receivedReviews && user.receivedReviews.length > 0 ? (
+              {user.reviews && user.reviews.length > 0 ? (
                 <div className="space-y-4">
-                  {user.receivedReviews.slice(0, 3).map((review) => (
-                    <div key={review._id} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
-                      <div className="text-sm text-neutral-400">Review ID: {review._id}</div>
+                  {user.reviews.slice(0, 3).map((reviewId: string, index: number) => (
+                    <div key={index} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
+                      <div className="text-sm text-neutral-400">Review ID: {reviewId}</div>
                       <div className="text-sm text-neutral-500 mt-2">
                         Review details would be fetched separately
                       </div>
                     </div>
                   ))}
-                  {user.totalReviews > 3 && (
+                  {user.reviews.length > 3 && (
                     <div className="text-center">
                       <button className="text-blue-400 hover:text-blue-300 text-sm">
-                        View all {user.totalReviews} reviews
+                        View all {user.reviews.length} reviews
                       </button>
                     </div>
                   )}
