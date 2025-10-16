@@ -3,6 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import ProfileProgress from "@/components/ui/profile-progress";
 
 // Define the payload type
 interface UpdatePayload {
@@ -78,7 +79,7 @@ export default function EditProfilePage() {
     };
 
     if (role === "freelancer") {
-      payload.skills = form.skills.split(",").map((s) => s.trim()).filter(Boolean);
+      payload.skills = form.skills.split(",").map((s: string) => s.trim()).filter(Boolean);
       payload.portfolio = form.portfolio;
       payload.experienceLevel = form.experienceLevel;
     }
@@ -113,17 +114,21 @@ export default function EditProfilePage() {
   if (loading) return <p className="p-4">Loading...</p>;
 
   return (
-    <main  className="h-screen bg-linear-to-r from-cyan-500 to-blue-500 flex flex-col items-center justify-center ">
-      <div className="w-full max-w-3xl sm:p-8 p-6 bg-white shadow-xl rounded-xl transition-all duration-300">
-        <h1 className="text-3xl font-bold mb-6">Edit Profile</h1>
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Edit Profile</h1>
 
-        {msg && <p className="text-sm text-red-500 mb-4">{msg}</p>}
-
-        <label className="block mb-1 font-medium">First Name</label>
-        <input
-          className="w-full p-2 mb-4 border rounded"
-          value={form.firstName}
-          onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+        {/* Profile Progress Bar */}
+        <ProfileProgress
+          user={{
+            bio: form.bio,
+            skills: role === "freelancer" ? form.skills.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+            portfolio: form.portfolio,
+            experienceLevel: form.experienceLevel,
+            companyName: form.companyName,
+            companyWebsite: form.companyWebsite,
+          }}
+          showSuggestions={true}
         />
 
         <label className="block mb-1 font-medium">Last Name</label>
