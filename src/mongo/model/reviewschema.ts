@@ -1,19 +1,18 @@
 import { Schema, model, models, Document } from 'mongoose';
 
 interface IReview extends Document {
-  reviewerId: string;     // UserData.userId (who is giving the review)
-  revieweeId: string;     // UserData.userId (who is being reviewed)
+  reviewerId: string;     // UserData.userId (client)
+  freelancerId: string;   // UserData.userId (freelancer)
   jobId: string;          // Job._id
   rating: number;         // 1 to 5
-  comment: string;        // Feedback text
-  revieweeRole: 'freelancer' | 'client'; // Role of the reviewee
+  comment: string;
   createdAt: Date;
 }
 
 const reviewSchema = new Schema<IReview>(
   {
-    reviewerId: { type: String, required: true },
-    revieweeId: { type: String, required: true },
+    reviewerId: { type: String, required: true },   // Must be client
+    freelancerId: { type: String, required: true }, // Reviewed freelancer
     jobId: { type: String, required: true },
 
     rating: {
@@ -28,20 +27,14 @@ const reviewSchema = new Schema<IReview>(
       required: true,
       maxlength: 1000,
     },
-
-    revieweeRole: {
-      type: String,
-      enum: ['freelancer', 'client'],
-      required: true,
-    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },
   }
 );
 
-// Unique index to prevent duplicate reviews for the same job and parties
-reviewSchema.index({ jobId: 1, reviewerId: 1, revieweeId: 1 }, { unique: true });
+
+reviewSchema.index({ jobId: 1, freelancerId: 1 }, { unique: true });
 
 const Review = models.Review || model<IReview>('Review', reviewSchema);
 export default Review;

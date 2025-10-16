@@ -4,7 +4,6 @@ import Job from '@/mongo/model/jobschema';
 import { auth } from '@clerk/nextjs/server';
 import Proposal from '@/mongo/model/proposalschema';
 import UserData from '@/mongo/model/user';
-import Review from '@/mongo/model/reviewschema';
 
 async function handleJobCompletion(
   req: NextRequest,
@@ -68,6 +67,8 @@ async function handleJobCompletion(
       job.finishedAt = new Date();
       
 
+      
+
        // Update the accepted proposal's status to completed
      if (job.acceptedProposalId) {
         const proposal = await Proposal.findOne({ proposalId: job.acceptedProposalId });
@@ -91,21 +92,10 @@ async function handleJobCompletion(
 
     await job.save();
 
-    // Check review status
-    const reviewStatus = await Review.find({ jobId });
-    const clientReviewedFreelancer = reviewStatus.some(r => r.reviewerId === job.clientId && r.revieweeRole === 'freelancer');
-    const freelancerReviewedClient = reviewStatus.some(r => r.reviewerId === job.freelancerId && r.revieweeRole === 'client');
-
     return NextResponse.json({
       success: true,
       message: `Marked as complete by ${role}`,
       job,
-      reviewStatus: {
-        clientReviewedFreelancer,
-        freelancerReviewedClient,
-        needsClientReview: !clientReviewedFreelancer && job.status === 'completed',
-        needsFreelancerReview: !freelancerReviewedClient && job.status === 'completed',
-      },
     });
   } catch (error) {
     console.error('[JOB_COMPLETE_ERROR]', error);
