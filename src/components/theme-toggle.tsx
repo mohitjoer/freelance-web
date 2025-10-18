@@ -21,7 +21,7 @@ export function ThemeToggle() {
       size="icon"
       aria-label="Toggle theme"
       onClick={toggleTheme}
-      className="transition-colors"
+      className="transition-colors cursor-pointer"
       type="button"
     >
       {mounted ? icon : <Moon className="size-5" />}
