@@ -29,6 +29,8 @@ jobs:
 
       - name: Build project
         run: bun run build
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
 
       - name: Run tests
         run: bun run test
