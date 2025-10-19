@@ -72,36 +72,36 @@ function HomeHero() {
         duration: 0.6,
         ease: "power2.out"
       })
-      .to(headlineRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power2.out"
-      }, "-=0.3")
-      .to(subtitleRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: "power2.out"
-      }, "-=0.4")
-      .to(popularSectionRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: "power2.out"
-      }, "-=0.3")
-      .to(ctaButtonsRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: "power2.out"
-      }, "-=0.3")
-      .to(visualRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power2.out"
-      }, "-=0.6");
+        .to(headlineRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out"
+        }, "-=0.3")
+        .to(subtitleRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out"
+        }, "-=0.4")
+        .to(popularSectionRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out"
+        }, "-=0.3")
+        .to(ctaButtonsRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out"
+        }, "-=0.3")
+        .to(visualRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out"
+        }, "-=0.6");
 
       // Floating cards animation with stagger
       gsap.to([
@@ -182,7 +182,7 @@ function HomeHero() {
       const buttons = ctaButtonsRef.current?.querySelectorAll('button');
       buttons?.forEach((button) => {
         const arrow = button.querySelector('[data-lucide="arrow-right"]');
-        
+
         button.addEventListener('mouseenter', () => {
           gsap.to(button, {
             scale: 1.05,
@@ -290,7 +290,7 @@ function HomeHero() {
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent bg-[length:200%_100%]"> opportunity</span>
               </h1>
               <p ref={subtitleRef} className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl transition-colors duration-300">
-                Whether you&apos;re hiring top talent or showcasing your skills, FreeLancBase connects the right people for every project. Join millions of freelancers and clients worldwide.
+                Whether you&apos;re hiring top talent or showcasing your skills, FreeLanceBase connects the right people for every project. Join millions of freelancers and clients worldwide.
               </p>
             </div>
 
@@ -400,7 +400,7 @@ function HomeHero() {
           </div>
         </div>
       </div>
-    </main>   
-  ); 
+    </main>
+  );
 }
 export default HomeHero;

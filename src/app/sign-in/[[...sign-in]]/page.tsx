@@ -1,22 +1,18 @@
 'use client';
 
 import { SignIn } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import AuthLayout from "@/components/authLayout";
+import { clerkAppearance } from "@/config/clerk-appearance";
 
 export default function SignInPage() {
-  const router = useRouter();
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f7f7f8] relative">
-      {/* Back Button */}
-      <button
-        onClick={() => router.push("/")}
-        className="absolute top-4 left-4 px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-900 transition"
-      >
-        &larr; Back
-      </button>
-
-      <SignIn />
-    </div>
+    <AuthLayout>
+      <SignIn
+        routing="path"
+        path="/sign-in"
+        signUpUrl="/sign-up"
+        appearance={clerkAppearance}
+      />
+    </AuthLayout>
   );
 }
