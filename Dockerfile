@@ -1,11 +1,18 @@
 # Use the official Bun image
-FROM oven/bun:1 as base
+FROM oven/bun:1 AS base
+
+# Accept build arguments
+ARG MONGO_DB_CHAT
+ARG MONGO_DB
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG CLERK_SECRET_KEY
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lockb ./
+# Copy package files (make bun.lockb optional)
+COPY package.json ./
+COPY bun.lock* ./
 
 # Install dependencies
 RUN bun install --frozen-lockfile
@@ -13,37 +20,43 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
+# Set environment variables for build
+ENV MONGO_DB_CHAT=$MONGO_DB_CHAT
+ENV MONGO_DB=$MONGO_DB
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
+
 # Build the Next.js application
 RUN bun run build
 
 # Production stage
-FROM oven/bun:1-slim as production
+FROM oven/bun:1-slim AS production
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lockb ./
+# Create a non-root user first
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy package files (make bun.lockb optional)
+COPY package.json ./
+COPY bun.lock* ./
 
 # Install only production dependencies
 RUN bun install --production --frozen-lockfile
 
-# Copy built application from build stage
-COPY --from=base /app/.next ./.next
-COPY --from=base /app/public ./public
-COPY --from=base /app/server ./server
-COPY --from=base /app/src ./src
-COPY --from=base /app/next.config.ts ./
-COPY --from=base /app/tailwind.config.ts ./
-COPY --from=base /app/postcss.config.mjs ./
-COPY --from=base /app/components.json ./
+# Copy built application from build stage and set ownership
+COPY --from=base --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=base --chown=nextjs:nodejs /app/public ./public
+COPY --from=base --chown=nextjs:nodejs /app/server ./server
+COPY --from=base --chown=nextjs:nodejs /app/src ./src
+COPY --from=base --chown=nextjs:nodejs /app/next.config.ts ./
+COPY --from=base --chown=nextjs:nodejs /app/tailwind.config.ts ./
+COPY --from=base --chown=nextjs:nodejs /app/postcss.config.mjs ./
+COPY --from=base --chown=nextjs:nodejs /app/components.json ./
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Change ownership of the app directory
-RUN chown -R nextjs:nodejs /app
+# Switch to non-root user
 USER nextjs
 
 # Expose ports
@@ -58,4 +71,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD bun --version || exit 1
 
 # Start both the Next.js app and Socket.IO server
-CMD ["bun", "run", "dev"]
+CMD ["bun", "run", "start"]
