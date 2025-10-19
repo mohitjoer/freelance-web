@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface AuthLayoutProps {
     children: ReactNode;
@@ -25,7 +26,7 @@ export default function AuthLayout({ children, title = "Welcome to" }: AuthLayou
                 <div className="flex w-full max-w-6xl gap-8 items-center justify-between animate-fadeIn">
                     {/* Left Side - Image */}
                     <div className="hidden lg:flex flex-1 items-center justify-center max-w-xl">
-                        <img
+                        <Image
                             src="/signin-illustration.svg"
                             alt="Sign in illustration"
                             className="w-full h-auto object-contain animate-slideInLeft"

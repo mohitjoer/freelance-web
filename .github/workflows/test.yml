@@ -10,8 +10,14 @@ on:
         - main
 
 jobs:
-  test: 
+  test:
     runs-on: ubuntu-latest
+    env:
+      MONGO_DB_CHAT: ${{ secrets.MONGO_DB_CHAT }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      MONGO_DB: ${{ secrets.MONGO_DB }}
+
     steps:
       - uses: actions/checkout@v4
 
