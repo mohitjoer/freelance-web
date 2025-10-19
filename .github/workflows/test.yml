@@ -13,11 +13,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      MONGO_DB: "mongodb://localhost:27017/test-main"
-      MONGO_DB_CHAT: "mongodb://localhost:27017/test-chat"
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_dummy_key_for_ci_build_only"
-      CLERK_SECRET_KEY: "sk_test_dummy_key_for_ci_build_only"
-      SKIP_ENV_VALIDATION: "true"
+        CI: 'true'
+        MONGO_DB: "mongodb://localhost:27017/test-main"
+        MONGO_DB_CHAT: "mongodb://localhost:27017/test-chat"
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_dummy_key_for_ci_build_only"
+        CLERK_SECRET_KEY: "sk_test_dummy_key_for_ci_build_only"
+        SKIP_ENV_VALIDATION: "true"
 
     steps:
       - uses: actions/checkout@v4
