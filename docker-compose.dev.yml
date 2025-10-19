@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # MongoDB Database for Development
+  mongodb:
+    image: mongo:7.0
+    container_name: freelance-mongodb-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password123}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-freelance_dev}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - freelance-dev-network
+
+  # Redis for Development
+  redis:
+    image: redis:7.2-alpine
+    container_name: freelance-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - freelance-dev-network
+
+  # Development App (with hot reload)
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: freelance-app-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "4000:4000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - SOCKET_PORT=4000
+      - MONGODB_URI=mongodb://mongodb:27017/${MONGO_DB_NAME:-freelance_dev}
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
+      - NEXT_PUBLIC_CLERK_SIGN_IN_URL=${NEXT_PUBLIC_CLERK_SIGN_IN_URL:-/sign-in}
+      - NEXT_PUBLIC_CLERK_SIGN_UP_URL=${NEXT_PUBLIC_CLERK_SIGN_UP_URL:-/sign-up}
+      - NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=${NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:-/dashboard}
+      - NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=${NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:-/dashboard}
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - freelance-dev-network
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  freelance-dev-network:
+    driver: bridge

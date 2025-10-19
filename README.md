@@ -122,6 +122,107 @@ bun dev
 Open http://localhost:3000
 
 
+## 🐳 Docker Setup
+
+### Quick Start with Docker
+
+1. **Prerequisites**
+   - Docker and Docker Compose installed
+   - Git (to clone the repository)
+
+2. **Clone and Setup**
+   ```bash
+   git clone <repository-url>
+   cd freelance-web
+   chmod +x docker-setup.sh
+   ```
+
+3. **Environment Configuration**
+   ```bash
+   # Copy environment template
+   cp env.example .env
+   
+   # Edit .env with your actual values
+   nano .env  # or use your preferred editor
+   ```
+
+4. **Start Services**
+   ```bash
+   # Production environment
+   ./docker-setup.sh start
+   
+   # Development environment (with hot reload)
+   ./docker-setup.sh dev
+   ```
+
+### Docker Commands
+
+```bash
+# Production
+./docker-setup.sh start      # Start production environment
+./docker-setup.sh stop       # Stop all services
+./docker-setup.sh restart    # Restart production
+
+# Development
+./docker-setup.sh dev        # Start development with hot reload
+./docker-setup.sh restart-dev # Restart development
+
+# Monitoring
+./docker-setup.sh status     # Show service status
+./docker-setup.sh logs       # Show production logs
+./docker-setup.sh logs dev   # Show development logs
+
+# Maintenance
+./docker-setup.sh cleanup    # Clean up Docker resources
+```
+
+### Manual Docker Commands
+
+```bash
+# Production
+docker-compose up -d --build
+docker-compose down
+
+# Development
+docker-compose -f docker-compose.dev.yml up -d --build
+docker-compose -f docker-compose.dev.yml down
+
+# View logs
+docker-compose logs -f app
+docker-compose logs -f mongodb
+```
+
+### Services
+
+- **Frontend**: http://localhost:3000 (Next.js)
+- **WebSocket**: http://localhost:4000 (Socket.IO)
+- **MongoDB**: mongodb://localhost:27017
+- **Redis**: redis://localhost:6379
+
+### Environment Variables
+
+Required environment variables (add to `.env`):
+
+```env
+# Database
+MONGO_ROOT_USERNAME=admin
+MONGO_ROOT_PASSWORD=your_secure_password
+MONGO_DB_NAME=freelance_db
+MONGODB_URI=mongodb://mongodb:27017/freelance_db
+
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+# Application
+NODE_ENV=production
+PORT=3000
+SOCKET_PORT=4000
+```
+
+
 ## 📜 Available Scripts
 
 ```bash
