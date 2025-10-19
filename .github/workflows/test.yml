@@ -29,8 +29,6 @@ jobs:
 
       - name: Build project
         run: bun run build
-        env:
-          MONGO_DB_CHAT: ${{ secrets.MONGO_DB_CHAT }}
 
       - name: Run tests
         run: bun run test
