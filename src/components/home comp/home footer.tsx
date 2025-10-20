@@ -21,7 +21,6 @@ import { useState, useEffect, useRef } from "react";
 
 function HomeFooter() {
   const [openSection, setOpenSection] = useState<string | null>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement>(null);
 
   const toggleSection = (key: string) => {
