@@ -108,9 +108,9 @@ Create a `.env.local` in the project root with the values below (replace placeho
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/freelancebase
 
 # Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
-CLERK_SECRET_KEY=sk_test_your_secret_here
-CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_******************************
+CLERK_SECRET_KEY=sk_test_*****************************
+CLERK_WEBHOOK_SECRET=whsec_***************
 ```
 
 4. Start development server
