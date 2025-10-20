@@ -80,7 +80,7 @@ frelance-web/
 
 Prerequisites
 
-- Bun v1.0+ (https://bun.shnpm install -g bun # the last `npm` command you'll ever need/docs/installation)
+- Bun v1.0+ (https://bun.sh/docs/installation)
 - Node.js v18+ (for compatibility)
 - MongoDB Atlas or local MongoDB
 
@@ -108,9 +108,9 @@ Create a `.env.local` in the project root with the values below (replace placeho
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/freelancebase
 
 # Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_dGVuZGVyLWNvd2JpcmQtNy5jbGVyay5hY2NvdW50cy5kZXYk
-CLERK_SECRET_KEY=sk_test_PeUFUcysQMsNIcsYbO4WeVYiv3TQscuuvKLnjVexLW
-CLERK_WEBHOOK_SECRET=whsec_mnVAnwhW4VgR+ZVt4ZqkTpoWZFfhqWeZ
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_******************************
+CLERK_SECRET_KEY=sk_test_*****************************
+CLERK_WEBHOOK_SECRET=whsec_***************
 ```
 
 4. Start development server
