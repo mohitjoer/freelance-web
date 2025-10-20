@@ -41,9 +41,11 @@ function Homeheader() {
         <div className="flex items-center gap-3">
           <SignedOut>
             <SignInButton mode="redirect" forceRedirectUrl="/select">
-              <Button className="cursor-pointer bg-blue-600 hover:bg-blue-700 dark:bg-primary dark:hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-colors duration-200">
-                Sign In
-              </Button>
+              <Button className="group cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-primary dark:to-primary/90 dark:hover:from-primary/90 dark:hover:to-primary/80 text-white px-4 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 rounded-lg text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/50 dark:hover:shadow-primary/50 transition-all duration-300 hover:scale-105 hover:ring-2 hover:ring-blue-400 dark:hover:ring-primary/60 hover:ring-offset-2 dark:hover:ring-offset-gray-900">
+            <span className="inline-block transition-transform duration-300 group-hover:scale-110">
+             Sign In
+            </span>
+</Button>
             </SignInButton>
           </SignedOut>
 
