@@ -320,39 +320,62 @@ function HomeFeature() {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-20 bg-background dark:bg-background transition-colors">
+    <section
+      ref={containerRef}
+      className="py-20 bg-background dark:bg-background transition-colors"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div ref={sectionHeaderRef} className="text-center mb-16">
-          <div ref={badgeRef} className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div
+            ref={badgeRef}
+            className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-4"
+          >
             <Zap className="w-4 h-4" />
             Platform Features
           </div>
-          <h2 ref={titleRef} className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h2
+            ref={titleRef}
+            className="text-4xl md:text-5xl font-bold text-foreground mb-6"
+          >
             Everything you need to
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent bg-[length:200%_100%]"> succeed</span>
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent bg-[length:200%_100%]">
+              {" "}
+              succeed
+            </span>
           </h2>
-          <p ref={subtitleRef} className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Our comprehensive platform provides all the tools and features both clients and freelancers need for successful project collaboration.
+          <p
+            ref={subtitleRef}
+            className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+          >
+            Our comprehensive platform provides all the tools and features both
+            clients and freelancers need for successful project collaboration.
           </p>
         </div>
 
         {/* Features Grid */}
-        <div ref={featuresGridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div
+          ref={featuresGridRef}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+        >
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             return (
-              <div 
-                key={index} 
-                ref={el => { featureCardsRefs.current[index] = el; }}
+              <div
+                key={index}
+                ref={(el) => {
+                  featureCardsRefs.current[index] = el;
+                }}
                 className="group relative"
               >
                 <div className="card-content bg-card dark:bg-card/80 rounded-2xl p-8 shadow-sm border border-border hover:shadow-lg hover:border-border/80 transition-all duration-300 h-full relative overflow-hidden">
                   {/* Icon */}
-                  <div className={`feature-icon w-14 h-14 ${feature.bgColor} rounded-xl flex items-center justify-center mb-6 transition-transform duration-300`}>
+                  <div
+                    className={`feature-icon w-14 h-14 ${feature.bgColor} rounded-xl flex items-center justify-center mb-6 transition-transform duration-300`}
+                  >
                     <IconComponent className={`w-7 h-7 ${feature.iconColor}`} />
                   </div>
-                  
+
                   {/* Content */}
                   <h3 className="text-xl font-bold text-foreground mb-4 group-hover:text-muted-foreground transition-colors">
                     {feature.title}
@@ -362,7 +385,9 @@ function HomeFeature() {
                   </p>
 
                   {/* Hover Effect Border */}
-                  <div className={`hover-border absolute inset-0 bg-gradient-to-r ${feature.gradient} rounded-2xl opacity-0 transition-opacity duration-300 pointer-events-none`}></div>
+                  <div
+                    className={`hover-border absolute inset-0 bg-gradient-to-r ${feature.gradient} rounded-2xl opacity-0 transition-opacity duration-300 pointer-events-none`}
+                  ></div>
                 </div>
               </div>
             );
@@ -370,37 +395,49 @@ function HomeFeature() {
         </div>
 
         {/* Bottom CTA Section */}
-  <div ref={ctaSectionRef} className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden">
+        <div
+          ref={ctaSectionRef}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden"
+        >
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="bg-pattern absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-20 -translate-y-20"></div>
             <div className="bg-pattern absolute bottom-0 right-0 w-40 h-40 bg-white rounded-full translate-x-20 translate-y-20"></div>
           </div>
-          
+
           <div className="relative z-10">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Users className="w-6 h-6" />
-              <span className="text-sm font-medium opacity-90">Join Our Community</span>
+              <span className="text-sm font-medium opacity-90">
+                Join Our Community
+              </span>
             </div>
-            
+
             <h3 className="text-3xl md:text-4xl font-bold mb-4">
               Ready to get started?
             </h3>
             <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-              Join thousands of successful projects happening on FreeLancBase every day.
+              Join thousands of successful projects happening on FreeLancBase
+              every day.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/select" className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl inline-block text-center">                
-            Start as Client
+              <Link
+                href="/select"
+                className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl inline-block text-center"
+              >
+                {/* Start as Client */}
+                Browse Freelancers
               </Link>
-              <Link href="/select" className="bg-white/10 backdrop-blur text-white border border-white/20 px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all duration-200 shadow-lg hover:shadow-xl inline-block text-center">
+              <Link
+                href="/select"
+                className="bg-white/10 backdrop-blur text-white border border-white/20 px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all duration-200 shadow-lg hover:shadow-xl inline-block text-center"
+              >
                 Join as Freelancer
               </Link>
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );

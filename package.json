@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"bun server/server.ts\" \"bun run next dev\"",
+    "dev": "next dev",
+  "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
+  "server": "node --loader ts-node/esm server/server.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
