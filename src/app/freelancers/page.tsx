@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import FreelancerSearch from "@/components/FreelancerSearch";
 import FreelancerCard from "@/components/FreelancerCard";
 import { Loader2 } from "lucide-react";
-import { Freelancer, SearchFilters } from "@/types/freelancer";
+import { Freelancer, SearchFilters, FilterOptions } from "@/types/freelancer";
+
 export default function FreelancersPage() {
- const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
-  const [filterOptions, setFilterOptions] = useState({
+  const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     skills: [],
     categories: [],
     locations: [],
@@ -19,22 +20,16 @@ export default function FreelancersPage() {
     total: 0,
     pages: 0,
   });
-  const [currentFilters, setCurrentFilters] = useState<SearchFilters>({});
+  const [currentFilters, setCurrentFilters] = useState<SearchFilters>({
+    query: "",
+    skills: [],
+    category: "",
+    minRating: 0,
+    location: "",
+    availability: "",
+  });
 
-  // Fetch filter options on mount
-  useEffect(() => {
-    fetchFilterOptions();
-    handleSearch({});
-  }, []);
-
-  // Fetch when page changes
-  useEffect(() => {
-    if (pagination.page > 1) {
-      handleSearch(currentFilters);
-    }
-  }, [pagination.page]);
-
-  const fetchFilterOptions = async () => {
+  const fetchFilterOptions = useCallback(async () => {
     try {
       const response = await fetch("/api/freelancers/filters");
       const data = await response.json();
@@ -44,42 +39,65 @@ export default function FreelancersPage() {
     } catch (error) {
       console.error("Error fetching filter options:", error);
     }
-  };
+  }, []);
 
-  const handleSearch = async (filters: any) => {
-    setLoading(true);
-    setCurrentFilters(filters);
+  const handleSearch = useCallback(
+    async (filters: SearchFilters) => {
+      setLoading(true);
+      setCurrentFilters(filters);
 
-    try {
-      // Build query string
-      const params = new URLSearchParams();
-      if (filters.query) params.append("query", filters.query);
-      if (filters.skills?.length)
-        params.append("skills", filters.skills.join(","));
-      if (filters.category) params.append("category", filters.category);
-      if (filters.minRating)
-        params.append("minRating", filters.minRating.toString());
-      if (filters.location) params.append("location", filters.location);
-      if (filters.availability)
-        params.append("availability", filters.availability);
-      params.append("page", pagination.page.toString());
-      params.append("limit", pagination.limit.toString());
+      try {
+        // Build query string
+        const params = new URLSearchParams();
+        if (filters.query) params.append("query", filters.query);
+        if (filters.skills?.length)
+          params.append("skills", filters.skills.join(","));
+        if (filters.category) params.append("category", filters.category);
+        if (filters.minRating)
+          params.append("minRating", filters.minRating.toString());
+        if (filters.location) params.append("location", filters.location);
+        if (filters.availability)
+          params.append("availability", filters.availability);
+        params.append("page", pagination.page.toString());
+        params.append("limit", pagination.limit.toString());
 
-      const response = await fetch(
-        `/api/freelancers/search?${params.toString()}`
-      );
-      const data = await response.json();
+        const response = await fetch(
+          `/api/freelancers/search?${params.toString()}`
+        );
+        const data = await response.json();
 
-      if (data.success) {
-        setFreelancers(data.data);
-        setPagination(data.pagination);
+        if (data.success) {
+          setFreelancers(data.data);
+          setPagination(data.pagination);
+        }
+      } catch (error) {
+        console.error("Error searching freelancers:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error searching freelancers:", error);
-    } finally {
-      setLoading(false);
+    },
+    [pagination.page, pagination.limit]
+  );
+
+  // Fetch filter options on mount
+  useEffect(() => {
+    fetchFilterOptions();
+    handleSearch({
+      query: "",
+      skills: [],
+      category: "",
+      minRating: 0,
+      location: "",
+      availability: "",
+    });
+  }, [fetchFilterOptions, handleSearch]);
+
+  // Fetch when page changes
+  useEffect(() => {
+    if (pagination.page > 1) {
+      handleSearch(currentFilters);
     }
-  };
+  }, [pagination.page, currentFilters, handleSearch]);
 
   const handlePageChange = (newPage: number) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
@@ -122,7 +140,7 @@ export default function FreelancersPage() {
             {/* Freelancer Grid */}
             {freelancers.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {freelancers.map((freelancer: any) => (
+                {freelancers.map((freelancer) => (
                   <FreelancerCard
                     key={freelancer._id}
                     freelancer={freelancer}

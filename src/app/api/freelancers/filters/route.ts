@@ -3,20 +3,18 @@ import mongoose from "mongoose";
 import UserData from "@/mongo/model/user";
 
 async function connectDB() {
-  // if (mongoose.connection.readyState >= 1) return;
+  const { readyState } = mongoose.connection;
+  if (readyState === 1) {
+    return;
+  }
+  if (readyState === 2) {
+    await mongoose.connection.asPromise();
+    return;
+  }
 
- const { readyState } = mongoose.connection;
- if (readyState === 1) {
-   return;
- }
- if (readyState === 2) {
-   await mongoose.connection.asPromise();
-   return;
- }
-
- if (!process.env.MONGODB_URI) {
-   throw new Error("MONGODB_URI environment variable is not defined");
- }
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI environment variable is not defined");
+  }
 
   try {
     await mongoose.connect(process.env.MONGODB_URI as string);
@@ -45,10 +43,14 @@ export async function GET() {
         locations: locations.filter(Boolean).sort(),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Filters error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch filters" },
+      {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Failed to fetch filters",
+      },
       { status: 500 }
     );
   }

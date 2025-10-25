@@ -1,16 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, Filter, X } from "lucide-react";
-import { SearchFilters } from "@/types/freelancer";
+import { Search, Filter } from "lucide-react";
+import { SearchFilters, FilterOptions } from "@/types/freelancer";
 
 interface FreelancerSearchProps {
   onSearch: (filters: SearchFilters) => void;
-  filterOptions: {
-    skills: string[];
-    categories: string[];
-    locations: string[];
-  };
+  filterOptions: FilterOptions;
 }
 
 export default function FreelancerSearch({
@@ -19,8 +15,8 @@ export default function FreelancerSearch({
 }: FreelancerSearchProps) {
   const [query, setQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    skills: [] as string[],
+  const [filters, setFilters] = useState<Omit<SearchFilters, "query">>({
+    skills: [],
     category: "",
     minRating: 0,
     location: "",
@@ -198,7 +194,14 @@ export default function FreelancerSearch({
             <select
               value={filters.availability}
               onChange={(e) =>
-                setFilters({ ...filters, availability: e.target.value })
+                setFilters({
+                  ...filters,
+                  availability: e.target.value as
+                    | ""
+                    | "available"
+                    | "busy"
+                    | "unavailable",
+                })
               }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 transition-colors"
             >

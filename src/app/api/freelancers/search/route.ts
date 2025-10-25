@@ -65,8 +65,18 @@ export async function GET(request: NextRequest) {
     if (isNaN(minRating) || minRating < 0) minRating = 0;
     if (minRating > 5) minRating = 5;
 
-    // Build filter
-    const filter: any = { role: "freelancer" };
+    // Build filter with proper typing
+    interface MongoFilter {
+      role: string;
+      $or?: Array<Record<string, unknown>>;
+      skills?: { $in: RegExp[] };
+      category?: string;
+      ratings?: { $gte: number };
+      location?: { $regex: string; $options: string };
+      availability?: string;
+    }
+
+    const filter: MongoFilter = { role: "freelancer" };
 
     if (query) {
       const escapedQuery = escapeRegex(query);
@@ -100,20 +110,22 @@ export async function GET(request: NextRequest) {
       UserData.countDocuments(filter),
     ]);
 
-    const transformedFreelancers = freelancers.map((f) => ({
-      _id: f._id,
-      name: `${f.firstName} ${f.lastName || ""}`.trim(),
-      email: f.userId, // ✅ userId is now available
-      skills: f.skills || [],
-      category: f.category || "General",
-      rating: f.ratings || 0,
-      location: f.location || "Not specified",
-      availability: f.availability || "available",
-      completedJobs: f.projects_done || 0,
-      bio: f.bio || "",
-      profileImage: f.userImage,
-      hourlyRate: f.hourlyRate || 0,
-    }));
+    const transformedFreelancers = freelancers.map(
+      (f: Record<string, unknown>) => ({
+        _id: f._id,
+        name: `${f.firstName || ""} ${f.lastName || ""}`.trim(),
+        email: f.userId, // ✅ userId is now available
+        skills: (f.skills as string[]) || [],
+        category: (f.category as string) || "General",
+        rating: (f.ratings as number) || 0,
+        location: (f.location as string) || "Not specified",
+        availability: (f.availability as string) || "available",
+        completedJobs: (f.projects_done as number) || 0,
+        bio: (f.bio as string) || "",
+        profileImage: f.userImage as string | undefined,
+        hourlyRate: (f.hourlyRate as number) || 0,
+      })
+    );
 
     return NextResponse.json({
       success: true,
@@ -125,12 +137,15 @@ export async function GET(request: NextRequest) {
         pages: Math.ceil(total / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Search error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to search freelancers",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to search freelancers",
       },
       { status: 500 }
     );
