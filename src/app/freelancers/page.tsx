@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import FreelancerSearch from "@/components/FreelancerSearch";
 import FreelancerCard from "@/components/FreelancerCard";
 import { Loader2 } from "lucide-react";
-
+import { Freelancer, SearchFilters } from "@/types/freelancer";
 export default function FreelancersPage() {
-  const [freelancers, setFreelancers] = useState([]);
+ const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
   const [filterOptions, setFilterOptions] = useState({
     skills: [],
     categories: [],
@@ -19,7 +19,7 @@ export default function FreelancersPage() {
     total: 0,
     pages: 0,
   });
-  const [currentFilters, setCurrentFilters] = useState<any>({});
+  const [currentFilters, setCurrentFilters] = useState<SearchFilters>({});
 
   // Fetch filter options on mount
   useEffect(() => {

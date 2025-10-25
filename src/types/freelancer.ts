@@ -20,7 +20,7 @@ export interface SearchFilters {
   category: string;
   minRating: number;
   location: string;
-  availability: string;
+  availability: "" | "available" | "busy" | "unavailable";
 }
 
 export interface FilterOptions {

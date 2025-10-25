@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Search, Filter, X } from "lucide-react";
+import { SearchFilters } from "@/types/freelancer";
 
 interface FreelancerSearchProps {
-  onSearch: (filters: any) => void;
+  onSearch: (filters: SearchFilters) => void;
   filterOptions: {
     skills: string[];
     categories: string[];
@@ -26,16 +27,16 @@ export default function FreelancerSearch({
     availability: "",
   });
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     onSearch({ query, ...filters });
-  };
+  }, [onSearch, query, filters]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       handleSearch();
     }, 500);
     return () => clearTimeout(timer);
-  }, [query, filters]);
+  }, [handleSearch]);
 
   const toggleSkill = (skill: string) => {
     setFilters((prev) => ({

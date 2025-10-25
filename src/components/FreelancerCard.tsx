@@ -2,21 +2,10 @@
 
 import Link from "next/link";
 import { MapPin, Star, Briefcase } from "lucide-react";
+import { Freelancer } from "@/types/freelancer";
 
 interface FreelancerCardProps {
-  freelancer: {
-    _id: string;
-    name: string;
-    skills: string[];
-    category: string;
-    rating: number;
-    location: string;
-    availability: string;
-    completedJobs: number;
-    bio?: string;
-    profileImage?: string;
-    hourlyRate?: number;
-  };
+  freelancer: Freelancer;
 }
 
 export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
@@ -57,9 +46,7 @@ export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
           </div>
           <span
             className={`px-3 py-1 rounded-full text-xs font-medium ${
-              availabilityColors[
-                freelancer.availability as keyof typeof availabilityColors
-              ]
+              availabilityColors[freelancer.availability]
             } transition-colors`}
           >
             {freelancer.availability}
@@ -106,3 +93,4 @@ export default function FreelancerCard({ freelancer }: FreelancerCardProps) {
     </Link>
   );
 }
+

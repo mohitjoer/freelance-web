@@ -423,10 +423,10 @@ function HomeFeature() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/select"
+                href="/freelancers"
                 className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl inline-block text-center"
               >
-                {/* Start as Client */}
+              
                 Browse Freelancers
               </Link>
               <Link

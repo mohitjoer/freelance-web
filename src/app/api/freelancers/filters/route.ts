@@ -3,7 +3,20 @@ import mongoose from "mongoose";
 import UserData from "@/mongo/model/user";
 
 async function connectDB() {
-  if (mongoose.connection.readyState >= 1) return;
+  // if (mongoose.connection.readyState >= 1) return;
+
+ const { readyState } = mongoose.connection;
+ if (readyState === 1) {
+   return;
+ }
+ if (readyState === 2) {
+   await mongoose.connection.asPromise();
+   return;
+ }
+
+ if (!process.env.MONGODB_URI) {
+   throw new Error("MONGODB_URI environment variable is not defined");
+ }
 
   try {
     await mongoose.connect(process.env.MONGODB_URI as string);
