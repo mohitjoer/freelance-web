@@ -1,6 +1,6 @@
 # FreelanceBase 🚀
 
-> A modern freelance marketplace connecting clients with skilled freelancers — secure job postings, real-time chat, reporting, and seamless project management.A project of FreelanceBase community.
+> A modern freelance marketplace connecting clients with skilled freelancers — secure job postings, real-time chat, reporting, and seamless project management.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/) [![MongoDB](https://img.shields.io/badge/MongoDB-7.0-green)](https://mongodb.com/) [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8)](https://tailwindcss.com/) [![Bun](https://img.shields.io/badge/Bun-1.0-000000)](https://bun.sh/)
 

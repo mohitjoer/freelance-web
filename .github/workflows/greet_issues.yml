@@ -19,9 +19,8 @@ jobs:
           script: |
             const issueNumber = context.issue.number;
             const author = context.payload.issue.user?.login || 'there';
-            const body = `Hi @${author} 👋\n\nThanks for opening this issue — the maintainers will take a look soon. If you can, please add steps to reproduce and any relevant logs / screenshots.
-            await github.rest.issues.createComment({we would be happy to have your contribution.`;
-            
+            const body = `Hi @${author} 👋\n\nThanks for opening this issue — the maintainers will take a look soon. If you can, please add steps to reproduce and any relevant logs / screenshots.`;
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
