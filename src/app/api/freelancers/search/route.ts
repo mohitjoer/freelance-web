@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       skills?: { $in: RegExp[] };
       category?: string;
       ratings?: { $gte: number };
-      location?: { $regex: string; $options: string };
+      location?: string | { $regex: string; $options: string };
       availability?: string;
     }
 
@@ -67,20 +67,31 @@ export async function GET(request: NextRequest) {
     }
 
     if (skills.length > 0) {
-      filter.skills = { $in: skills.map((s) => new RegExp(s, "i")) };
+      filter.skills = {
+        $in: skills.map((s) => new RegExp(escapeRegex(s), "i")),
+      };
     }
 
     if (category) filter.category = category;
     if (minRating > 0) filter.ratings = { $gte: minRating };
-    if (location) filter.location = { $regex: location, $options: "i" };
+
+    // ✅ FIX 1: Use exact match for location (comes from distinct values)
+    // If you need case-insensitive search, escape it first
+    if (location) {
+      // Option A: Exact match (if location comes from dropdown)
+      filter.location = location;
+
+      // Option B: Case-insensitive with escaped regex (if free text)
+      // filter.location = { $regex: escapeRegex(location), $options: "i" };
+    }
+
     if (availability) filter.availability = availability;
 
     const skip = (page - 1) * limit;
 
-    // ✅ Include userId in projection (fix for email issue)
     const [freelancers, total] = await Promise.all([
       UserData.find(filter)
-        .select("-__v")
+        .select("-__v -userId") // Exclude userId to prevent PII leak
         .sort({ ratings: -1, projects_done: -1 })
         .skip(skip)
         .limit(limit)
@@ -92,7 +103,7 @@ export async function GET(request: NextRequest) {
       (f: Record<string, unknown>) => ({
         _id: f._id,
         name: `${f.firstName || ""} ${f.lastName || ""}`.trim(),
-        email: f.userId, // ✅ userId is now available
+        
         skills: (f.skills as string[]) || [],
         category: (f.category as string) || "General",
         rating: (f.ratings as number) || 0,
