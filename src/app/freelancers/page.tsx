@@ -42,12 +42,15 @@ export default function FreelancersPage() {
     }
   }, []);
 
-  const handleSearch = async (filters: SearchFilters) => {
+  const handleSearch = async (filters: SearchFilters, page: number = 1) => {
     setLoading(true);
     setCurrentFilters(filters);
 
+    if (page === 1) {
+      setPagination((prev) => ({ ...prev, page: 1 }));
+    }
+
     try {
-      // Build query string
       const params = new URLSearchParams();
       if (filters.query) params.append("query", filters.query);
       if (filters.skills?.length)
@@ -58,7 +61,8 @@ export default function FreelancersPage() {
       if (filters.location) params.append("location", filters.location);
       if (filters.availability)
         params.append("availability", filters.availability);
-      params.append("page", pagination.page.toString());
+
+      params.append("page", page.toString());
       params.append("limit", pagination.limit.toString());
 
       const response = await fetch(
@@ -77,29 +81,29 @@ export default function FreelancersPage() {
     }
   };
 
-  // Fetch filter options on mount
   useEffect(() => {
     fetchFilterOptions();
   }, [fetchFilterOptions]);
 
-  // Initial search on mount
   useEffect(() => {
-    handleSearch({
-      query: "",
-      skills: [],
-      category: "",
-      minRating: 0,
-      location: "",
-      availability: "",
-    });
+    handleSearch(
+      {
+        query: "",
+        skills: [],
+        category: "",
+        minRating: 0,
+        location: "",
+        availability: "",
+      },
+      1
+    );
     mounted.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch when page changes
   useEffect(() => {
-    if (mounted.current && pagination.page > 1) {
-      handleSearch(currentFilters);
+    if (mounted.current) {
+      handleSearch(currentFilters, pagination.page);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.page]);
@@ -112,7 +116,6 @@ export default function FreelancersPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-8 pt-20">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Find Freelancers
@@ -122,27 +125,24 @@ export default function FreelancersPage() {
           </p>
         </div>
 
-        {/* Search & Filters */}
         <div className="mb-8">
+          {/* Always reset to page 1 when search filters change */}
           <FreelancerSearch
-            onSearch={handleSearch}
+            onSearch={(filters) => handleSearch(filters, 1)}
             filterOptions={filterOptions}
           />
         </div>
 
-        {/* Results */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
           </div>
         ) : (
           <>
-            {/* Results Count */}
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               Showing {freelancers.length} of {pagination.total} freelancers
             </div>
 
-            {/* Freelancer Grid */}
             {freelancers.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {freelancers.map((freelancer) => (
@@ -163,7 +163,6 @@ export default function FreelancersPage() {
               </div>
             )}
 
-            {/* Pagination */}
             {pagination.pages > 1 && (
               <div className="flex justify-center gap-2">
                 <button
@@ -207,4 +206,3 @@ export default function FreelancersPage() {
     </div>
   );
 }
-

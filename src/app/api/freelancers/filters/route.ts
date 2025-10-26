@@ -2,9 +2,22 @@ import { NextResponse } from "next/server";
 import UserData from "@/mongo/model/user";
 import { connectDB } from "@/lib/db";
 
+// ✅ ADD THIS
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
-    await connectDB();
+    // ✅ Handle the case where DB might not be available
+    const connection = await connectDB();
+    if (!connection) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Database connection not available",
+        },
+        { status: 503 }
+      );
+    }
 
     const [skills, categories, locations] = await Promise.all([
       UserData.distinct("skills", { role: "freelancer" }),

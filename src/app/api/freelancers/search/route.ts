@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import UserData from "@/mongo/model/user";
 import { connectDB } from "@/lib/db";
 
+// ✅ ADD THIS - Forces Next.js to treat this as a dynamic route
+export const dynamic = "force-dynamic";
+
 // Utility functions
 function sanitizeString(value: string, maxLength: number): string {
   return value.trim().slice(0, maxLength);
@@ -13,11 +16,21 @@ function escapeRegex(text: string): string {
 
 export async function GET(request: NextRequest) {
   try {
-    await connectDB();
+    // ✅ Handle the case where DB might not be available
+    const connection = await connectDB();
+    if (!connection) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Database connection not available",
+        },
+        { status: 503 }
+      );
+    }
 
     const searchParams = request.nextUrl.searchParams;
 
-    // Sanitize and validate params
+    // ... rest of your existing code stays the same
     const query = sanitizeString(searchParams.get("query") || "", 500);
     const category = sanitizeString(searchParams.get("category") || "", 100);
     const location = sanitizeString(searchParams.get("location") || "", 100);
@@ -43,14 +56,13 @@ export async function GET(request: NextRequest) {
     if (isNaN(minRating) || minRating < 0) minRating = 0;
     if (minRating > 5) minRating = 5;
 
-    // Build filter with proper typing
     interface MongoFilter {
       role: string;
       $or?: Array<Record<string, unknown>>;
       skills?: { $in: RegExp[] };
       category?: string;
       ratings?: { $gte: number };
-      location?: string | { $regex: string; $options: string };
+      location?: string;
       availability?: string;
     }
 
@@ -74,24 +86,14 @@ export async function GET(request: NextRequest) {
 
     if (category) filter.category = category;
     if (minRating > 0) filter.ratings = { $gte: minRating };
-
-    // ✅ FIX 1: Use exact match for location (comes from distinct values)
-    // If you need case-insensitive search, escape it first
-    if (location) {
-      // Option A: Exact match (if location comes from dropdown)
-      filter.location = location;
-
-      // Option B: Case-insensitive with escaped regex (if free text)
-      // filter.location = { $regex: escapeRegex(location), $options: "i" };
-    }
-
+    if (location) filter.location = location;
     if (availability) filter.availability = availability;
 
     const skip = (page - 1) * limit;
 
     const [freelancers, total] = await Promise.all([
       UserData.find(filter)
-        .select("-__v -userId") // Exclude userId to prevent PII leak
+        .select("-__v -userId")
         .sort({ ratings: -1, projects_done: -1 })
         .skip(skip)
         .limit(limit)
@@ -103,7 +105,6 @@ export async function GET(request: NextRequest) {
       (f: Record<string, unknown>) => ({
         _id: f._id,
         name: `${f.firstName || ""} ${f.lastName || ""}`.trim(),
-        
         skills: (f.skills as string[]) || [],
         category: (f.category as string) || "General",
         rating: (f.ratings as number) || 0,
