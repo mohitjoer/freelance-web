@@ -6,7 +6,7 @@ import { Star, Users, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useTheme } from "../theme-provider"; // Add this import
+// import { useTheme } from "../theme-provider"; // Add this import
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
 }
 
 function HomeHero() {
-  const { resolvedTheme } = useTheme(); // Add this line
+  // const { resolvedTheme } = useTheme(); // Add this line
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const trustBadgeRef = useRef<HTMLDivElement>(null);
@@ -261,7 +261,7 @@ function HomeHero() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [resolvedTheme]); // Add resolvedTheme to dependency array
+  }, []); // Add resolvedTheme to dependency array
 
   return (
     <main ref={containerRef} className="py-20 bg-background dark:bg-background overflow-hidden relative">
