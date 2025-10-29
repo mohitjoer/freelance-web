@@ -6,7 +6,7 @@ import { Star, Users, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useTheme } from "../theme-provider"; // Add this import
+// import { useTheme } from "../theme-provider"; // Add this import
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
 }
 
 function HomeHero() {
-  const { resolvedTheme } = useTheme(); // Add this line
+  // const { resolvedTheme } = useTheme(); // Add this line
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const trustBadgeRef = useRef<HTMLDivElement>(null);
@@ -261,10 +261,10 @@ function HomeHero() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [resolvedTheme]); // Add resolvedTheme to dependency array
+  }, []); // Add resolvedTheme to dependency array
 
   return (
-    <main ref={containerRef} className="relative  bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 pt-34 pb-20 overflow-hidden transition-colors duration-300">
+    <main ref={containerRef} className="py-20 bg-background dark:bg-background overflow-hidden relative">
       {/* Background Elements */}
       <div ref={backgroundRef} className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 dark:bg-blue-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 transition-colors duration-300"></div>
@@ -283,20 +283,20 @@ function HomeHero() {
 
             {/* Main Headline */}
             <div className="space-y-4">
-              <h1 ref={headlineRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gray-900 dark:text-white transition-colors duration-300">
+              <h1 ref={headlineRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white-900 dark:text-white transition-colors duration-300">
                 Where
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent bg-[length:200%_100%]"> talent </span>
                 meets
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent bg-[length:200%_100%]"> opportunity</span>
               </h1>
-              <p ref={subtitleRef} className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl transition-colors duration-300">
+              <p ref={subtitleRef} className="text-xl text-white-600 dark:text-white-300 leading-relaxed max-w-2xl transition-colors duration-300">
                 Whether you&apos;re hiring top talent or showcasing your skills, FreeLanceBase connects the right people for every project. Join millions of freelancers and clients worldwide.
               </p>
             </div>
 
             {/* Popular Searches */}
             <div ref={popularSectionRef} className="space-y-3">
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">Popular for clients:</p>
+              <p className="text-sm text-white-500 dark:text-white-400 font-medium transition-colors duration-300">Popular for clients:</p>
               <div className="flex flex-wrap gap-2">
                 {["Web Development", "Logo Design", "Content Writing", "Mobile Apps", "SEO"].map((tag) => (
                   <button key={tag} className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 rounded-full text-sm font-medium transition-all duration-200 border border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700">
@@ -304,7 +304,7 @@ function HomeHero() {
                   </button>
                 ))}
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-4 transition-colors duration-300">Popular for freelancers:</p>
+              <p className="text-sm text-white-500 dark:text-white-400 font-medium mt-4 transition-colors duration-300">Popular for freelancers:</p>
               <div className="flex flex-wrap gap-2">
                 {["Remote Jobs", "Part-time Work", "Project Based", "Long-term", "Entry Level"].map((tag) => (
                   <button key={tag} className="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-300 rounded-full text-sm font-medium transition-all duration-200 border border-purple-200 dark:border-purple-800 hover:border-purple-300 dark:hover:border-purple-700">
@@ -393,8 +393,8 @@ function HomeHero() {
               { label: "Countries", value: "150+" }
             ].map((stat, index) => (
               <div key={index} className="space-y-2">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stat.value}</p>
-                <p className="text-gray-600 dark:text-gray-300 font-medium transition-colors duration-300">{stat.label}</p>
+                <p className="text-3xl font-bold text-white-900 dark:text-white transition-colors duration-300">{stat.value}</p>
+                <p className="text-white-600 dark:text-whte-300 font-medium transition-colors duration-300">{stat.label}</p>
               </div>
             ))}
           </div>
