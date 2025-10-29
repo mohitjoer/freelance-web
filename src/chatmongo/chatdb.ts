@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const connectionString = `${process.env.MONGODB_CHAT}`;
+const connectionString = `${process.env.MONGO_DB_CHAT}`;
 
 if (!connectionString) {
   throw new Error("Please provide a valid connection string");

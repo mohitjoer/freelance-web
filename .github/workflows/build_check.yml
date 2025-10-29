@@ -17,7 +17,7 @@ jobs:
     env:
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
       CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-      MONGODB_CHAT: ${{ secrets.MONGODB_CHAT }}
+      MONGO_DB_CHAT: ${{ secrets.MONGO_DB_CHAT }}
       MONGO_DB: ${{ secrets.MONGO_DB }}
     
     steps:
