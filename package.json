@@ -28,7 +28,7 @@
     "gsap": "^3.13.0",
     "lucide-react": "^0.525.0",
     "mongoose": "^8.16.3",
-    "next": "15.3.4",
+    "next": "15.3.8",
     "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-day-picker": "^9.7.0",
