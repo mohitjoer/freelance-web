@@ -11,7 +11,7 @@
   "dependencies": {
     "@clerk/clerk-js": "^5.69.2",
     "@clerk/clerk-react": "^5.32.2",
-    "@clerk/nextjs": "^6.23.1",
+    "@clerk/nextjs": "^6.36.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.1.2",
