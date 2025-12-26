@@ -1,4 +1,4 @@
-// /app/api/profile/[userId]/route.ts
+// /app/api/profile/[userid]/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/mongo/db';
@@ -6,13 +6,13 @@ import UserData from '@/mongo/model/user';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ userid: string }> }
 ) {
   try {
     await connectDB();
 
     // Await the params promise
-    const { userId } = await params;
+    const { userid: userId } = await params;
 
     if (!userId) {
       return NextResponse.json(
