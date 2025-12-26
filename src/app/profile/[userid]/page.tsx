@@ -36,7 +36,7 @@ interface IUser {
 
 async function getUserProfile(userId: string): Promise<IUser | null> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
-                  process.env.NEXTAUTH_URL || 
+                  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) || 
                   'http://localhost:3000';
   
   const res = await fetch(`${baseUrl}/api/profile/${userId}`, {
