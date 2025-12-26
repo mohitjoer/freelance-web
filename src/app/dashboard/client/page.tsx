@@ -62,8 +62,8 @@ interface SidebarItemProps {
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, href, active, onClick }) => {
   const baseClasses = "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group";
-  const activeClasses = active 
-    ? "bg-green-600 text-white shadow-lg" 
+  const activeClasses = active
+    ? "bg-green-600 text-white shadow-lg"
     : "text-gray-600 hover:bg-gray-100 hover:text-gray-900";
 
   const content = (
@@ -135,7 +135,7 @@ export default function ClientDashboard() {
           console.warn('Failed to load jobs:', jobsData.message);
           // Don't throw error for jobs, just log warning
         }
-        
+
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Unknown error";
         setError(msg);
@@ -149,7 +149,7 @@ export default function ClientDashboard() {
 
   const sidebarItems = [
     { icon: <DashboardOutlinedIcon />, label: "Dashboard", href: "/dashboard", active: true },
-    { icon: <PostAddOutlinedIcon />, label: "Post Job", href: "/jobs/create" },     
+    { icon: <PostAddOutlinedIcon />, label: "Post Job", href: "/jobs/create" },
     { icon: <PersonOutlineOutlinedIcon />, label: "Profile", href: `/profile/${clientData?.data?.userId}` },
     { icon: <NotificationsOutlinedIcon />, label: "Notifications", href: "/notifications" },
     { icon: <SettingsOutlinedIcon />, label: "Settings", href: "/setting" },
@@ -208,7 +208,7 @@ export default function ClientDashboard() {
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -224,15 +224,15 @@ export default function ClientDashboard() {
           <div className="flex items-center justify-between pt-5 pb-6 px-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
               <Image
-                src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png" 
-                alt="Logo" 
+                src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png"
+                alt="Logo"
                 width={100}
                 height={100}
                 className="w-10 h-10 object-contain"
               />
               <span className="text-xl font-bold text-gray-900">FreeLanceBase</span>
             </div>
-            <button 
+            <button
               onClick={() => setSidebarOpen(false)}
               className="p-2 rounded-lg hover:bg-gray-100 lg:hidden"
             >
@@ -309,7 +309,7 @@ export default function ClientDashboard() {
         <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => setSidebarOpen(true)}
                 className="p-2 rounded-lg hover:bg-gray-100 lg:hidden"
               >
@@ -320,7 +320,7 @@ export default function ClientDashboard() {
                 <p className="text-sm text-gray-500">Welcome back, {data.name || user?.firstName}!</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
                 {data.role}
@@ -361,7 +361,7 @@ export default function ClientDashboard() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                     <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,7 +402,7 @@ export default function ClientDashboard() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
@@ -416,7 +416,7 @@ export default function ClientDashboard() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -438,37 +438,34 @@ export default function ClientDashboard() {
                 <div className="bg-gray-100 rounded-lg p-1 flex">
                   <button
                     onClick={() => setActiveView('posted')}
-                    className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
-                      activeView === 'posted'
+                    className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${activeView === 'posted'
                         ? 'bg-blue-600 text-white shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                      }`}
                   >
                     Posted Jobs
                   </button>
                   <button
                     onClick={() => setActiveView('ongoing')}
-                    className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
-                      activeView === 'ongoing'
+                    className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${activeView === 'ongoing'
                         ? 'bg-yellow-500 text-white shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                      }`}
                   >
                     Ongoing Jobs
                   </button>
                   <button
                     onClick={() => setActiveView('finished')}
-                    className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
-                      activeView === 'finished'
+                    className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${activeView === 'finished'
                         ? 'bg-green-600 text-white shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                      }`}
                   >
                     Finished Jobs
                   </button>
                 </div>
               </div>
-              
+
               {/* Component Display */}
               <div>
                 {activeView === 'posted' && <ClientJobList />}

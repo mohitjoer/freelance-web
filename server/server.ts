@@ -17,24 +17,24 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", (roomId) => {
     socket.join(roomId);
     console.log(`📥 Socket ${socket.id} joined room ${roomId}`);
-    
+
     // Confirm to the client that they joined
     socket.emit("roomJoined", { roomId, socketId: socket.id });
-    
+
     // Notify others in the room
     socket.to(roomId).emit("userJoined", { socketId: socket.id });
   });
 
   socket.on("chatMessage", ({ roomId, message, senderId, role }) => {
     console.log(`💬 Message in room ${roomId}:`, message);
-    
+
     // Broadcast to all clients in the room (including sender)
-    io.to(roomId).emit("chatMessage", { 
-      message, 
-      senderId, 
+    io.to(roomId).emit("chatMessage", {
+      message,
+      senderId,
       role,
       timestamp: new Date().toISOString(),
-      socketId: socket.id 
+      socketId: socket.id
     });
   });
 
