@@ -44,6 +44,13 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        canvas: "hsl(var(--canvas))",
+        ink: "hsl(var(--ink))",
+        "surface-dark": "hsl(var(--surface-dark))",
+        "surface-soft": "hsl(var(--surface-soft))",
+        "on-dark": "hsl(var(--on-dark))",
+        "on-dark-soft": "hsl(var(--on-dark-soft))",
+        hairline: "hsl(var(--hairline))",
       },
       borderRadius: {
         lg: "var(--radius)",

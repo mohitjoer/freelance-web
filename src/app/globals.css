@@ -1,6 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@layer utilities {
+  .text-display-sm { @apply text-4xl md:text-5xl font-bold tracking-tight; }
+  .text-display-md { @apply text-5xl md:text-6xl font-bold tracking-tight; }
+  .text-display-lg { @apply text-6xl md:text-7xl font-bold tracking-tight; }
+  .text-display-xl { @apply text-7xl md:text-[84px] font-bold tracking-tighter; }
+  .text-title-sm { @apply text-xl font-bold; }
+  .text-title-md { @apply text-2xl font-bold; }
+  .text-caption-strong { @apply text-xs font-bold tracking-widest uppercase; }
+  .text-body-sm { @apply text-sm leading-relaxed; }
+  .text-body-md { @apply text-base leading-relaxed; }
+  .font-display { @apply font-sans; }
+}
 /* Theme design tokens (light) */
 :root {
 	--background: 0 0% 100%;
@@ -32,6 +44,14 @@
 	--ring: 222 89% 55%;
 
 	--radius: 0.5rem;
+
+	--canvas: 0 0% 100%;
+	--ink: 222 47% 11%;
+	--surface-dark: 222 47% 5%;
+	--surface-soft: 240 5% 96%;
+	--on-dark: 0 0% 100%;
+	--on-dark-soft: 215 20% 65%;
+	--hairline: 214 32% 91%;
 }
 
 /* Dark theme overrides */
@@ -63,6 +83,14 @@
 	--border: 217 33% 22%;
 	--input: 217 33% 22%;
 	--ring: 222 89% 63%;
+
+	--canvas: 222 47% 7%;
+	--ink: 0 0% 98%;
+	--surface-dark: 222 47% 5%;
+	--surface-soft: 217 33% 15%;
+	--on-dark: 0 0% 100%;
+	--on-dark-soft: 215 20% 65%;
+	--hairline: 217 33% 22%;
 }
 
 body { 
