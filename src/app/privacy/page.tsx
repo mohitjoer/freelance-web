@@ -1,5 +1,5 @@
 export default function PrivacyPage() {
-  const lastUpdated = "January 15, 2025";
+  const lastUpdated = "May 18, 2026";
   const projectName = "Freelance Web Platform";
   const platformName = "FreeLanceBase";
   const contactEmail = "mohitjoe.r@gmail.com";

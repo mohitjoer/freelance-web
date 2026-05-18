@@ -197,7 +197,7 @@ export default function TermsPage() {
               <span className="text-lg font-semibold">FreeLanceBase</span>
             </div>
             <div className="text-sm text-gray-400">
-              © 2025 FreeLanceBase.<br></br> All rights reserved.
+              © {new Date().getFullYear()} FreeLanceBase.<br></br> All rights reserved.
             </div>
           </div>
         </div>
