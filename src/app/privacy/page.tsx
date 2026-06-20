@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Read the Privacy Policy of FreelanceBase to understand how we collect, use, and protect your data.",
+};
+
 export default function PrivacyPage() {
   const lastUpdated = "May 18, 2026";
   const projectName = "Freelance Web Platform";

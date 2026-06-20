@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "nextjs-seo": {
+      "source": "mohitjoer/NextJs-SEO",
+      "sourceType": "github",
+      "skillPath": "skills/nextjs-seo/SKILL.md",
+      "computedHash": "c26116461978ab9aa28b9c00a4b818510f9cfff50f9d6811aa32d636b6630997"
+    }
+  }
+}

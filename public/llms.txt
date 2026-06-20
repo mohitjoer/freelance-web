@@ -1,0 +1,22 @@
+# FreelanceBase
+
+The Modern Freelance Marketplace connecting top freelance talent with clients. Find remote jobs, manage projects, and showcase portfolios.
+
+## System Guidelines
+- All public pages are crawlable.
+- Dynamic listings for open jobs and freelancer profiles are updated in real-time.
+- Authentication is handled securely via Clerk.
+
+## Core Features
+- **Job Board**: Clients can post jobs; freelancers can search, apply, and submit proposals.
+- **Profiles**: Freelancers highlight their skills, experience levels (beginner, intermediate, expert), ratings, and portfolios.
+- **Collaboration**: Secure message rooms for freelancer-client communications.
+
+## Public Pages
+- **Homepage** (`/`): Landing page describing features, platform benefits, and client trust.
+- **Open Jobs** (`/jobs/open`): Public directory of open jobs.
+- **Job Details** (`/jobs/[jobId]`): Details of specific projects, including category, budget, and deadline.
+- **Public Profile** (`/profile/[userid]`): Freelancer or client portfolio page with reviews, ratings, and stats.
+- **Privacy Policy** (`/privacy`): Data collection and safety guidelines.
+- **Terms of Service** (`/terms`): Terms of platform use.
+- **Authentication** (`/sign-in` & `/sign-up`): Secure login and registration.

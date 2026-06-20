@@ -3,6 +3,33 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ExternalLink, Briefcase,Calendar, Award } from 'lucide-react';
 import BackButton from '@/components/backbutton';
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const user = await getUserProfile(resolvedParams.userId);
+  if (!user) {
+    return {
+      title: "Profile Not Found",
+      description: "This FreelanceBase profile does not exist.",
+    };
+  }
+
+  const fullName = `${user.firstName}${user.lastName ? ` ${user.lastName}` : ''}`;
+  const roleStr = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+  const userBio = user.bio || `View the professional profile of ${fullName} (${roleStr}) on FreelanceBase.`;
+
+  return {
+    title: `${fullName} - ${roleStr} Profile`,
+    description: userBio.slice(0, 160),
+    openGraph: {
+      title: `${fullName} - FreelanceBase Profile`,
+      description: userBio.slice(0, 160),
+      type: "profile",
+      images: [user.userImage || "/default-avatar.png"],
+    },
+  };
+}
 
 
 interface IPortfolio {

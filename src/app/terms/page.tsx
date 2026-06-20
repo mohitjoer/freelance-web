@@ -1,6 +1,12 @@
 import Image from 'next/image';
 import React from 'react';
 import BackButton from '@/components/backbutton';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions",
+  description: "Read the Terms and Conditions of FreelanceBase outlining guidelines, user accounts, and platform services.",
+};
 
 export default function TermsPage() {
   return (
