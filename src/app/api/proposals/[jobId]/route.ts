@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/mongo/db';
 import Job from '@/mongo/model/jobschema';
 import UserData from '@/mongo/model/user';
-import { auth } from '@clerk/nextjs/server';
+import { getUserId } from "@/lib/session";
 import Proposal from '@/mongo/model/proposalschema';
 
 export async function GET(
@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { jobId } = await context.params;
-    const { userId } = await auth();
+    const userId = await getUserId();
     
     if (!userId) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });

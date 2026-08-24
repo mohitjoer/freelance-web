@@ -43,7 +43,7 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-bold mb-4 text-gray-900">1. Information We Collect</h2>
           
           <h3 className="text-xl font-semibold mb-3 text-gray-800">1.1 Account Information</h3>
-          <p className="mb-4">When you create an account through our authentication provider (Clerk), we collect:</p>
+          <p className="mb-4">When you create an account on FreeLanceBase, we collect:</p>
           <ul className="list-disc pl-6 space-y-2 mb-6">
             <li>Full name and email address</li>
             <li>Profile photograph (if provided)</li>
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
           <p className="mb-4">Your data is stored securely using:</p>
           <ul className="list-disc pl-6 space-y-2 mb-6">
             <li><strong>MongoDB Atlas:</strong> Enterprise-grade cloud database with built-in security features</li>
-            <li><strong>Clerk Authentication:</strong> SOC 2 Type II compliant authentication infrastructure</li>
+            <li><strong>Better Auth:</strong> Self-hosted, encrypted session-based authentication</li>
           </ul>
 
           <h3 className="text-xl font-semibold mb-3 text-gray-800">3.2 Security Measures</h3>
@@ -155,7 +155,7 @@ export default function PrivacyPage() {
 
           <h3 className="text-xl font-semibold mb-3 text-gray-800">4.2 Third-Party Integrations</h3>
           <ul className="list-disc pl-6 space-y-2 mb-6">
-            <li><strong>Clerk:</strong> Authentication and user management (Privacy Policy: clerk.com/privacy)</li>
+            <li><strong>Better Auth:</strong> Self-hosted authentication and user management (better-auth.com)</li>
             <li><strong>Communication Services:</strong> Email delivery and notifications</li>
             <li><strong>Analytics:</strong> Usage analytics and performance monitoring</li>
           </ul>
@@ -220,7 +220,7 @@ export default function PrivacyPage() {
           </div>
           <p className="mb-6">
             Your data may be processed in countries other than your residence through our 
-            third-party service providers (Clerk, MongoDB Atlas). We rely on their security 
+            third-party service providers (MongoDB Atlas). We rely on their security 
             measures and compliance certifications but cannot provide additional guarantees.
           </p>
         </section>

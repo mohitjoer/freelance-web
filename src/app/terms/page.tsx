@@ -43,11 +43,11 @@ export default function TermsPage() {
             By accessing our services, you agree to be bound by these conditions.
           </p>
           <div className="mt-6 text-sm text-gray-500">
-            Last updated: {new Date().toLocaleDateString('en-US', { 
+            Last updated: <span suppressHydrationWarning>{new Date().toLocaleDateString('en-US', {
               year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
+              month: 'long',
+              day: 'numeric'
+            })}</span>
           </div>
         </div>
 
@@ -65,10 +65,10 @@ export default function TermsPage() {
             <div className="border-l-4 border-green-500 pl-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-3">2. User Accounts</h2>
               <p className="text-gray-700 leading-relaxed">
-                Users must register via Clerk. You are responsible for your account and must not engage in fraud or unauthorized promotion. By registering, you accept Clerk&apos;s{' '}
+                Users must register via FreeLanceBase&apos;s built-in authentication. You are responsible for your account and must not engage in fraud or unauthorized promotion. By registering, you accept our{' '}
                 <a 
                   className="text-blue-600 hover:text-blue-800 underline transition-colors" 
-                  href="https://clerk.com/terms" 
+                  href="/terms" 
                   target="_blank" 
                   rel="noopener noreferrer"
                 >
@@ -77,7 +77,7 @@ export default function TermsPage() {
                 and{' '}
                 <a 
                   className="text-blue-600 hover:text-blue-800 underline transition-colors" 
-                  href="https://clerk.com/privacy" 
+                  href="/privacy" 
                   target="_blank" 
                   rel="noopener noreferrer"
                 >
@@ -145,7 +145,7 @@ export default function TermsPage() {
             <div className="border-l-4 border-lime-500 pl-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-3">11. Third-Party Disclaimer</h2>
               <p className="text-gray-700 leading-relaxed">
-                Authentication is managed by Clerk. We are not liable for issues related to Clerk&apos;s services.
+                Authentication is managed by FreeLanceBase&apos;s own secure authentication system (Better Auth). We are not liable for issues related to authentication services.
               </p>
             </div>
 

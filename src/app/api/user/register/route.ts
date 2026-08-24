@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (body.role === 'client') {
       await UserData.create({
       userId: body.userId,
-      userImage: body.userImage,
+      userImage: body.userImage || '/default-avatar.png',
       firstName: body.firstName,
       lastName: body.lastName,
       role: body.role,
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     if (body.role === 'freelancer') {
       await UserData.create({
         userId: body.userId,
-        userImage: body.userImage,
+        userImage: body.userImage || '/default-avatar.png',
         firstName: body.firstName,
         lastName: body.lastName,
         role: body.role,

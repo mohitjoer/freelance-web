@@ -4,27 +4,27 @@ import { Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function HomeFooter() {
-  const footerLinks = {
-    Product: [
-      { name: "How it Works", href: "/how-it-works" },
-      { name: "Browse Talent", href: "/browse-talent" },
-      { name: "Post a Job", href: "/post-job" },
-      { name: "Pricing", href: "/pricing" }
-    ],
-    Resources: [
-      { name: "Help Center", href: "/help" },
-      { name: "Community", href: "/community" },
-      { name: "Trust & Safety", href: "/trust-safety" },
-      { name: "API Documentation", href: "/api-docs" }
-    ],
-    Legal: [
-      { name: "Terms of Service", href: "/terms" },
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Cookie Policy", href: "/cookies" }
-    ]
-  };
+const footerLinks = {
+  Product: [
+    { name: "How it Works", href: "/how-it-works" },
+    { name: "Browse Talent", href: "/browse-talent" },
+    { name: "Post a Job", href: "/post-job" },
+    { name: "Pricing", href: "/pricing" }
+  ],
+  Resources: [
+    { name: "Help Center", href: "/help" },
+    { name: "Community", href: "/community" },
+    { name: "Trust & Safety", href: "/trust-safety" },
+    { name: "API Documentation", href: "/api-docs" }
+  ],
+  Legal: [
+    { name: "Terms of Service", href: "/terms" },
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Cookie Policy", href: "/cookies" }
+  ]
+};
 
+export default function HomeFooter() {
   return (
     <footer className="bg-surface-soft border-t border-hairline transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

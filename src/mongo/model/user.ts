@@ -47,7 +47,7 @@ interface IUserData extends Document {
 
 const userSchema = new Schema<IUserData>(
   {
-    userId: { type: String, required: true, unique: true }, // Clerk ID
+    userId: { type: String, required: true, unique: true }, // Better Auth user ID
     userImage: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String },

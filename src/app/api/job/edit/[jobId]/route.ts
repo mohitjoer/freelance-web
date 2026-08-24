@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getUserId } from "@/lib/session";
 import connectDB from '@/mongo/db';
 import Job from '@/mongo/model/jobschema';
 
@@ -9,6 +9,16 @@ type RouteContext = {
 };
 
 // GET /api/job/edit/[jobId]
+const UPDATABLE_FIELDS = [
+      'title', 
+      'description', 
+      'category', 
+      'budget', 
+      'deadline', 
+      'references', 
+      'resources'
+    ];
+
 export async function GET(
   request: NextRequest,
   context: RouteContext
@@ -46,7 +56,7 @@ export async function PATCH(
   try {
     // Await params before accessing properties
     const { jobId } = await context.params;
-    const { userId } = await auth();
+    const userId = await getUserId();
 
     if (!userId) {
       return NextResponse.json(
@@ -86,17 +96,9 @@ export async function PATCH(
     }
 
     const payload = await req.json();
-    const updatableFields = [
-      'title', 
-      'description', 
-      'category', 
-      'budget', 
-      'deadline', 
-      'references', 
-      'resources'
-    ];
+    
 
-    for (const field of updatableFields) {
+    for (const field of UPDATABLE_FIELDS) {
       if (payload[field] !== undefined) {
         job[field] = field === 'budget' 
           ? parseFloat(payload[field]) 

@@ -1,10 +1,10 @@
-import { auth } from "@clerk/nextjs/server";
+import { getUserId } from "@/lib/session";
 import { redirect } from "next/navigation";
 import connectDB from "@/mongo/db";
 import UserData from "@/mongo/model/user";
 
 export default async function SelectRedirectPage() {
-  const { userId } = await auth();
+  const userId = await getUserId();
   if (!userId) return redirect("/sign-in");
 
   await connectDB();

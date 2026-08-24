@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getUserId } from "@/lib/session";
 import Job from '@/mongo/model/jobschema';
 import Proposal from '@/mongo/model/proposalschema';
 import User from '@/mongo/model/user';
+import Notification from '@/mongo/model/notificationschema';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function PATCH(
   req: NextRequest,
@@ -12,7 +14,7 @@ export async function PATCH(
   try {
     // Await the params before destructuring
     const { proposalId, action } = await context.params;
-    const { userId } = await auth();
+    const userId = await getUserId();
 
     if (!userId) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -108,9 +110,58 @@ export async function PATCH(
 
     } else if (action === 'reject') {
       await Proposal.findOneAndUpdate(
-        { proposalId: proposal.proposalId }, 
+        { proposalId: proposal.proposalId },
         { status: 'rejected' }
       );
+    }
+
+    // Notify the freelancer(s) (best effort — never fail the request)
+    try {
+      if (action === 'accept') {
+        await Notification.create({
+          notificationId: uuidv4(),
+          userId: proposal.freelancerId,
+          type: 'proposal_accepted',
+          title: 'Proposal accepted',
+          message: `Your proposal for "${job.title}" was accepted. The job is now in progress.`,
+          link: `/jobs/${job.jobId}`,
+          jobId: job.jobId,
+        });
+
+        // Notify freelancers whose proposals were auto-rejected
+        const autoRejected = await Proposal.find({
+          jobId: job.jobId,
+          proposalId: { $ne: proposalId },
+          status: 'rejected',
+          freelancerId: { $ne: proposal.freelancerId },
+        }).lean();
+
+        if (autoRejected.length > 0) {
+          await Notification.insertMany(
+            autoRejected.map((pr) => ({
+              notificationId: uuidv4(),
+              userId: pr.freelancerId,
+              type: 'proposal_rejected',
+              title: 'Proposal not selected',
+              message: `Your proposal for "${job.title}" was not selected this time.`,
+              link: `/jobs/open`,
+              jobId: job.jobId,
+            }))
+          );
+        }
+      } else {
+        await Notification.create({
+          notificationId: uuidv4(),
+          userId: proposal.freelancerId,
+          type: 'proposal_rejected',
+          title: 'Proposal declined',
+          message: `Your proposal for "${job.title}" was declined by the client.`,
+          link: `/jobs/open`,
+          jobId: job.jobId,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to create notifications:', err);
     }
 
     return NextResponse.json({

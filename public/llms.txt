@@ -5,7 +5,7 @@ The Modern Freelance Marketplace connecting top freelance talent with clients. F
 ## System Guidelines
 - All public pages are crawlable.
 - Dynamic listings for open jobs and freelancer profiles are updated in real-time.
-- Authentication is handled securely via Clerk.
+- Authentication is handled securely via Better Auth (email and password).
 
 ## Core Features
 - **Job Board**: Clients can post jobs; freelancers can search, apply, and submit proposals.

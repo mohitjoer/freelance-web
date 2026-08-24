@@ -1,14 +1,16 @@
 // /app/api/job/create/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getUserId } from "@/lib/session";
 import connectDB from "@/mongo/db";
 import Job from "@/mongo/model/jobschema";
 import UserData from "@/mongo/model/user";
 import { v4 as uuidv4 } from 'uuid';
 
+const REQUIRED_FIELDS = ["title", "description", "category", "budget", "deadline"];
+
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth();
+    const userId = await getUserId();
     if (!userId) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
@@ -16,8 +18,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
     const body = await req.json();
 
-    const requiredFields = ["title", "description", "category", "budget", "deadline"];
-    for (const field of requiredFields) {
+    for (const field of REQUIRED_FIELDS) {
       if (!body[field]) {
         return NextResponse.json({ success: false, message: `${field} is required.` }, { status: 400 });
       }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@/components/auth';
 import Link from 'next/link';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -9,7 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+import WorkOutlineIcon from '@mui/icons-material/WorkOutlined';
 import {
   Popover,
   PopoverContent,
@@ -30,6 +30,21 @@ interface Job {
   createdAt: string;
 }
 
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'open':
+      return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+    case 'in-progress':
+      return 'bg-blue-50 text-blue-700 border border-blue-200';
+    case 'completed':
+      return 'bg-green-50 text-green-700 border border-green-200';
+    case 'cancelled':
+      return 'bg-red-50 text-red-700 border border-red-200';
+    default:
+      return 'bg-gray-50 text-gray-700 border border-gray-200';
+  }
+};
+
 export default function ClientJobList() {
   const { user, isLoaded } = useUser();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -39,10 +54,15 @@ export default function ClientJobList() {
   useEffect(() => {
     if (!isLoaded || !user) return;
 
+    const controller = new AbortController();
+    let cancelled = false;
+
     const fetchJobs = async () => {
       try {
-        const res = await fetch('/api/user/client-jobs');
+        const res = await fetch('/api/user/client-jobs', { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        if (cancelled) return;
         if (data.success) {
           // Filter to only show open jobs
           const openJobs = data.data.filter((job: Job) => job.status.toLowerCase() === 'open');
@@ -50,14 +70,19 @@ export default function ClientJobList() {
         } else {
           setError(data.message || 'Failed to load jobs');
         }
-      } catch {
-        setError('Server error');
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return;
+        if (!cancelled) setError('Server error');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchJobs();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [isLoaded, user]);
 
   const handleCancel = async (jobId: string) => {
@@ -66,6 +91,7 @@ export default function ClientJobList() {
         method: "PATCH",
       });
 
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const result = await res.json();
 
       if (result.success) {
@@ -80,20 +106,6 @@ export default function ClientJobList() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'open':
-        return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-      case 'in-progress':
-        return 'bg-blue-50 text-blue-700 border border-blue-200';
-      case 'completed':
-        return 'bg-green-50 text-green-700 border border-green-200';
-      case 'cancelled':
-        return 'bg-red-50 text-red-700 border border-red-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border border-gray-200';
-    }
-  };
 
   if (loading) {
     return (

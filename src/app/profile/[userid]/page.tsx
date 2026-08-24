@@ -3,11 +3,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ExternalLink, Briefcase,Calendar, Award } from 'lucide-react';
 import BackButton from '@/components/backbutton';
+import connectDB from '@/mongo/db';
+import UserData from '@/mongo/model/user';
+import { toPlain } from '@/lib/serialize';
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ userid: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const user = await getUserProfile(resolvedParams.userId);
+  const user = await getUserProfile(resolvedParams.userid);
   if (!user) {
     return {
       title: "Profile Not Found",
@@ -62,27 +65,22 @@ interface IUser {
 }
 
 async function getUserProfile(userId: string): Promise<IUser | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
-                  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) || 
-                  'http://localhost:3000';
-  
-  const res = await fetch(`${baseUrl}/api/profile/${userId}`, {
-    cache: 'no-store',
-  });
-
-  if (!res.ok) return null;
-
-  const data = await res.json();
-  return data.user;
+  await connectDB();
+  const user = await UserData.findOne({ userId }).select('-_id -__v').lean();
+  if (!user) return null;
+  // Serialize Mongo document into a plain JSON-safe object
+  return toPlain(user) as IUser;
 }
 
 
+const EXPERIENCE_COLORS = {
+  beginner: 'bg-green-100 text-green-800 border-green-200',
+  intermediate: 'bg-blue-100 text-blue-800 border-blue-200',
+  expert: 'bg-purple-100 text-purple-800 border-purple-200'
+};
+
 const ExperienceBadge = ({ level }: { level: string }) => {
-  const colors = {
-    beginner: 'bg-green-100 text-green-800 border-green-200',
-    intermediate: 'bg-blue-100 text-blue-800 border-blue-200',
-    expert: 'bg-purple-100 text-purple-800 border-purple-200'
-  };
+  const colors = EXPERIENCE_COLORS;
   
   return (
     <span className={`px-3 py-1 rounded-full text-sm font-medium border ${colors[level as keyof typeof colors]}`}>
@@ -107,10 +105,10 @@ const RatingStars = ({ rating }: { rating: number }) => {
   );
 };
 
-export default async function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+export default async function PublicProfilePage({ params }: { params: Promise<{ userid: string }> }) {
   // Await the params promise
   const resolvedParams = await params;
-  const user = await getUserProfile(resolvedParams.userId);
+  const user = await getUserProfile(resolvedParams.userid);
 
   if (!user) return notFound();
 
@@ -190,9 +188,9 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                   Skills
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {user.skills.map((skill: string, index: number) => (
+                  {user.skills.map((skill: string) => (
                     <span
-                      key={index}
+                      key={skill}
                       className="px-3 py-2 bg-neutral-800 border text-white  border-neutral-700 rounded-lg text-sm"
                     >
                       {skill}
@@ -207,8 +205,8 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Portfolio</h2>
                 <div className="space-y-4">
-                  {user.portfolio.map((item: IPortfolio, index: number) => (
-                    <div key={index} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
+                  {user.portfolio.map((item: IPortfolio) => (
+                    <div key={`${item.title}-${item.link}`} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="text-lg font-medium text-white">{item.title}</h3>
@@ -277,8 +275,8 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
               <h2 className="text-2xl font-semibold mb-4">Reviews & Feedback</h2>
               {user.reviews && user.reviews.length > 0 ? (
                 <div className="space-y-4">
-                  {user.reviews.slice(0, 3).map((reviewId: string, index: number) => (
-                    <div key={index} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
+                  {user.reviews.slice(0, 3).map((reviewId: string) => (
+                    <div key={reviewId} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
                       <div className="text-sm text-neutral-400">Review ID: {reviewId}</div>
                       <div className="text-sm text-neutral-500 mt-2">
                         Review details would be fetched separately

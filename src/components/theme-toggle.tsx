@@ -2,18 +2,10 @@
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
-import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
   const { resolvedTheme, toggleTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // Set mounted flag after first client render to avoid setState during render.
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const icon = resolvedTheme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />;
+  const isDark = resolvedTheme === "dark";
 
   return (
     <Button
@@ -24,7 +16,18 @@ export function ThemeToggle() {
       className="transition-colors cursor-pointer"
       type="button"
     >
-      {mounted ? icon : <Moon className="size-5" />}
+      <span className="relative block size-5">
+        <Sun
+          className={`absolute inset-0 size-5 transition duration-300 ${
+            isDark ? "scale-100 rotate-0 opacity-100" : "scale-75 -rotate-90 opacity-0"
+          }`}
+        />
+        <Moon
+          className={`absolute inset-0 size-5 transition duration-300 ${
+            isDark ? "scale-75 rotate-90 opacity-0" : "scale-100 rotate-0 opacity-100"
+          }`}
+        />
+      </span>
     </Button>
   );
 }

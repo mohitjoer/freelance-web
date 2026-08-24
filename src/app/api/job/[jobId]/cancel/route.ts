@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getUserId } from "@/lib/session";
 import connectDB from "@/mongo/db";
 import Job from "@/mongo/model/jobschema";
 
@@ -9,7 +9,7 @@ export async function PATCH(
   context: { params: Promise<{ jobId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const userId = await getUserId();
     if (!userId) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }

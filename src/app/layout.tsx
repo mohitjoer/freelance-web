@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from '@clerk/nextjs'
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
-import { ThemeProvider, ThemeScript } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeScript } from "@/components/theme-script";
 import ScrollToTop from '@/components/ScrollToTop';
 
 const geistSans = Geist({
@@ -63,19 +63,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <ThemeScript />
-        </head>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}>          
-          <ThemeProvider>
-            {children}
-            <ScrollToTop />
-          </ThemeProvider>
-          <Analytics />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}>
+        <ThemeProvider>
+          {children}
+          <ScrollToTop />
+        </ThemeProvider>
+        <Analytics />
+      </body>
+    </html>
   );
 }

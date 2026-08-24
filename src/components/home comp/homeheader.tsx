@@ -2,77 +2,81 @@
 
 import { Button } from "../ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-
 import {
   SignInButton,
   SignedIn,
   SignedOut,
   UserButton,
-} from "@clerk/nextjs";
+} from "@/components/auth";
 
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "../theme-provider";
 
 function Homeheader() {
-  const { resolvedTheme } = useTheme();
   return (
-    <header className={`w-full fixed z-100 shadow-lg px-4 py-3 sm:px-8 sm:py-4 ${resolvedTheme === "dark" ? "bg-background backdrop-blur-lg" : "bg-white border-black"} transition-colors duration-144 border-b-1`}>
-      <div className=" mx-auto flex items-center justify-between">
-        {/* Brand + Navigation */}
-          {/* Brand Name */}
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Image 
-                alt="FreeLancBase logo" 
-                src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png"
-                width={40}
-                height={40}
-                className="rounded-lg"
-              />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">
-              FreeLanceBase
-            </h1>
+    <header className="w-full fixed z-100 bg-background/90 backdrop-blur-lg border-b border-hairline transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-4">
+
+        {/* Brand */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          <Image
+            alt="FreeLanceBase logo"
+            src="https://res.cloudinary.com/dipugmopt/image/upload/v1753371311/ChatGPT_Image_Jul_24_2025_09_04_04_PM_odujhi.png"
+            width={36}
+            height={36}
+            className="rounded-lg"
+          />
+          <span className="text-xl font-bold text-ink tracking-tight hidden sm:block">
+            FreeLanceBase
+          </span>
+        </Link>
+
+        {/* Primary links */}
+        <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-muted-foreground">
+          <Link href="/jobs/open" className="hover:text-ink transition-colors">
+            Browse jobs
+          </Link>
+          <Link href="/sign-up" className="hover:text-ink transition-colors">
+            Post a job
+          </Link>
+          <Link href="/how-it-works" className="hover:text-ink transition-colors">
+            How it works
+          </Link>
+        </nav>
+
+        {/* Auth */}
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="hidden sm:block">
+            <ThemeToggle />
           </div>
 
-
-        {/* Auth Section */}
-        <div className="flex items-center gap-3">
           <SignedOut>
             <SignInButton mode="redirect" forceRedirectUrl="/select">
-              <Button className="group cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-primary dark:to-primary/90 dark:hover:from-primary/90 dark:hover:to-primary/80 text-white px-4 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 rounded-lg text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/50 dark:hover:shadow-primary/50 transition-all duration-300 hover:scale-105 hover:ring-2 hover:ring-blue-400 dark:hover:ring-primary/60 hover:ring-offset-2 dark:hover:ring-offset-gray-900">
-            <span className="inline-block transition-transform duration-300 group-hover:scale-110">
-             Sign In
-            </span>
-</Button>
+              <Button
+                variant="ghost"
+                className="cursor-pointer rounded-full px-5 font-bold text-muted-foreground hover:text-ink hover:bg-surface-soft"
+              >
+                Sign in
+              </Button>
             </SignInButton>
+            <Link href="/sign-up" className="inline-block ml-1">
+              <Button className="cursor-pointer rounded-full px-6 font-bold shadow-none hover:shadow-md hover:shadow-primary/20 transition-shadow">
+                Join
+              </Button>
+            </Link>
           </SignedOut>
 
           <SignedIn>
             <Link href="/select">
               <Button
                 variant="outline"
-                className="cursor-pointer border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-primary-foreground px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+                className="cursor-pointer rounded-full px-6 font-bold border-hairline text-ink hover:bg-surface-soft hover:text-ink"
               >
                 Dashboard
               </Button>
             </Link>
-            <UserButton
-              appearance={{
-                elements: {
-                  userButtonAvatarBox: {
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "8px",
-                  },
-                },
-              }}
-            />
+            <UserButton size={36} />
           </SignedIn>
-          <div className="ml-2">
-            <ThemeToggle />
-          </div>
         </div>
       </div>
     </header>

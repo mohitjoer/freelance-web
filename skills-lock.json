@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "skills/nextjs-seo/SKILL.md",
       "computedHash": "c26116461978ab9aa28b9c00a4b818510f9cfff50f9d6811aa32d636b6630997"
+    },
+    "react-doctor": {
+      "source": "millionco/react-doctor",
+      "sourceType": "github",
+      "skillPath": "skills/react-doctor/SKILL.md",
+      "computedHash": "2a003f397a4a94fc032019bc7fd97e938b4e2fae995c96df8603790db168dcc7"
     }
   }
 }

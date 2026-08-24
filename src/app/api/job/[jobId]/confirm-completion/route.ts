@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/mongo/db';
 import Job from '@/mongo/model/jobschema';
-import { auth } from '@clerk/nextjs/server';
+import { getUserId } from "@/lib/session";
 import Proposal from '@/mongo/model/proposalschema';
 import UserData from '@/mongo/model/user';
 
@@ -12,7 +12,7 @@ async function handleJobCompletion(
   try {
     await connectDB();
 
-    const { userId } = await auth();
+    const userId = await getUserId();
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -45,7 +45,7 @@ async function handleJobCompletion(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
-    // Clerk ID-based verification
+    // User ID-based verification
     if (role === 'client' && job.clientId !== userId) {
       return NextResponse.json({ error: 'Forbidden: Not authorized as the client' }, { status: 403 });
     }

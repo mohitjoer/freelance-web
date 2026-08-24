@@ -4,6 +4,16 @@ import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 
+// Module-scope so the formatter is built once, not per render
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+const formatCurrency = (amount: number) => currencyFormatter.format(amount);
+
 interface Job {
     _id: string;
     jobId: string;
@@ -41,15 +51,41 @@ interface CompletedJobData {
     job: Job | null;
 }
 
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+const formatTimeAgo = (dateString: string) => {
+  const now = new Date();
+  const date = new Date(dateString);
+  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+
+  if (diffInHours < 1) return 'Less than 1 hour ago';
+  if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+  if (diffInHours < 48) return 'Yesterday';
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+
+  return formatDate(dateString);
+};
+
 export default function CompletedJob() {
   const [completedJobs, setCompletedJobs] = useState<CompletedJobData[]>([]);
   const [loading, setLoading] = useState(true);
   
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchCompletedJobs = async () => {
       try {
-        const res = await fetch('/api/proposals/user');
+        const res = await fetch('/api/proposals/user', { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP `);
         const data = await res.json();
         if (data.success) {
           // Filter to show only accepted proposals (completed jobs)
@@ -74,6 +110,7 @@ export default function CompletedJob() {
           setCompletedJobs(transformedJobs);
         }
       } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
         console.error('Error fetching completed jobs:', error);
       } finally {
         setLoading(false);
@@ -81,40 +118,8 @@ export default function CompletedJob() {
     };
 
     fetchCompletedJobs();
+    return () => controller.abort();
   }, []);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Less than 1 hour ago';
-    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-    if (diffInHours < 48) return 'Yesterday';
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
-    
-    return formatDate(dateString);
-  };
-
 
   return (
     <div className="space-y-6">
@@ -140,7 +145,7 @@ export default function CompletedJob() {
       {loading ? (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 animate-pulse">
+            <div key={`item-${i}`} className="bg-white border border-gray-200 rounded-xl p-6 animate-pulse">
               <div className="flex justify-between items-start mb-4">
                 <div className="space-y-2 flex-1">
                   <div className="h-5 bg-gray-200 rounded w-3/4"></div>
@@ -177,7 +182,7 @@ export default function CompletedJob() {
       ) : (
         <div className="space-y-4">
           {completedJobs.map((completedJob) => (
-            <div key={completedJob._id} className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition-all duration-200">
+            <div key={completedJob._id} className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition duration-200">
               <div className="p-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">

@@ -21,21 +21,8 @@ export async function POST(req: Request) {
     const existingReports = await Report.countDocuments({ reportedId });
     
     if (existingReports >= 4) {
-      // This will be the 5th report, ban the user
-      try {
-        await fetch(`${process.env.CLERK_API_BASE}/v1/users/${reportedId}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            banned: true
-          })
-        });
-      } catch (clerkError) {
-        console.error("Error banning user in Clerk:", clerkError);
-      }
+      // This is the 5th report against this user
+      console.log(`User ${reportedId} has reached the report threshold`);
     }
 
     // Save the report

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@/components/auth';
 import Link from 'next/link';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -26,6 +26,39 @@ interface Job {
   acceptedProposalId?: string;
 }
 
+
+const getStatusConfig = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'completed':
+      return {
+        color: 'bg-green-50 text-green-700 border border-green-200',
+        icon: CheckCircleIcon,
+        iconColor: 'text-green-600',
+        bgColor: 'bg-green-100',
+        message: 'This job has been completed successfully!',
+        messageBg: 'bg-green-50 border-green-200 text-green-700'
+      };
+    case 'cancelled':
+      return {
+        color: 'bg-red-50 text-red-700 border border-red-200',
+        icon: CancelIcon,
+        iconColor: 'text-red-600',
+        bgColor: 'bg-red-100',
+        message: 'This job was cancelled.',
+        messageBg: 'bg-red-50 border-red-200 text-red-700'
+      };
+    default:
+      return {
+        color: 'bg-gray-50 text-gray-700 border border-gray-200',
+        icon: CheckCircleIcon,
+        iconColor: 'text-gray-600',
+        bgColor: 'bg-gray-100',
+        message: 'Job status updated.',
+        messageBg: 'bg-gray-50 border-gray-200 text-gray-700'
+      };
+  }
+};
+
 export default function JobFinished() {
   const { user, isLoaded } = useUser();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -36,61 +69,39 @@ export default function JobFinished() {
   useEffect(() => {
     if (!isLoaded || !user) return;
 
+    const controller = new AbortController();
+    let cancelled = false;
+
     const fetchFinishedJobs = async () => {
       try {
-        const res = await fetch('/api/user/client-jobs');
+        const res = await fetch('/api/user/client-jobs', { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        if (cancelled) return;
         if (data.success) {
           setJobs(data.data);
         } else {
           setError(data.message || 'Failed to load finished jobs');
         }
-      } catch {
-        setError('Server error');
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return;
+        if (!cancelled) setError('Server error');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchFinishedJobs();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [isLoaded, user]);
 
   // Filter jobs based on status
   const completedJobs = jobs.filter(job => job.status === 'completed');
   const cancelledJobs = jobs.filter(job => job.status === 'cancelled');
   const currentJobs = activeTab === 'completed' ? completedJobs : cancelledJobs;
-
-  const getStatusConfig = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return {
-          color: 'bg-green-50 text-green-700 border border-green-200',
-          icon: CheckCircleIcon,
-          iconColor: 'text-green-600',
-          bgColor: 'bg-green-100',
-          message: 'This job has been completed successfully!',
-          messageBg: 'bg-green-50 border-green-200 text-green-700'
-        };
-      case 'cancelled':
-        return {
-          color: 'bg-red-50 text-red-700 border border-red-200',
-          icon: CancelIcon,
-          iconColor: 'text-red-600',
-          bgColor: 'bg-red-100',
-          message: 'This job was cancelled.',
-          messageBg: 'bg-red-50 border-red-200 text-red-700'
-        };
-      default:
-        return {
-          color: 'bg-gray-50 text-gray-700 border border-gray-200',
-          icon: CheckCircleIcon,
-          iconColor: 'text-gray-600',
-          bgColor: 'bg-gray-100',
-          message: 'Job status updated.',
-          messageBg: 'bg-gray-50 border-gray-200 text-gray-700'
-        };
-    }
-  };
 
   if (loading) {
     return (

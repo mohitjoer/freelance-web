@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getUserId } from "@/lib/session";
 import Proposal from '@/mongo/model/proposalschema';
 import Job from '@/mongo/model/jobschema';
 import User from '@/mongo/model/user';
@@ -12,7 +12,7 @@ export async function PUT(
 ) {
   try {
     await connectDB();
-    const { userId } = await auth();
+    const userId = await getUserId();
     if (!userId) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -68,7 +68,7 @@ export async function DELETE(
 ) {
   try {
     await connectDB();
-    const { userId } = await auth();
+    const userId = await getUserId();
     if (!userId) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
+
 const ScrollToTop: React.FC = () => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
 
@@ -21,19 +22,12 @@ const ScrollToTop: React.FC = () => {
         };
     }, []);
 
-    const scrollToTop = (): void => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
-    };
-
     return (
         <>
             {isVisible && (
                 <button
                     onClick={scrollToTop}
-                    className="cursor-pointer fixed bottom-24 right-8 z-[9999] bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all"
+                    className="cursor-pointer fixed bottom-24 right-8 z-[9999] bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
                     aria-label="Scroll to top"
                 >
                     <svg 
@@ -54,6 +48,13 @@ const ScrollToTop: React.FC = () => {
             )}
         </>
     );
+};
+
+const scrollToTop = (): void => {
+  window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+  });
 };
 
 export default ScrollToTop;

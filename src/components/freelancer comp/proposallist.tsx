@@ -4,6 +4,16 @@ import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 
+// Module-scope so the formatter is built once, not per render
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+const formatCurrency = (amount: number) => currencyFormatter.format(amount);
+
 interface Job {
     _id: string;
     jobId: string;
@@ -27,6 +37,54 @@ interface Proposal {
     job: Job | null;
 }
 
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case 'pending':
+      return (
+        <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+          <div className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2"></div>
+          Pending Review
+        </span>
+      );
+    case 'rejected':
+      return (
+        <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+          <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
+          Not Selected
+        </span>
+      );
+    default:
+      return null;
+  }
+};
+
+const canDeleteProposal = (proposal: Proposal) => {
+  return (proposal.status === 'pending' || proposal.status === 'rejected') && proposal.job?.jobId;
+};
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+const formatTimeAgo = (dateString: string) => {
+  const now = new Date();
+  const date = new Date(dateString);
+  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+
+  if (diffInHours < 1) return 'Less than 1 hour ago';
+  if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+  if (diffInHours < 48) return 'Yesterday';
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+
+  return formatDate(dateString);
+};
+
 export default function Proposallist() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,9 +93,12 @@ export default function Proposallist() {
   const [deletingProposalId, setDeletingProposalId] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchProposals = async () => {
       try {
-        const res = await fetch('/api/proposals/user');
+        const res = await fetch('/api/proposals/user', { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP `);
         const data = await res.json();
         if (data.success) {
           // Filter to show only pending and rejected proposals
@@ -47,6 +108,7 @@ export default function Proposallist() {
           setProposals(filteredProposals);
         }
       } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
         console.error('Error fetching proposals:', error);
       } finally {
         setLoading(false);
@@ -54,7 +116,12 @@ export default function Proposallist() {
     };
 
     fetchProposals();
+    return () => controller.abort();
   }, []);
+
+
+
+
 
   const handleDeleteProposal = async (proposalId: string, jobId: string) => {
     if (!proposalId || !jobId) return;
@@ -68,6 +135,7 @@ export default function Proposallist() {
           method: 'DELETE',
         }
       );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const result = await res.json();
 
@@ -90,62 +158,10 @@ export default function Proposallist() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return (
-          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
-            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2"></div>
-            Pending Review
-          </span>
-        );
-      case 'rejected':
-        return (
-          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
-            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
-            Not Selected
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
 
-  const canDeleteProposal = (proposal: Proposal) => {
-    return (proposal.status === 'pending' || proposal.status === 'rejected') && proposal.job?.jobId;
-  };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Less than 1 hour ago';
-    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-    if (diffInHours < 48) return 'Yesterday';
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
-    
-    return formatDate(dateString);
-  };
 
   return (
     <div className="space-y-6">
@@ -189,7 +205,7 @@ export default function Proposallist() {
       {loading ? (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 animate-pulse">
+            <div key={`item-${i}`} className="bg-white border border-gray-200 rounded-xl p-6 animate-pulse">
               <div className="flex justify-between items-start mb-4">
                 <div className="space-y-2 flex-1">
                   <div className="h-5 bg-gray-200 rounded w-3/4"></div>
@@ -226,7 +242,7 @@ export default function Proposallist() {
       ) : (
         <div className="space-y-4">
           {proposals.map((proposal) => (
-            <div key={proposal._id} className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition-all duration-200">
+            <div key={proposal._id} className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition duration-200">
               <div className="p-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">

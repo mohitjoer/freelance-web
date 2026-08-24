@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore, ReactNode } from "react";
 
 // Types
 export type Theme = "light" | "dark" | "system";
@@ -14,101 +14,85 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const STORAGE_KEY = "freelancebase-theme";
 
-function getSystemTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+function isValidTheme(value: string | null): value is Theme {
+  return value === "light" || value === "dark" || value === "system";
 }
 
-function resolveTheme(theme: Theme): "light" | "dark" {
-  return theme === "system" ? getSystemTheme() : theme;
+// External store so localStorage can be read without setState-in-effect
+const themeStore = {
+  listeners: new Set<() => void>(),
+  subscribe(callback: () => void) {
+    themeStore.listeners.add(callback);
+    window.addEventListener("storage", callback);
+    return () => {
+      themeStore.listeners.delete(callback);
+      window.removeEventListener("storage", callback);
+    };
+  },
+  emit() {
+    themeStore.listeners.forEach((l) => l());
+  },
+};
+
+function getStoredTheme(): Theme | null {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return isValidTheme(stored) ? stored : null;
+}
+
+function usePrefersDark() {
+  const [prefersDark, setPrefersDark] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => setPrefersDark(media.matches);
+    onChange();
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
+  return prefersDark;
 }
 
 export function ThemeProvider({ defaultTheme = "light", children }: { defaultTheme?: Theme; children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(defaultTheme);
-  const [resolved, setResolved] = useState<"light" | "dark">(() => resolveTheme(defaultTheme));
-  const [mounted, setMounted] = useState(false);
+  // Server/hydration snapshot is null; client snapshot reads localStorage.
+  // React re-renders with the client value after hydration without warnings.
+  const stored = useSyncExternalStore(
+    themeStore.subscribe,
+    getStoredTheme,
+    () => null,
+  );
 
-  // Mark as mounted after hydration
+  // Immediate local override so toggles update in the same tab (storage event only fires cross-tab)
+  const [override, setOverride] = useState<Theme | null>(null);
+
+  const prefersDark = usePrefersDark();
+
+  const theme: Theme = override ?? stored ?? defaultTheme;
+
+  // Resolved theme is derived, never stored in state
+  const resolvedTheme: "light" | "dark" =
+    theme === "system" ? (prefersDark ? "dark" : "light") : theme;
+
+  // Apply class to <html> whenever resolution changes
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    const root = document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(resolvedTheme);
+  }, [resolvedTheme]);
 
-  // Load stored preference
-  useEffect(() => {
-    if (!mounted) return;
-
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored && (stored === "light" || stored === "dark" || stored === "system")) {
-      setThemeState(stored);
-      const newResolved = resolveTheme(stored);
-      setResolved(newResolved);
-
-      // Immediately apply to DOM
-      const root = document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(newResolved);
-    }
-  }, [mounted]);
-
-  // Listen for system changes if system theme selected
-  useEffect(() => {
-    if (!mounted || theme !== "system") return;
-
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      const newResolved = media.matches ? "dark" : "light";
-      setResolved(newResolved);
-
-      // Apply to DOM immediately
-      const root = document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(newResolved);
+  const value: ThemeContextValue = useMemo(() => {
+    const setTheme = (t: Theme) => {
+      localStorage.setItem(STORAGE_KEY, t);
+      setOverride(t);
+      themeStore.emit();
     };
-
-    handler();
-    media.addEventListener("change", handler);
-    return () => media.removeEventListener("change", handler);
-  }, [theme, mounted]);
-
-  // Apply class to <html>
-  useEffect(() => {
-    if (!mounted) return;
-
-    const currentResolved = resolveTheme(theme);
-    setResolved(currentResolved);
-
-    const root = document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(currentResolved);
-
-    // Debug log
-    console.log("Theme applied:", currentResolved, "Classes:", root.classList.toString());
-  }, [theme, mounted]);
-
-  const setTheme = (t: Theme) => {
-    if (!mounted) return;
-
-    setThemeState(t);
-    localStorage.setItem(STORAGE_KEY, t);
-
-    // Force immediate DOM update
-    const newResolved = resolveTheme(t);
-    setResolved(newResolved);
-
-    const root = document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(newResolved);
-  };
-
-  const toggleTheme = () => {
-    if (!mounted) return;
-
-    // Use resolvedTheme so first toggle from system-dark goes to light immediately.
-    const newTheme = resolved === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-  };
-
-  const value: ThemeContextValue = { theme, resolvedTheme: resolved, setTheme, toggleTheme };
+    return {
+      theme,
+      resolvedTheme,
+      setTheme,
+      toggleTheme: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
+    };
+  }, [theme, resolvedTheme]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
@@ -117,10 +101,4 @@ export function useTheme() {
   const ctx = useContext(ThemeContext);
   if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
   return ctx;
-}
-
-// Prevent flash of wrong theme before hydration
-export function ThemeScript() {
-  const code = `(function(){try{var s='${STORAGE_KEY}';var t=localStorage.getItem(s);var d='light';var e=t&&t!=="system"?t:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(e);}catch(e){}})();`;
-  return <script dangerouslySetInnerHTML={{ __html: code }} />;
 }

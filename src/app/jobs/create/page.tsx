@@ -1,9 +1,9 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@/components/auth';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 
 export default function CreateJobPage() {
   const { user, isLoaded } = useUser();
@@ -62,6 +62,7 @@ export default function CreateJobPage() {
         }),
       });
 
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const result = await res.json();
 
       if (result.success) {
@@ -101,11 +102,10 @@ return (
                     <div className="space-y-6">
                         {/* Job Title */}
                         <div>
-                            <label className="block text-sm font-medium text-cyan-700 mb-2">
-                                Job Title <span className="text-red-500">*</span>
-                            </label>
+                            <label htmlFor="title" className="block text-sm font-medium text-cyan-700 mb-2">Job Title <span className="text-red-500">*</span></label>
                             <input
-                                name="title"
+                                id="title"
+                                    name="title"
                                 value={form.title}
                                 onChange={handleChange}
                                 className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
@@ -115,11 +115,10 @@ return (
 
                         {/* Category */}
                         <div>
-                            <label className="block text-sm font-medium text-cyan-700 mb-2">
-                                Category <span className="text-red-500">*</span>
-                            </label>
+                            <label htmlFor="category" className="block text-sm font-medium text-cyan-700 mb-2">Category <span className="text-red-500">*</span></label>
                             <input
-                                name="category"
+                                id="category"
+                                    name="category"
                                 value={form.category}
                                 onChange={handleChange}
                                 className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
@@ -130,10 +129,11 @@ return (
                         {/* Budget and Deadline */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                <label htmlFor="budget" className="block text-sm font-medium text-cyan-700 mb-2">
                                     Budget (USD) <span className="text-red-500">*</span>
                                 </label>
                                 <input
+                                    id="budget"
                                     name="budget"
                                     type="number"
                                     value={form.budget}
@@ -144,12 +144,14 @@ return (
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-cyan-700 mb-2">
+                                <label htmlFor="deadline" className="block text-sm font-medium text-cyan-700 mb-2">
                                     Deadline <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     name="deadline"
                                     type="date"
+
+                                    aria-label="Deadline"
                                     value={form.deadline}
                                     onChange={handleChange}
                                     className="w-full px-3 py-2 border border-cyan-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 bg-cyan-50/30"
@@ -162,10 +164,9 @@ return (
                     <div className="space-y-6">
                         {/* Job Description */}
                         <div>
-                            <label className="block text-sm font-medium text-cyan-700 mb-2">
-                                Job Description <span className="text-red-500">*</span>
-                            </label>
+                            <label htmlFor="description" className="block text-sm font-medium text-cyan-700 mb-2">Job Description <span className="text-red-500">*</span></label>
                             <textarea
+                                    id="description"
                                 name="description"
                                 value={form.description}
                                 onChange={handleChange}
@@ -184,11 +185,10 @@ return (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Reference Links */}
                         <div>
-                            <label className="block text-sm font-medium text-cyan-700 mb-2">
-                                Reference Links <span className="text-teal-600">(Optional)</span>
-                            </label>
+                            <span className="block text-sm font-medium text-cyan-700 mb-2">Reference Links <span className="text-teal-600">(Optional)</span></span>
                             <div className="flex gap-2 mb-3">
                                 <input
+                                    aria-label="Reference link"
                                     value={referenceInput}
                                     onChange={e => setReferenceInput(e.target.value)}
                                     placeholder="https://example.com"
@@ -197,17 +197,19 @@ return (
                                 <button
                                     type="button"
                                     onClick={() => handleAddLink('references', referenceInput)}
-                                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white text-sm font-medium rounded-md hover:from-cyan-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-md transition-all"
+                                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white text-sm font-medium rounded-md hover:from-cyan-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-md transition"
                                 >
                                     Add
                                 </button>
                             </div>
                             <div className="space-y-2 max-h-32 overflow-y-auto">
-                                {form.references.map((ref, idx) => (
-                                    <div key={idx} className="flex items-center justify-between bg-cyan-50 p-2 rounded-md border border-cyan-200">
+                                {form.references.map((ref) => (
+                                    <div key={ref} className="flex items-center justify-between bg-cyan-50 p-2 rounded-md border border-cyan-200">
                                         <span className="text-sm text-cyan-800 break-all mr-2">{ref}</span>
                                         <button
-                                            onClick={() => handleRemoveLink('references', idx)}
+                                            type="button" aria-label="Remove reference"
+
+                                            onClick={() => handleRemoveLink('references', form.references.indexOf(ref))}
                                             className="text-red-500 hover:text-red-700 flex-shrink-0"
                                         >
                                             <DeleteOutlineIcon fontSize="small" />
@@ -219,11 +221,10 @@ return (
 
                         {/* Resource Links */}
                         <div>
-                            <label className="block text-sm font-medium text-cyan-700 mb-2">
-                                Resource Links <span className="text-teal-600">(Optional)</span>
-                            </label>
+                            <span className="block text-sm font-medium text-cyan-700 mb-2">Resource Links <span className="text-teal-600">(Optional)</span></span>
                             <div className="flex gap-2 mb-3">
                                 <input
+                                    aria-label="Resource link"
                                     value={resourceInput}
                                     onChange={e => setResourceInput(e.target.value)}
                                     placeholder="https://example.com"
@@ -232,17 +233,19 @@ return (
                                 <button
                                     type="button"
                                     onClick={() => handleAddLink('resources', resourceInput)}
-                                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white text-sm font-medium rounded-md hover:from-cyan-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-md transition-all"
+                                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white text-sm font-medium rounded-md hover:from-cyan-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-md transition"
                                 >
                                     Add
                                 </button>
                             </div>
                             <div className="space-y-2 max-h-32 overflow-y-auto">
-                                {form.resources.map((res, idx) => (
-                                    <div key={idx} className="flex items-center justify-between bg-cyan-50 p-2 rounded-md border border-cyan-200">
+                                {form.resources.map((res) => (
+                                    <div key={res} className="flex items-center justify-between bg-cyan-50 p-2 rounded-md border border-cyan-200">
                                         <span className="text-sm text-cyan-800 break-all mr-2">{res}</span>
                                         <button
-                                            onClick={() => handleRemoveLink('resources', idx)}
+                                            type="button" aria-label="Remove resource"
+
+                                            onClick={() => handleRemoveLink('resources', form.resources.indexOf(res))}
                                             className="text-red-500 hover:text-red-700 flex-shrink-0"
                                         >
                                             <DeleteOutlineIcon fontSize="small" />
@@ -260,7 +263,7 @@ return (
                         <button
                             onClick={handleSubmit}
                             disabled={loading}
-                            className="px-8 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-medium rounded-lg hover:from-cyan-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg transform hover:scale-[1.02]"
+                            className="px-8 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-medium rounded-lg hover:from-cyan-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg transform hover:scale-[1.02]"
                         >
                             {loading ? 'Creating Job...' : 'Post Job'}
                         </button>

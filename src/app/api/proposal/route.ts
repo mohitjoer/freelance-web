@@ -1,16 +1,17 @@
 // File: /app/api/proposal/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getUserId } from "@/lib/session";
 import connectDB from '@/mongo/db';
 import Proposal from '@/mongo/model/proposalschema';
 import Job from '@/mongo/model/jobschema';
 import User from '@/mongo/model/user';
+import Notification from '@/mongo/model/notificationschema';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth();
+    const userId = await getUserId();
     if (!userId) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -63,6 +64,21 @@ export async function POST(req: NextRequest) {
     // Update freelancer profile with proposal
     freelancer.jobsProposed.push(newProposal.proposalId);
     await freelancer.save();
+
+    // Notify the client (best effort — never fail the request)
+    try {
+      await Notification.create({
+        notificationId: uuidv4(),
+        userId: job.clientId,
+        type: 'proposal_received',
+        title: 'New proposal received',
+        message: `${freelancer.firstName || 'A freelancer'} submitted a proposal on "${job.title}"`,
+        link: `/jobs/${job.jobId}`,
+        jobId: job.jobId,
+      });
+    } catch (err) {
+      console.error('Failed to create notification:', err);
+    }
 
     return NextResponse.json({
       success: true,
