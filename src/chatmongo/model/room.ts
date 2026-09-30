@@ -1,5 +1,6 @@
 // models/Room.ts
-import mongoose, { Schema, Document, Model } from "mongoose";
+import { Schema, Document, Model, Types } from "mongoose";
+import { chatConnection } from "@/chatmongo/chatdb";
 
 interface IMessage {
   senderId: string;
@@ -25,7 +26,11 @@ const roomSchema = new Schema<IRoom>({
   messages: [messageSchema]
 });
 
+// Must be registered on the CHAT connection. On the default singleton it would
+// silently bind to the main database instead.
 const Room: Model<IRoom> =
-  mongoose.models.Room || mongoose.model<IRoom>("Room", roomSchema);
+  (chatConnection.models.Room as Model<IRoom> | undefined) ??
+  chatConnection.model<IRoom>("Room", roomSchema);
 
+export type RoomDocument = Types.DocumentArray<IMessage> & { toObject: () => IMessage[] };
 export default Room;

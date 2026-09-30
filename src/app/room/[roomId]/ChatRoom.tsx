@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState, FormEvent, useRef } from "react";
+import { Send } from "lucide-react";
 import { UserButton, useUser } from '@/components/auth';
 import { io, Socket } from "socket.io-client";
 import BackButton from "@/components/backbutton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import MessageList from "./MessageList";
 import type { Message, ChatMessageEvent } from "./types";
 
@@ -13,6 +16,7 @@ export default function ChatRoom({ roomId, initialMessages }: { roomId: string; 
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [sending, setSending] = useState(false);
+  const [accessError, setAccessError] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const sendingRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -27,88 +31,101 @@ export default function ChatRoom({ roomId, initialMessages }: { roomId: string; 
   }, [messages]);
 
   // Initialize Socket.IO connection
+  //
+  // The fetch is one-shot websocket auth (a signed room token), not a data
+  // fetch: it is aborted on cleanup, and the effect returns a cleanup that
+  // disconnects the socket. These rules target data-loading effects and fire on
+  // any fetch or subscription inside a useEffect.
+  // react-doctor-disable-next-line -- false positive, see above
   useEffect(() => {
     if (!roomId || !isSignedIn || !user?.id) return;
 
-    // Initialize socket connection
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000', {
-      transports: ['websocket'],
-      withCredentials: true
-    });
+    let cancelled = false;
+    let socket: Socket | null = null;
+    const abort = new AbortController();
 
-    socketRef.current = socket;
+    // The socket server authorises nothing itself; it verifies a signed room
+    // token that the app issues only to participants of this job.
+    const connect = async () => {
+      let token: string;
+      try {
+        const res = await fetch(`/api/room/${roomId}/socket-token`, { signal: abort.signal });
+        if (!res.ok) {
+          if (cancelled) return;
+          setAccessError(
+            res.status === 403
+              ? "You do not have access to this chat."
+              : "Sign in again to join this chat."
+          );
+          return;
+        }
+        token = (await res.json()).token as string;
+      } catch (err) {
+        if (cancelled || (err as Error).name === 'AbortError') return;
+        setAccessError("Could not verify access to this chat.");
+        return;
+      }
 
-    // Connection event handlers
-    const onConnect = () => {
-      console.log('Connected to server:', socket.id);
-      setIsConnected(true);
+      if (cancelled) return;
 
-      // Join the room
-      socket.emit('joinRoom', roomId);
-    };
+      socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000', {
+        transports: ['websocket'],
+        withCredentials: true,
+        auth: { token },
+      });
 
-    const onDisconnect = () => {
-      console.log('Disconnected from server');
-      setIsConnected(false);
-    };
+      socketRef.current = socket;
 
-    // Room event handlers
-    const onRoomJoined = (data: unknown) => {
-      console.log('Successfully joined room:', data);
-    };
+      socket.on('connect', () => {
+        setIsConnected(true);
+        socket!.emit('joinRoom', roomId);
+      });
 
-    const onUserJoined = (data: unknown) => {
-      console.log('User joined:', data);
-    };
+      socket.on('disconnect', () => setIsConnected(false));
 
-    const onUserLeft = (data: unknown) => {
-      console.log('User left:', data);
-    };
-
-    // Message event handlers
-    const onChatMessage = (data: ChatMessageEvent) => {
-      console.log('Received message:', data);
-
-      const newMessage: Message = {
-        _id: data._id || Date.now().toString(),
-        senderId: data.senderId,
-        senderName: data.senderName,
-        role: data.role || 'user',
-        message: data.message,
-        timestamp: data.timestamp || new Date().toISOString(),
-        socketId: data.socketId
-      };
-
-      setMessages(prev => {
-        // Avoid duplicate messages
-        const exists = prev.some(msg =>
-          msg._id === newMessage._id ||
-          (msg.message === newMessage.message &&
-           msg.senderId === newMessage.senderId &&
-           Math.abs(new Date(msg.timestamp).getTime() - new Date(newMessage.timestamp).getTime()) < 1000)
+      socket.on('connect_error', (err: Error) => {
+        console.error('Socket rejected:', err.message);
+        setIsConnected(false);
+        setAccessError(
+          err.message === 'unauthorized'
+            ? 'Your session expired. Sign in again to join this chat.'
+            : 'You do not have access to this chat.'
         );
+      });
 
-        if (exists) return prev;
-        return [...prev, newMessage];
+      socket.on('roomError', (data: unknown) => {
+        console.error('Room error:', data);
+        setAccessError('You do not have access to this chat.');
+      });
+
+      socket.on('userJoined', (data: unknown) => console.log('User joined:', data));
+      socket.on('userLeft', (data: unknown) => console.log('User left:', data));
+
+      socket.on('chatMessage', (data: ChatMessageEvent) => {
+        const incoming: Message = {
+          _id: data._id || `${data.senderId}-${data.timestamp}`,
+          senderId: data.senderId,
+          senderName: data.senderName,
+          role: data.role || 'user',
+          message: data.message,
+          timestamp: data.timestamp || new Date().toISOString(),
+          socketId: data.socketId,
+        };
+
+        setMessages(prev => {
+          const exists = prev.some(msg => msg._id === incoming._id);
+          return exists ? prev : [...prev, incoming];
+        });
       });
     };
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('roomJoined', onRoomJoined);
-    socket.on('userJoined', onUserJoined);
-    socket.on('userLeft', onUserLeft);
-    socket.on('chatMessage', onChatMessage);
+    connect();
 
     // Cleanup on unmount
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('roomJoined', onRoomJoined);
-      socket.off('userJoined', onUserJoined);
-      socket.off('userLeft', onUserLeft);
-      socket.off('chatMessage', onChatMessage);
-      socket.disconnect();
+      cancelled = true;
+      abort.abort();
+      socket?.disconnect();
       socketRef.current = null;
     };
   }, [roomId, isSignedIn, user?.id]);
@@ -122,11 +139,7 @@ export default function ChatRoom({ roomId, initialMessages }: { roomId: string; 
 
     const messageData = {
       roomId,
-      senderId: user.id,
-      senderName: user.firstName || 'Anonymous',
-      role: "user",
       message: newMessage.trim(),
-      timestamp: new Date().toISOString()
     };
 
     console.log("Sending message:", messageData);
@@ -134,20 +147,17 @@ export default function ChatRoom({ roomId, initialMessages }: { roomId: string; 
     // Send via Socket.IO for real-time delivery
     socketRef.current.emit('chatMessage', messageData);
 
-    // Also save to database via API
+    // Also save to database via API. The server derives senderId/role from the
+    // session, so they are deliberately not sent here.
     try {
       const response = await fetch(`/api/room/${roomId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          senderId: messageData.senderId,
-          role: messageData.role,
-          message: messageData.message
-        }),
+        body: JSON.stringify({ message: messageData.message }),
       });
 
       if (!response.ok) {
-        console.error('Failed to save message to database');
+        console.error('Failed to save message to database', response.status);
       }
     } catch (error) {
       console.error('Error saving message:', error);
@@ -161,122 +171,77 @@ export default function ChatRoom({ roomId, initialMessages }: { roomId: string; 
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Loading...</p>
-        </div>
+      <div className="flex h-dvh items-center justify-center bg-canvas">
+        <p className="text-sm text-muted-foreground">Loading…</p>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-md mx-4">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 0h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Sign In Required</h2>
-          <p className="text-slate-600">Please sign in to access the chat room and connect with others.</p>
+      <div className="flex h-dvh items-center justify-center bg-canvas px-5">
+        <div className="max-w-sm text-center">
+          <h1 className="text-lg font-semibold text-ink">Sign in to open this chat</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Conversations are private to the two people working on the project.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (accessError) {
+    return (
+      <div className="flex h-dvh items-center justify-center bg-canvas px-5">
+        <div className="max-w-sm text-center">
+          <h1 className="text-lg font-semibold text-ink">Chat unavailable</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{accessError}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <BackButton/>
-              <div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-slate-900">Chat Room</h1>
-                    <p className="text-sm text-slate-500 font-mono">ID: {roomId}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2 mt-2">
-                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
-                  <span className={`text-xs font-medium ${isConnected ? 'text-emerald-600' : 'text-red-600'}`}>
-                    {isConnected ? 'Connected' : 'Disconnected'}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-slate-900">{user.firstName || 'You'}</p>
-                <p className="text-xs text-slate-500">Online</p>
-              </div>
-              <UserButton />
-            </div>
+    <div className="flex h-dvh flex-col bg-canvas">
+      <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-hairline bg-card px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <BackButton />
+          <div className="min-w-0">
+            <h1 className="truncate text-sm font-semibold tracking-tight text-ink">Project chat</h1>
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span
+                className={`size-1.5 rounded-full ${isConnected ? "bg-emerald-500" : "bg-destructive"}`}
+                aria-hidden
+              />
+              {isConnected ? "Connected" : "Reconnecting…"}
+            </p>
           </div>
         </div>
-      </div>
+        <UserButton />
+      </header>
 
       <MessageList
         messages={messages}
         currentUserId={user?.id}
-        loading={false}
         messagesEndRef={messagesEndRef}
       />
 
-
-      <div className="bg-white border-t border-slate-200 px-6 py-4">
-        <form onSubmit={handleSendMessage} className="flex items-center space-x-4">
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              aria-label="Type your message"
-              className="w-full bg-slate-50 border border-slate-200 rounded-full px-6 py-3 pr-12 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-              placeholder={
-                isConnected 
-                  ? "Type your message..." 
-                  : "Connecting..."
-              }
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              disabled={!user?.id || !isConnected}
-            />
-            {newMessage.trim() && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <button
-                  type="submit"
-                  aria-label="Send message"
-                  disabled={sending || !newMessage.trim() || !user?.id || !isConnected}
-                  className="w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                </button>
-              </div>
-            )}
-          </div>
-          {!newMessage.trim() && (
-            <button
-              type="button"
-              aria-label="Add attachment"
-              className="w-10 h-10 bg-slate-100 text-slate-400 rounded-full hover:bg-slate-200 transition-colors duration-200 flex items-center justify-center"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-              </svg>
-            </button>
-          )}
-        </form>
-      </div>
+      <form
+        onSubmit={handleSendMessage}
+        className="flex shrink-0 items-center gap-2 border-t border-hairline bg-card px-4 py-3 sm:px-6"
+      >
+        <Input
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder={isConnected ? "Write a message" : "Connecting…"}
+          disabled={!user?.id || !isConnected}
+          aria-label="Message"
+        />
+        <Button type="submit" size="icon" disabled={sending || !newMessage.trim() || !isConnected}>
+          <Send className="size-4" aria-hidden />
+          <span className="sr-only">Send</span>
+        </Button>
+      </form>
     </div>
   );
 }

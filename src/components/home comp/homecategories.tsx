@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Code2, PenTool, BookOpenText, Clapperboard, Megaphone, ChartNoAxesColumn } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -11,15 +10,15 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Class names are literals, not template-built, so Tailwind can see them.
 const categories = [
-  { name: "Web Development", seed: "freelancebase-webdev-code" },
-  { name: "Graphic Design", seed: "freelancebase-graphic-design" },
-  { name: "Writing", seed: "freelancebase-writing-desk" },
-  { name: "Video Editing", seed: "freelancebase-video-studio" },
-  { name: "Digital Marketing", seed: "freelancebase-marketing-team" },
-  { name: "Data & Analytics", seed: "freelancebase-data-charts" },
+  { name: "Web Development", detail: "React, Next.js, APIs", term: "Development", Icon: Code2, tile: "bg-cat-dev/10", hue: "text-cat-dev" },
+  { name: "Graphic Design", detail: "Brand, logo, illustration", term: "Design", Icon: PenTool, tile: "bg-cat-design/10", hue: "text-cat-design" },
+  { name: "Writing", detail: "Copy, articles, SEO", term: "Writing", Icon: BookOpenText, tile: "bg-cat-writing/10", hue: "text-cat-writing" },
+  { name: "Video Editing", detail: "Edits, motion, reels", term: "Video", Icon: Clapperboard, tile: "bg-cat-video/10", hue: "text-cat-video" },
+  { name: "Digital Marketing", detail: "Ads, growth, social", term: "Marketing", Icon: Megaphone, tile: "bg-cat-marketing/10", hue: "text-cat-marketing" },
+  { name: "Data & Analytics", detail: "Dashboards, BI, ML", term: "Data", Icon: ChartNoAxesColumn, tile: "bg-cat-data/10", hue: "text-cat-data" },
 ];
-
 export default function HomeCategories() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -51,34 +50,25 @@ export default function HomeCategories() {
         <h2 className="text-display-sm md:text-display-md font-display text-ink tracking-tight mb-3">
           Browse by category
         </h2>
-        <p className="text-lg text-muted-foreground mb-10 max-w-xl">
-          Whatever the work, there is a freelancer ready to take it on.
+        <p className="text-lg text-muted-foreground mb-10 measure">
+          Pick a discipline and see the open briefs waiting for someone who knows it.
         </p>
 
-        <div className="anim-cat-grid grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          {categories.map((cat) => (
+        <div className="anim-cat-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-hairline rounded-2xl overflow-hidden border border-hairline">
+          {categories.map(({ name, detail, term, Icon, tile, hue }) => (
             <Link
-              key={cat.name}
-              href="/jobs/open"
-              className="anim-cat group relative overflow-hidden rounded-2xl aspect-[4/3] active:scale-[0.99] transition-transform"
+              key={name}
+              href={`/jobs/open?category=${term}`}
+              className="anim-cat group flex items-center gap-4 bg-card p-6 transition-colors hover:bg-surface-soft"
             >
-              <Image
-                src={`https://picsum.photos/seed/${cat.seed}/640/480`}
-                alt=""
-                fill
-                sizes="(max-width: 1024px) 50vw, 33vw"
-                className="object-cover brightness-[0.72] group-hover:brightness-[0.62] group-hover:scale-105 transition duration-500"
-              />
-              <span className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
-              <span className="absolute bottom-0 left-0 right-0 p-4 md:p-5 flex items-end justify-between gap-2">
-                <span>
-                  <span className="block text-white font-bold text-base md:text-lg leading-tight">{cat.name}</span>
-                  <span className="hidden sm:block text-white/70 text-xs mt-1">Explore open jobs</span>
-                </span>
-                <span className="w-8 h-8 shrink-0 rounded-full bg-white/15 backdrop-blur border border-white/25 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition">
-                  <ArrowUpRight className="w-4 h-4 text-white" />
-                </span>
+              <span className={`size-11 shrink-0 rounded-xl ${tile} flex items-center justify-center`}>
+                <Icon className={`size-5 ${hue}`} />
               </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-bold text-ink leading-tight">{name}</span>
+                <span className="block text-sm text-muted-foreground mt-0.5 truncate">{detail}</span>
+              </span>
+              <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
             </Link>
           ))}
         </div>

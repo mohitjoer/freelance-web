@@ -45,9 +45,9 @@ export default function PasswordInput({
         className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground hover:text-ink transition-colors cursor-pointer"
       >
         {visible ? (
-          <EyeOff className="w-5 h-5" aria-hidden="true" />
+          <EyeOff className="size-5" aria-hidden="true" />
         ) : (
-          <Eye className="w-5 h-5" aria-hidden="true" />
+          <Eye className="size-5" aria-hidden="true" />
         )}
       </button>
     </div>

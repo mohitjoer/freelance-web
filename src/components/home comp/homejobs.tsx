@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import { Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "../ui/button";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -24,7 +23,6 @@ const jobs = [
     proposals: 8,
     skills: ["Figma", "UI/UX"],
     client: { initials: "DO", name: "Daniel O.", rating: "4.9" },
-    seed: "freelancebase-job-figma",
   },
   {
     title: "React + Tailwind developer for SaaS app",
@@ -35,7 +33,6 @@ const jobs = [
     proposals: 15,
     skills: ["React", "TailwindCSS"],
     client: { initials: "MS", name: "Maya S.", rating: "5.0" },
-    seed: "freelancebase-job-react",
   },
   {
     title: "Product demo video edit (2 min)",
@@ -46,7 +43,6 @@ const jobs = [
     proposals: 6,
     skills: ["Premiere Pro", "Motion"],
     client: { initials: "TK", name: "Tomas K.", rating: "4.8" },
-    seed: "freelancebase-job-video",
   },
   {
     title: "4 blog articles for B2B SaaS",
@@ -57,7 +53,6 @@ const jobs = [
     proposals: 11,
     skills: ["SEO", "Copywriting"],
     client: { initials: "RB", name: "Rhea B.", rating: "4.7" },
-    seed: "freelancebase-job-writing",
   },
 ];
 
@@ -104,9 +99,9 @@ export default function HomeJobs() {
               Real briefs with real budgets. Apply directly from your dashboard.
             </p>
           </div>
-          <Link href="/jobs/open" className="hidden sm:inline-flex items-center gap-1.5 text-primary font-bold hover:gap-2.5 transition">
+          <Link href="/jobs/open" className="hidden sm:inline-flex items-center gap-1.5 text-primary font-bold transition-transform hover:translate-x-1">
             Browse open jobs
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="size-4" />
           </Link>
         </div>
 
@@ -118,48 +113,44 @@ export default function HomeJobs() {
               <Link
                 key={job.title}
                 href="/jobs/open"
-                className="anim-job group bg-background border border-hairline rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-ink/10 active:scale-[0.99] transition flex flex-col"
+                className="anim-job group bg-card border border-hairline rounded-2xl p-5 hover:border-primary/40 transition-colors flex flex-col"
               >
-                {/* Cover image */}
-                <div className="relative aspect-[16/9] overflow-hidden bg-surface-soft">
-                  <Image
-                    src={`https://picsum.photos/seed/${job.seed}/640/360`}
-                    alt=""
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/55 backdrop-blur text-white text-xs font-bold">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <h3 className="text-title-sm font-bold text-ink leading-snug group-hover:text-primary transition-colors">
+                    {job.title}
+                  </h3>
+                  <span className="shrink-0 px-2.5 py-1 rounded-full bg-surface-soft text-xs font-bold text-muted-foreground whitespace-nowrap">
                     {job.category}
                   </span>
                 </div>
 
-                {/* Body */}
-                <div className="flex flex-col flex-1 p-5">
-                  <h3 className="text-title-sm font-bold text-ink leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                    {job.title}
-                  </h3>
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {job.skills.map((skill) => (
+                    <span key={skill} className="px-2.5 py-0.5 rounded-md bg-surface-soft text-xs font-medium text-muted-foreground">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
 
-                  {/* Client row */}
-                  <div className="flex items-center gap-2 mt-auto pt-3 mb-3 text-sm">
-                    <span className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
-                      {job.client.initials}
-                    </span>
-                    <span className="font-semibold text-muted-foreground truncate">{job.client.name}</span>
-                    <span className="flex items-center gap-1 ml-auto shrink-0 font-semibold text-ink">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      {job.client.rating}
-                    </span>
-                  </div>
+                {/* Client row */}
+                <div className="flex items-center gap-2 mt-auto pt-4 border-t border-hairline text-sm">
+                  <span className="size-7 shrink-0 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
+                    {job.client.initials}
+                  </span>
+                  <span className="font-semibold text-muted-foreground truncate">{job.client.name}</span>
+                  <span className="flex items-center gap-1 ml-auto shrink-0 font-semibold text-ink">
+                    <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                    {job.client.rating}
+                  </span>
+                </div>
 
-                  {/* Price row */}
-                  <div className="flex items-center justify-between pt-3.5 border-t border-hairline">
-                    <span className="text-xs text-muted-foreground">{job.proposals} proposals</span>
-                    <span className="text-right">
-                      <span className="block font-bold text-primary leading-tight">{job.budget}</span>
-                      <span className="block text-[11px] text-muted-foreground">{job.rate}</span>
-                    </span>
-                  </div>
+                {/* Price row */}
+                <div className="flex items-end justify-between pt-3.5 border-t border-hairline mt-3">
+                  <span className="text-xs text-muted-foreground">{job.proposals} proposals · {job.level}</span>
+                  <span className="font-bold text-primary leading-tight text-right">
+                    {job.budget}
+                    <span className="block text-xs font-medium text-muted-foreground">{job.rate}</span>
+                  </span>
                 </div>
               </Link>
             ))}
@@ -173,7 +164,7 @@ export default function HomeJobs() {
             <ul className="divide-y divide-hairline">
               {freelancers.map((f) => (
                 <li key={f.name} className="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0">
-                  <span className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                  <span className="size-10 shrink-0 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
                     {f.initials}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -181,7 +172,7 @@ export default function HomeJobs() {
                     <span className="block text-xs text-muted-foreground truncate">{f.role} · {f.rate}</span>
                   </span>
                   <span className="flex items-center gap-1 text-sm font-bold text-ink whitespace-nowrap">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <Star className="size-3.5 fill-amber-400 text-amber-400" />
                     {f.rating}
                   </span>
                 </li>
@@ -198,7 +189,7 @@ export default function HomeJobs() {
 
         <Link href="/jobs/open" className="sm:hidden inline-flex items-center gap-1.5 text-primary font-bold mt-8">
           Browse open jobs
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="size-4" />
         </Link>
       </div>
     </section>

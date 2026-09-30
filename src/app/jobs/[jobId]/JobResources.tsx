@@ -1,69 +1,50 @@
 'use client';
 
-import LinkIcon from '@mui/icons-material/Link';
-import type { Job } from './types';
+import { ExternalLink } from "lucide-react";
+import { Panel, PanelHeader } from "@/components/ui/panel";
 
 interface JobResourcesProps {
   references?: string[];
   resources?: string[];
 }
 
-export default function JobResources({ references, resources }: JobResourcesProps) {
-  const hasReferences = Array.isArray(references) && references.length > 0;
-  const hasResources = Array.isArray(resources) && resources.length > 0;
+function LinkList({ label, urls }: { label: string; urls: string[] }) {
+  return (
+    <div>
+      <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </h3>
+      <ul className="divide-y divide-hairline border-y border-hairline">
+        {urls.map((url) => (
+          <li key={url}>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between gap-4 py-2.5 text-sm text-primary transition-colors hover:underline"
+            >
+              <span className="truncate">{url}</span>
+              <ExternalLink className="size-3.5 shrink-0" aria-hidden />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-  if (!hasReferences && !hasResources) return null;
+export default function JobResources({ references, resources }: JobResourcesProps) {
+  const refs = references ?? [];
+  const res = resources ?? [];
+  if (refs.length === 0 && res.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <LinkIcon className="text-blue-600" />
-        Additional Resources
-      </h3>
-
-      {hasReferences && (
-        <div className="mb-6">
-          <h4 className="font-medium text-gray-800 mb-3">Reference Links</h4>
-          <div className="space-y-2">
-            {references!.map((url) => (
-              <a
-                key={url}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group"
-              >
-                <LinkIcon className="text-blue-600 flex-shrink-0" style={{ fontSize: 16 }} />
-                <span className="text-blue-600 hover:text-blue-800 text-sm break-all group-hover:underline">
-                  {url}
-                </span>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {hasResources && (
-        <div>
-          <h4 className="font-medium text-gray-800 mb-3">Resource Links</h4>
-          <div className="space-y-2">
-            {resources!.map((url) => (
-              <a
-                key={url}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors group"
-              >
-                <LinkIcon className="text-green-600 flex-shrink-0" style={{ fontSize: 16 }} />
-                <span className="text-green-600 hover:text-green-800 text-sm break-all group-hover:underline">
-                  {url}
-                </span>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    <Panel>
+      <PanelHeader title="References" />
+      <div className="space-y-6 px-5 py-4">
+        {refs.length > 0 && <LinkList label="Briefs" urls={refs} />}
+        {res.length > 0 && <LinkList label="Links" urls={res} />}
+      </div>
+    </Panel>
   );
 }

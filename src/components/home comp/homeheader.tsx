@@ -11,6 +11,7 @@ import {
 
 import Link from "next/link";
 import Image from "next/image";
+import NotificationBell from "@/components/notification-bell";
 
 function Homeheader() {
   return (
@@ -36,11 +37,14 @@ function Homeheader() {
           <Link href="/jobs/open" className="hover:text-ink transition-colors">
             Browse jobs
           </Link>
-          <Link href="/sign-up" className="hover:text-ink transition-colors">
+          <Link href="/jobs/create" className="hover:text-ink transition-colors">
             Post a job
           </Link>
-          <Link href="/how-it-works" className="hover:text-ink transition-colors">
+          <Link href="/#how-it-works" className="hover:text-ink transition-colors">
             How it works
+          </Link>
+          <Link href="/support" className="hover:text-ink transition-colors">
+            Support
           </Link>
         </nav>
 
@@ -50,8 +54,12 @@ function Homeheader() {
             <ThemeToggle />
           </div>
 
+          <SignedIn>
+            <NotificationBell />
+          </SignedIn>
+
           <SignedOut>
-            <SignInButton mode="redirect" forceRedirectUrl="/select">
+            <SignInButton mode="redirect" forceRedirectUrl="/dashboard">
               <Button
                 variant="ghost"
                 className="cursor-pointer rounded-full px-5 font-bold text-muted-foreground hover:text-ink hover:bg-surface-soft"
@@ -67,7 +75,7 @@ function Homeheader() {
           </SignedOut>
 
           <SignedIn>
-            <Link href="/select">
+            <Link href="/dashboard">
               <Button
                 variant="outline"
                 className="cursor-pointer rounded-full px-6 font-bold border-hairline text-ink hover:bg-surface-soft hover:text-ink"

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import ReportIcon from '@mui/icons-material/Report';
+import { Flag } from "lucide-react";
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Alert, AlertTitle } from '@/components/ui/alert';
 
 interface ReportUserPopoverProps {
   reporterId?: string;
@@ -15,14 +15,16 @@ interface ReportUserPopoverProps {
 }
 
 export default function ReportUserPopover({ reporterId, reportedId, jobId, reportedLabel }: ReportUserPopoverProps) {
-  const [reportDetails, setReportDetails] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [details, setDetails] = useState('');
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
+  const [sending, setSending] = useState(false);
+
+  const who = reportedLabel === 'freelancer' ? 'freelancer' : 'client';
 
   const handleReport = async () => {
-    if (!reportDetails.trim()) {
-      alert('Please provide a reason for reporting.');
-      return;
-    }
+    if (sending || !details.trim()) return;
+    setSending(true);
+    setStatus(null);
 
     try {
       const res = await fetch('/api/user/report', {
@@ -31,78 +33,66 @@ export default function ReportUserPopover({ reporterId, reportedId, jobId, repor
         body: JSON.stringify({
           reporterId,
           reportedId,
-          reason: reportDetails,
-          details: reportDetails,
+          reason: details,
+          details,
           jobId,
         }),
       });
 
       if (res.ok) {
-        setSuccessMessage('Report submitted successfully!');
-        setReportDetails('');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        setStatus({ ok: true, text: 'Report sent to our team.' });
+        setDetails('');
       } else {
-        const errorData = await res.json();
-        alert(errorData.message || 'Failed to submit report.');
+        const body = await res.json().catch(() => null);
+        setStatus({ ok: false, text: body?.message || 'Could not send the report.' });
       }
     } catch (error) {
       console.error('Report submission error:', error);
-      alert('Server error occurred while submitting report.');
+      setStatus({ ok: false, text: 'Server error. The report was not sent.' });
+    } finally {
+      setSending(false);
     }
   };
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 transition-colors"
-        >
-          <ReportIcon className="w-4 h-4 mr-2" />
-          Report {reportedLabel === 'freelancer' ? 'User' : 'Client'}
+        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
+          <Flag className="size-4" aria-hidden />
+          <span className="sr-only">Report this {who}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0 bg-white">
-        <div className="p-6">
-          <h4 className="font-semibold text-gray-900 mb-4">
-            Report {reportedLabel === 'freelancer' ? 'Freelancer' : 'Client'}
-          </h4>
+      <PopoverContent className="w-96 p-0">
+        <div className="space-y-4 p-5">
+          <div>
+            <h3 className="font-semibold text-ink">Report this {who}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Our team reviews every report. False reports may restrict the account.
+            </p>
+          </div>
 
-          {successMessage && (
-            <Alert className="mb-4 border-green-200 bg-green-50">
-              <AlertTitle className="text-green-800">{successMessage}</AlertTitle>
-            </Alert>
+          {status && (
+            <p className={`text-sm ${status.ok ? 'text-ink' : 'text-destructive'}`} role="status">
+              {status.text}
+            </p>
           )}
 
-          <div className="mb-4">
-            <label htmlFor="reportReason" className="block text-sm font-medium text-gray-700 mb-2">
-              Reason for reporting *
-            </label>
-            <textarea
-              id="reportReason"
-              value={reportDetails}
-              onChange={(e) => setReportDetails(e.target.value)}
-              placeholder={`Provide the reason and context for reporting this ${reportedLabel}...`}
-              rows={4}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
-            />
-          </div>
+          <Textarea
+            aria-label={`Reason for reporting this ${who}`}
+            rows={4}
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            placeholder="What happened?"
+          />
 
-          <div className="flex gap-3">
-            <Button
-              onClick={handleReport}
-              className="bg-red-600 hover:bg-red-700 text-white flex-1"
-              size="sm"
-              disabled={!reportDetails.trim()}
-            >
-              Submit Report
-            </Button>
-          </div>
-
-          <p className="text-xs text-gray-500 mt-3">
-            Reports are reviewed by our team and this job will be marked as Cancelled. False reports may result in account restrictions.
-          </p>
+          <Button
+            onClick={handleReport}
+            size="sm"
+            className="w-full"
+            disabled={!details.trim() || sending}
+          >
+            {sending ? 'Sending…' : 'Send report'}
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

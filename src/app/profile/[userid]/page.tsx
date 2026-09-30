@@ -1,12 +1,76 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Star, ExternalLink, Briefcase,Calendar, Award } from 'lucide-react';
-import BackButton from '@/components/backbutton';
 import connectDB from '@/mongo/db';
 import UserData from '@/mongo/model/user';
+import Job from '@/mongo/model/jobschema';
 import { toPlain } from '@/lib/serialize';
+import ProfileView, { type IUser, type Project } from './ProfileView';
 import type { Metadata } from "next";
+
+async function getUserProfile(userId: string): Promise<IUser | null> {
+  await connectDB();
+  const user = await UserData.findOne({ userId }).select('-_id -__v').lean();
+  if (!user) return null;
+  // Serialize Mongo document into a plain JSON-safe object
+  return toPlain(user) as IUser;
+}
+
+/**
+ * Jobs this user was actually part of — assigned freelancer, or the client who
+ * posted. Derived from the Job collection rather than the denormalised
+ * `jobsFinished` / `jobsInProgress` arrays on the user doc, which are written in
+ * one place and not maintained everywhere, so they drift.
+ *
+ * `finishedAt` is null while a job is in progress and sorts last under a
+ * descending sort, so completed work leads.
+ */
+async function getProjects(user: IUser): Promise<Project[]> {
+  await connectDB();
+  const isFreelancer = user.role === 'freelancer';
+  const filter = isFreelancer
+    ? { freelancerId: user.userId }
+    : { clientId: user.userId };
+
+  const jobs = await Job.find({ ...filter, status: { $in: ['in-progress', 'completed'] } })
+    .select('jobId title category status budget budgetType budgetMax finishedAt clientId freelancerId')
+    .sort({ finishedAt: -1, createdAt: -1 })
+    .limit(6)
+    .lean();
+
+  if (jobs.length === 0) return [];
+
+  // One lookup for every counterparty, rather than one per card.
+  const counterpartIds = [
+    ...new Set(
+      jobs
+        .map((j) => (isFreelancer ? j.clientId : j.freelancerId))
+        .filter((id): id is string => typeof id === 'string' && id.length > 0)
+    ),
+  ];
+  const people = counterpartIds.length
+    ? await UserData.find({ userId: { $in: counterpartIds } })
+        .select('userId firstName lastName')
+        .lean()
+    : [];
+  const nameById = new Map(
+    people.map((p) => [p.userId, `${p.firstName ?? ''} ${p.lastName ?? ''}`.trim() || 'Anonymous'])
+  );
+
+  return jobs.map((j) => {
+    const counterpartId = isFreelancer ? j.clientId : j.freelancerId;
+    return {
+      jobId: j.jobId,
+      title: j.title,
+      category: j.category,
+      status: j.status,
+      budget: j.budget,
+      budgetType: j.budgetType,
+      budgetMax: j.budgetMax,
+      finishedAt: j.finishedAt ? j.finishedAt.toISOString() : undefined,
+      counterpartId,
+      counterpartName: counterpartId ? (nameById.get(counterpartId) ?? 'Anonymous') : 'Anonymous',
+    };
+  });
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ userid: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -34,77 +98,6 @@ export async function generateMetadata({ params }: { params: Promise<{ userid: s
   };
 }
 
-
-interface IPortfolio {
-  title: string;
-  link: string;
-  description?: string;
-}
-
-interface IUser {
-  userId: string;               
-  userImage: string;             
-  firstName: string;
-  lastName?: string;
-  role: 'freelancer' | 'client'; 
-  bio?: string;
-  skills?: string[];
-  projects_done?: number;
-  experienceLevel?: 'beginner' | 'intermediate' | 'expert';
-  portfolio?: IPortfolio[];
-  companyName?: string;  
-  companyWebsite?: string;
-  jobsPosted?: string[];
-  jobsInProgress?: string[];
-  jobsFinished?: string[];
-  jobsProposed?: string[];
-  ratings?: number;
-  reviews?: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-async function getUserProfile(userId: string): Promise<IUser | null> {
-  await connectDB();
-  const user = await UserData.findOne({ userId }).select('-_id -__v').lean();
-  if (!user) return null;
-  // Serialize Mongo document into a plain JSON-safe object
-  return toPlain(user) as IUser;
-}
-
-
-const EXPERIENCE_COLORS = {
-  beginner: 'bg-green-100 text-green-800 border-green-200',
-  intermediate: 'bg-blue-100 text-blue-800 border-blue-200',
-  expert: 'bg-purple-100 text-purple-800 border-purple-200'
-};
-
-const ExperienceBadge = ({ level }: { level: string }) => {
-  const colors = EXPERIENCE_COLORS;
-  
-  return (
-    <span className={`px-3 py-1 rounded-full text-sm font-medium border ${colors[level as keyof typeof colors]}`}>
-      {level.charAt(0).toUpperCase() + level.slice(1)}
-    </span>
-  );
-};
-
-const RatingStars = ({ rating }: { rating: number }) => {
-  return (
-    <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          className={`w-4 h-4 ${
-            star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-          }`}
-        />
-      ))}
-      <span className="ml-2 text-sm text-neutral-300">({rating.toFixed(1)})</span>
-    </div>
-  );
-};
-
 export default async function PublicProfilePage({ params }: { params: Promise<{ userid: string }> }) {
   // Await the params promise
   const resolvedParams = await params;
@@ -112,210 +105,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
   if (!user) return notFound();
 
-  const fullName = `${user.firstName}${user.lastName ? ` ${user.lastName}` : ''}`;
+  const projects = await getProjects(user);
 
-  return (
-    <main>
-      <div className="w-full overflow-hidden">
-        
-        {/* Header Section */}
-        <div className="p-8 border-b w-full bg-linear-to-bl from-green-300 to-emerald-600 border-neutral-800">
-          <div className="flex flex-col md:flex-row md:items-start gap-6">
-            <BackButton/>
-            <Image
-              src={user.userImage || '/default-avatar.png'}
-              alt={fullName}
-              width={150}
-              height={150}
-              className="rounded-full object-cover border-2 border-neutral-700"
-            />
-            <div className="flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
-                <h1 className="text-4xl font-bold">{fullName}</h1>
-                <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  user.role === 'freelancer' ? 'bg-blue-600' : 'bg-linear-to-b from-green-300 to-green-400'
-                }`}>
-                  {user.role === 'freelancer' ? 'Freelancer' : 'Client'}
-                </span>
-              </div>
-              
-              {user.bio && (
-                <p className="text-lg text-neutral-300 mb-4 max-w-2xl">{user.bio}</p>
-              )}
-              
-              {user.ratings === 0 && (
-                <div className="mb-4">
-                  <RatingStars rating={user.ratings} />
-                </div>
-              )}
-              
-              {user.role === 'freelancer' && user.experienceLevel && (
-                <div className="mb-4">
-                  <ExperienceBadge level={user.experienceLevel} />
-                </div>
-              )}
-              
-              {user.role === 'client' && user.companyName && (
-                <div className="flex items-center gap-2 text-neutral-300">
-                  <Briefcase className="w-5 h-5" />
-                  <span className="text-lg">{user.companyName}</span>
-                  {user.companyWebsite && (
-                    <Link 
-                      href={user.companyWebsite} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 p-8">
-          
-          {/* Left Column */}
-          <div className="space-y-8">
-            
-            {/* Skills (Freelancers) */}
-            {user.role === 'freelancer' && user.skills && user.skills.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                  <Award className="w-6 h-6" />
-                  Skills
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {user.skills.map((skill: string) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-2 bg-neutral-800 border text-white  border-neutral-700 rounded-lg text-sm"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Portfolio (Freelancers) */}
-            {user.role === 'freelancer' && user.portfolio && user.portfolio.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">Portfolio</h2>
-                <div className="space-y-4">
-                  {user.portfolio.map((item: IPortfolio) => (
-                    <div key={`${item.title}-${item.link}`} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium text-white">{item.title}</h3>
-                          {item.description && (
-                            <p className="text-sm text-neutral-400 mt-1">{item.description}</p>
-                          )}
-                        </div>
-                        <Link
-                          href={item.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          <span className="text-sm">View</span>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Stats Section */}
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Statistics</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {user.role === 'freelancer' && (
-                  <>
-                    <div className="p-4 bg-blue-100 border border-blue-400 rounded-lg text-center">
-                      <div className="text-2xl font-bold text-blue-400">{user.projects_done || 0}</div>
-                      <div className="text-sm text-neutral-400">Projects Completed</div>
-                    </div>
-                    <div className="p-4 bg-green-100 border border-green-400 rounded-lg text-center">
-                      <div className="text-2xl font-bold text-green-400">{user.jobsProposed?.length || 0}</div>
-                      <div className="text-sm text-neutral-400">Proposals Sent</div>
-                    </div>
-                  </>
-                )}
-                
-                {user.role === 'client' && (
-                  <div className="p-4 bg-purple-100 border border-purple-400 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-purple-400">{user.jobsPosted?.length || 0}</div>
-                    <div className="text-sm text-neutral-400">Jobs Posted</div>
-                  </div>
-                )}
-                
-                <div className="p-4 bg-yellow-100 border border-yellow-400 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-yellow-400">{user.jobsInProgress?.length || 0}</div>
-                  <div className="text-sm text-neutral-400">Active Projects</div>
-                </div>
-                
-                <div className="p-4 bg-emerald-100 border border-emerald-400 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-emerald-400">{user.jobsFinished?.length || 0}</div>
-                  <div className="text-sm text-neutral-400">Completed Projects</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-8">
-            
-            {/* Reviews Section */}
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Reviews & Feedback</h2>
-              {user.reviews && user.reviews.length > 0 ? (
-                <div className="space-y-4">
-                  {user.reviews.slice(0, 3).map((reviewId: string) => (
-                    <div key={reviewId} className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
-                      <div className="text-sm text-neutral-400">Review ID: {reviewId}</div>
-                      <div className="text-sm text-neutral-500 mt-2">
-                        Review details would be fetched separately
-                      </div>
-                    </div>
-                  ))}
-                  {user.reviews.length > 3 && (
-                    <div className="text-center">
-                      <button className="text-blue-400 hover:text-blue-300 text-sm">
-                        View all {user.reviews.length} reviews
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-8 bg-neutral-800 border border-neutral-700 rounded-lg text-center">
-                  <div className="text-neutral-500 mb-2">No reviews yet</div>
-                  <div className="text-sm text-neutral-600">
-                    {user.role === 'freelancer' ? 
-                      'Complete your first project to receive reviews' : 
-                      'Reviews from completed projects will appear here'}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Member Since */}
-            <div className="p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
-              <div className="flex items-center gap-2 text-neutral-300">
-                <Calendar className="w-5 h-5" />
-                <span>Member since {new Date(user.createdAt).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long' 
-                })}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+  return <ProfileView user={user} projects={projects} />;
 }

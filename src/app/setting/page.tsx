@@ -1,31 +1,40 @@
-import BackButton from "@/components/backbutton"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
+import { Page, PageHeader, SidePanel } from "@/components/PageShell"
+import { Panel } from "@/components/ui/panel"
 
-function page() {
+const LINKS = [
+  { href: "/profile/edit", title: "Edit your profile", body: "Name, bio, skills, portfolio and company details." },
+  { href: "/notifications", title: "Notifications", body: "Everything that happened on your jobs and proposals." },
+  { href: "/support", title: "Help & support", body: "Answers to the questions we get most." },
+]
+
+export default function SettingsPage() {
   return (
-    <div>
-        <div className="bg-neutral-300 rounded-2xl p-3 m-4">
-            <div className="flex flex-row justify-between items-center">
-                <h2 className="scroll-m-20 text-start p-5 text-4xl font-extrabold tracking-tight text-balance">Setting&apos;s</h2>
-                <BackButton/>
-            </div>
-            <div className="bg-neutral-400 border-neutral-600 rounded-2xl p-4 m-4">
-                <div>
-                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight pb-3">Profile</h3>
-                    <div className="bg-neutral-300 rounded-2xl p-3 flex flex-row justify-between items-center">
-                        <h4 className="text-muted-foreground text-xl">Edit your profile</h4>
-                        <Link href="/profile/edit">
-                            <Button  variant={"outline"} className="flex items-center gap-2 px-4 py-2 bg-neutral-500 text-white rounded-lg hover:bg-neutral-500/30 transition-colors backdrop-blur-sm border border-white/30">
-                                <span className="hidden sm:inline">Edit Profile</span>
-                            </Button>   
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <Page
+      aside={<SidePanel active="/setting" />} width="max-w-2xl"
+      back={{ href: "/dashboard", label: "dashboard" }}
+    >
+      <PageHeader title="Settings" />
+
+      <Panel>
+        <ul className="divide-y divide-hairline">
+          {LINKS.map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className="group flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-surface-soft"
+              >
+                <span>
+                  <span className="block text-sm font-medium text-ink">{l.title}</span>
+                  <span className="mt-0.5 block text-sm text-muted-foreground">{l.body}</span>
+                </span>
+                <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-ink" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Panel>
+    </Page>
   )
 }
-export default page
-

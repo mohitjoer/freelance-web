@@ -2,8 +2,7 @@
 
 import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
-
+import { CircleCheck as CheckCircleOutlineIcon } from "lucide-react";
 interface MarkCompletePopoverProps {
   jobId: string;
   markingComplete: boolean;
@@ -21,12 +20,12 @@ export default function MarkCompletePopover({ jobId, markingComplete, onConfirm 
         >
           {markingComplete ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2"></div>
+              <div className="animate-spin rounded-full size-4 border-b-2 border-green-600 mr-2"></div>
               Marking Complete...
             </>
           ) : (
             <>
-              <CheckCircleOutlineIcon className="mr-2 h-4 w-4" />
+              <CheckCircleOutlineIcon className="mr-2 size-4" />
               Mark Complete
             </>
           )}

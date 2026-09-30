@@ -31,6 +31,10 @@ export async function POST(req: NextRequest) {
       description: body.description,
       category: body.category,
       budget: body.budget,
+      budgetType: body.budgetType === 'hourly' ? 'hourly' : 'fixed',
+      ...(body.budgetType === 'hourly' && body.budgetMax
+        ? { budgetMax: body.budgetMax }
+        : {}),
       deadline: new Date(body.deadline),
       clientId: userId,
       references: body.references || [],

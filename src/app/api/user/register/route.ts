@@ -14,19 +14,17 @@ export async function POST(req: Request) {
 
     if (body.role === 'client') {
       await UserData.create({
-      userId: body.userId,
-      userImage: body.userImage || '/default-avatar.png',
-      firstName: body.firstName,
-      lastName: body.lastName,
-      role: body.role,
-      bio: body.bio,
-      companyName: body.companyName ? body.companyName : "",
-      companyWebsite: body.companyWebsite ? body.companyWebsite : "",
-      reviews: [],
-    })
-    } 
-
-    if (body.role === 'freelancer') {
+        userId: body.userId,
+        userImage: body.userImage || '/default-avatar.png',
+        firstName: body.firstName,
+        lastName: body.lastName,
+        role: body.role,
+        bio: body.bio,
+        companyName: body.companyName || '',
+        companyWebsite: body.companyWebsite || '',
+        reviews: [],
+      });
+    } else if (body.role === 'freelancer') {
       await UserData.create({
         userId: body.userId,
         userImage: body.userImage || '/default-avatar.png',
@@ -39,6 +37,13 @@ export async function POST(req: Request) {
         portfolio: Array.isArray(body.portfolio) ? body.portfolio : [],
         reviews: [],
       });
+    } else {
+      // An unrecognised role would fall through both branches and report
+      // success without writing a document, bouncing the user back here.
+      return NextResponse.json(
+        { success: false, message: 'Pick a role before continuing.' },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json({ success: true });

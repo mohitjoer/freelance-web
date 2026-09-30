@@ -37,7 +37,7 @@ const orgSchema = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-canvas selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-dvh bg-canvas selection:bg-primary/10 selection:text-primary">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(websiteSchema) }}

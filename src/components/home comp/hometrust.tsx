@@ -23,16 +23,22 @@ const pillars = [
     icon: BadgeCheck,
     title: "Verified profiles",
     text: "Every freelancer builds a profile with real skills, portfolio work, and a track record you can check before you hire.",
+    tile: "bg-cat-dev/10",
+    hue: "text-cat-dev",
   },
   {
     icon: MessagesSquare,
     title: "Work stays on the platform",
     text: "Each project gets a dedicated workspace with secure, real-time chat — so agreements and updates live in one place.",
+    tile: "bg-cat-writing/10",
+    hue: "text-cat-writing",
   },
   {
     icon: ShieldCheck,
     title: "Clear scope, no surprises",
     text: "Budgets, deadlines, and milestones are agreed upfront. Payment is only confirmed when you approve the completed work.",
+    tile: "bg-cat-marketing/10",
+    hue: "text-cat-marketing",
   },
 ];
 
@@ -97,8 +103,8 @@ export default function HomeTrust() {
         <div className="anim-pillars grid md:grid-cols-3 gap-4 md:gap-5">
           {pillars.map((pillar) => (
             <div key={pillar.title} className="anim-pillar bg-background border border-hairline rounded-2xl p-7 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition">
-              <span className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
-                <pillar.icon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <span className={`size-11 rounded-xl ${pillar.tile} flex items-center justify-center mb-6`}>
+                <pillar.icon className={`size-5 ${pillar.hue}`} />
               </span>
               <h3 className="text-title-sm font-bold text-ink mb-2">{pillar.title}</h3>
               <p className="text-body-sm text-muted-foreground leading-relaxed">{pillar.text}</p>

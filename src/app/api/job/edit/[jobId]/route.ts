@@ -13,8 +13,10 @@ const UPDATABLE_FIELDS = [
       'title', 
       'description', 
       'category', 
-      'budget', 
-      'deadline', 
+      'budget',
+      'budgetType',
+      'budgetMax',
+      'deadline',
       'references', 
       'resources'
     ];
@@ -100,10 +102,17 @@ export async function PATCH(
 
     for (const field of UPDATABLE_FIELDS) {
       if (payload[field] !== undefined) {
-        job[field] = field === 'budget' 
-          ? parseFloat(payload[field]) 
-          : payload[field];
+        if (field === 'budget' || field === 'budgetMax') {
+          job[field] = payload[field] === null ? undefined : parseFloat(payload[field]);
+        } else {
+          job[field] = payload[field];
+        }
       }
+    }
+
+    // budgetMax only makes sense for an hourly range; clear it otherwise.
+    if (job.budgetType !== 'hourly') {
+      job.budgetMax = undefined;
     }
 
     await job.save();

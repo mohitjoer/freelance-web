@@ -1,54 +1,44 @@
 import { redirect } from "next/navigation";
 import { getUserId } from "@/lib/session";
-import connectDB from "@/mongo/db";
-import UserData from "@/mongo/model/user";
-import Job from "@/mongo/model/jobschema";
-import OpenJobsPage, { type OpenJob } from "./OpenJobsContent";
+import { queryOpenJobs } from "@/lib/jobs";
+import OpenJobsPage from "./OpenJobsContent";
+
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const userId = await getUserId();
   if (!userId) redirect("/sign-in?redirect=/jobs/open");
 
-  await connectDB();
+  const params = await searchParams;
 
-  const user = await UserData.findOne({ userId });
-  if (!user || user.role !== 'freelancer') {
-    return (
-      <OpenJobsPage
-        initialJobs={[]}
-        message={!user ? 'Unauthorized' : 'Access denied: freelancers only.'}
-      />
-    );
-  }
+  const { data, total, page, pageCount } = await queryOpenJobs({
+    search: one(params.search),
+    category: one(params.category),
+    min: one(params.min),
+    max: one(params.max),
+    budgetType: one(params.budgetType),
+    sort: one(params.sort),
+    page: one(params.page),
+  });
 
-  // Mirrors GET /api/jobs/open
-  const openJobs = await Job.find({
-    status: 'open',
-    freelancerId: { $exists: false },
-  }).sort({ createdAt: -1 }).lean();
-
-  const jobsWithClientDetails: OpenJob[] = await Promise.all(
-    openJobs.map(async (job) => {
-      const client = await UserData.findOne({ userId: job.clientId }).select('firstName lastName userImage').lean();
-      return {
-        _id: String(job._id),
-        jobId: job.jobId,
-        title: job.title,
-        description: job.description,
-        category: job.category,
-        budget: job.budget,
-        deadline: job.deadline?.toString() ?? '',
-        createdAt: job.createdAt?.toString() ?? '',
-        client: {
-          clientId: job.clientId,
-          name: `${client?.firstName || ''} ${client?.lastName || ''}`.trim(),
-          image: client?.userImage || '/default-avatar.png',
-        },
-      };
-    })
+  return (
+    <OpenJobsPage
+      initialJobs={data}
+      meta={{ total, page, pageCount }}
+      filters={{
+        search: one(params.search) ?? "",
+        category: one(params.category) ?? "all",
+        min: one(params.min) ?? "",
+        max: one(params.max) ?? "",
+        budgetType: one(params.budgetType) ?? "all",
+        sort: one(params.sort) ?? "newest",
+      }}
+    />
   );
-
-  return <OpenJobsPage initialJobs={jobsWithClientDetails} />;
 }

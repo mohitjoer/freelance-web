@@ -1,15 +1,14 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import CategoryIcon from '@mui/icons-material/Category';
-import DescriptionIcon from '@mui/icons-material/Description';
 import ViewProposal from '@/components/jobs id comp/viewproposal';
 import JobHeader from './JobHeader';
 import JobResources from './JobResources';
 import JobSidebar from './JobSidebar';
+import { Panel, PanelHeader, StatRow } from '@/components/ui/panel';
+import { SidePanel } from '@/components/PageShell';
 import { formatDate, type Job, type Proposal } from './types';
+import { formatBudget } from '@/lib/budget';
 
 interface JobDetailsProps {
   job: Job;
@@ -161,87 +160,67 @@ export default function JobDetails({ job, currentUserId, initialProposal, initia
   const isJobOwner = currentUserId === job.clientId;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Full Header Section */}
+    <div className="min-h-dvh bg-canvas">
       <JobHeader job={job} currentUserId={currentUserId} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Job Overview Card */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <DescriptionIcon className="text-blue-600" />
-                Job Overview
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <AttachMoneyIcon className="text-green-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Budget</p>
-                  <p className="font-bold text-green-600">${job.budget.toLocaleString()}</p>
-                </div>
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <CalendarTodayIcon className="text-blue-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Deadline</p>
-                  <p className="font-bold text-blue-600">{formatDate(job.deadline)}</p>
-                </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <CategoryIcon className="text-purple-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Category</p>
-                  <p className="font-bold text-purple-600">{job.category}</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <CalendarTodayIcon className="text-gray-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Posted</p>
-                  <p className="font-bold text-gray-600">{formatDate(job.createdAt)}</p>
-                </div>
-              </div>
-            </div>
+      {/* Nav rail | job content | apply form. Collapses to one column below xl. */}
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 lg:px-8 xl:grid-cols-[15rem_minmax(0,1fr)_20rem]">
+        <div className="hidden xl:block">
+          <SidePanel active="/jobs/open" />
+        </div>
 
-            {/* Description Card */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Description</h3>
-              <div className="prose prose-gray max-w-none">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.description}</p>
-              </div>
-            </div>
+        <div className="min-w-0 space-y-6">
+          <Panel>
+            <StatRow
+              stats={[
+                { label: "Budget", value: formatBudget(job) },
+                { label: "Deadline", value: formatDate(job.deadline) },
+                { label: "Category", value: job.category },
+                { label: "Posted", value: formatDate(job.createdAt) },
+              ]}
+            />
+          </Panel>
 
-            {/* References and Resources */}
-            <JobResources references={job.references} resources={job.resources} />
+          <Panel>
+            <PanelHeader title="Description" />
+            <p className="whitespace-pre-wrap px-5 py-4 leading-relaxed text-muted-foreground">
+              {job.description}
+            </p>
+          </Panel>
 
-            {/* Existing Proposal Display */}
-            {existingProposal && !isJobOwner && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Current Proposal</h3>
-                <div className="bg-blue-50 p-4 rounded-lg space-y-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Message:</p>
-                    <p className="text-gray-900">{existingProposal.message}</p>
+          <JobResources references={job.references} resources={job.resources} />
+
+          {existingProposal && !isJobOwner && (
+            <Panel>
+              <PanelHeader title="Your proposal" />
+              <div className="space-y-4 px-5 py-4">
+                <p className="leading-relaxed text-foreground">{existingProposal.message}</p>
+                <dl className="flex flex-wrap gap-x-8 gap-y-1 text-sm">
+                  <div className="flex gap-2">
+                    <dt className="text-muted-foreground">Your rate</dt>
+                    <dd className="font-medium tabular-nums text-ink">
+                      ${existingProposal.proposedAmount.toLocaleString()}
+                    </dd>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Proposed Amount:</p>
-                      <p className="text-lg font-bold text-green-600">${existingProposal.proposedAmount.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Estimated Days:</p>
-                      <p className="text-lg font-bold text-blue-600">{existingProposal.estimatedDays} days</p>
-                    </div>
+                  <div className="flex gap-2">
+                    <dt className="text-muted-foreground">Delivery</dt>
+                    <dd className="font-medium tabular-nums text-ink">
+                      {existingProposal.estimatedDays} days
+                    </dd>
                   </div>
-                </div>
+                </dl>
               </div>
-            )}
+            </Panel>
+          )}
 
-            {/* View Proposals for Job Owner */}
-            {isJobOwner && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <ViewProposal jobId={job.jobId} initialProposals={initialProposals} />
-              </div>
-            )}
-          </div>
+          {isJobOwner && (
+            <Panel>
+              <ViewProposal jobId={job.jobId} initialProposals={initialProposals} />
+            </Panel>
+          )}
+        </div>
 
-          {/* Sidebar */}
+        <div className="min-w-0">
           <JobSidebar
             job={job}
             isJobOwner={isJobOwner}
@@ -254,7 +233,7 @@ export default function JobDetails({ job, currentUserId, initialProposal, initia
             onDelete={handleDeleteProposal}
           />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

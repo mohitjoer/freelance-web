@@ -4,23 +4,15 @@ import { useEffect, useState } from 'react';
 import ReportUserPopover from '@/components/reports/ReportUserPopover';
 import { useUser } from '@/components/auth';
 import Link from 'next/link';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import AddIcon from '@mui/icons-material/Add';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import WorkIcon from '@mui/icons-material/Work';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import ReportIcon from '@mui/icons-material/Report';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Button } from '../ui/button';
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { EmptyState } from "@/components/dashboard/ui";
+import { formatBudget } from '@/lib/budget';
+import { formatDay } from '@/lib/format';
 
 interface Job {
   jobId: string;
@@ -30,11 +22,13 @@ interface Job {
   title: string;
   status: string;
   budget: number;
+  budgetType?: 'fixed' | 'hourly';
+  budgetMax?: number | null;
   deadline: string;
   createdAt: string;
   clientMarkedComplete?: boolean;
   acceptedProposalId?: string;
-  startedat: Date;
+  startedat?: Date;
 }
 
 export default function JobOngoing() {
@@ -109,202 +103,109 @@ export default function JobOngoing() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-600 border-t-transparent"></div>
-              <p className="text-gray-600 font-medium">Loading ongoing jobs...</p>
-            </div>
-          </div>
-        </div>
+      <div className="space-y-3" aria-busy>
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="h-24 animate-pulse rounded-lg bg-surface-soft" />
+        ))}
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="text-red-500 text-6xl mb-4">⚠️</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Something went wrong</h3>
-              <p className="text-gray-600">{error}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <p className="py-10 text-center text-sm text-destructive">
+        Could not load ongoing jobs. {error}
+      </p>
+    );
+  }
+
+  if (inProgressJobs.length === 0) {
+    return (
+      <EmptyState
+        title="No ongoing jobs"
+        body="Projects you hire a freelancer for will show up here."
+        action={
+          <Button asChild size="sm">
+            <Link href="/jobs/create">Post a job</Link>
+          </Button>
+        }
+      />
     );
   }
 
   return (
-    <div className="min-h-fit bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Ongoing Jobs</h1>
-              <p className="mt-2 text-gray-600">Track and manage your active projects</p>
-            </div>
-            <Link href="/jobs/create">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
-                <AddIcon className="w-5 h-5" />
-                Post New Job
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Jobs Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          {inProgressJobs.length === 0 ? (
-            <div className="text-center py-16 px-6">
-              <div className="w-16 h-16 mx-auto mb-6 bg-blue-50 rounded-full flex items-center justify-center">
-                <WorkIcon className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No ongoing jobs</h3>
-              <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                You don&apos;t have any jobs in progress at the moment. Your completed and active projects will appear here.
+    <ul className="-mx-5 -my-5 divide-y divide-hairline">
+      {inProgressJobs.map((job) => (
+        <li key={job._id} className="px-5 py-4 transition-colors hover:bg-surface-soft/60">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <h3 className="truncate text-sm font-medium text-foreground">{job.title}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Waiting on freelancer confirmation
               </p>
-              <Link href="/jobs/create">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-sm">
-                  Create New Job
-                </Button>
-              </Link>
             </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {inProgressJobs.map((job, index) => (
-                <div 
-                  key={job._id} 
-                  className={`p-6 hover:bg-gray-50 transition-colors ${index === 0 ? 'rounded-t-xl' : ''} ${index === inProgressJobs.length - 1 ? 'rounded-b-xl' : ''}`}
-                >
-                  {/* Job Header */}
-                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-semibold text-gray-900 truncate">{job.title}</h3>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                          In Progress
-                        </span>
-                      </div>
-                      {job.clientMarkedComplete && (
-                        <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
-                          <HourglassEmptyIcon className="w-4 h-4" />
-                          Waiting for freelancer to confirm completion
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-2 lg:flex-nowrap">
-                      <Link href={`/room/${job.jobId}`}>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-                        >
-                          <ChatOutlinedIcon className="w-4 h-4 mr-2" />
-                          Chat
-                        </Button>
-                      </Link>
-                      
-                      {job.clientMarkedComplete ? (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          disabled
-                          className="border-gray-300 text-gray-500 cursor-not-allowed"
-                        >
-                          <HourglassEmptyIcon className="w-4 h-4 mr-2" />
-                          Pending Confirmation
-                        </Button>
-                      ) : (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 transition-colors"
-                            >
-                              <CheckCircleOutlineIcon className="w-4 h-4 mr-2" />
-                              Mark Complete
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-80 p-0 bg-white">
-                            <div className="p-6">
-                              <h4 className="font-semibold text-gray-900 mb-2">Mark Job Complete</h4>
-                              <p className="text-gray-600 text-sm mb-4">
-                                Are you sure you want to mark this job as completed? The freelancer will need to confirm completion before payment is released.
-                              </p>
-                              <div className="flex gap-3">
-                                <Button
-                                  onClick={() => handleMarkComplete(job.jobId)}
-                                  className="bg-green-600 hover:bg-green-700 text-white flex-1"
-                                  size="sm"
-                                >
-                                  Yes, Mark Complete
-                                </Button>
-                              </div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                      
-                      <ReportUserPopover reporterId={user?.id} reportedId={job.freelancerId} jobId={job.jobId} reportedLabel="freelancer" />
-                      
-                      <Link href={`/jobs/${job.jobId}`}>
-                        <Button 
-                          className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
-                          size="sm"
-                        >
-                          <VisibilityIcon className="w-4 h-4 mr-2" />
-                          View Details
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
 
-                  {/* Job Details Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <AttachMoneyIcon className="w-4 h-4 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-gray-500 font-medium">Budget</p>
-                        <p className="text-gray-900 font-semibold">${job.budget.toLocaleString()}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <CalendarTodayIcon className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-gray-500 font-medium">Deadline</p>
-                        <p className="text-gray-900 font-semibold">{new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <AccessTimeIcon className="w-4 h-4 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="text-gray-500 font-medium">Started</p>
-                        <p className="text-gray-900 font-semibold">{new Date(job.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button asChild variant="ghost" size="sm">
+                <Link href={`/room/${job.jobId}`}>Chat</Link>
+              </Button>
+
+              {job.clientMarkedComplete ? (
+                <Button variant="outline" size="sm" disabled>
+                  Pending
+                </Button>
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Mark complete
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0">
+                    <div className="p-5">
+                      <h4 className="font-semibold text-foreground">Mark complete?</h4>
+                      <p className="mt-1.5 text-sm text-muted-foreground">
+                        The freelancer has to confirm before payment is released.
+                      </p>
+                      <div className="mt-4 flex gap-2">
+                        <Button onClick={() => handleMarkComplete(job.jobId)} size="sm" className="flex-1">
+                          Yes, mark complete
+                        </Button>
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </PopoverContent>
+                </Popover>
+              )}
+
+              <ReportUserPopover
+                reporterId={user?.id}
+                reportedId={job.freelancerId}
+                jobId={job.jobId}
+                reportedLabel="freelancer"
+              />
+
+              <Button asChild size="sm">
+                <Link href={`/jobs/${job.jobId}`}>Details</Link>
+              </Button>
             </div>
-          )}
-        </div>
-      </div>
-    </div>
+          </div>
+
+          <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs">
+            <div className="flex gap-1.5">
+              <dt className="text-muted-foreground">Budget</dt>
+              <dd className="font-medium tabular-nums text-foreground">{formatBudget(job)}</dd>
+            </div>
+            <div className="flex gap-1.5">
+              <dt className="text-muted-foreground">Deadline</dt>
+              <dd className="font-medium tabular-nums text-foreground">{formatDay(job.deadline)}</dd>
+            </div>
+            <div className="flex gap-1.5">
+              <dt className="text-muted-foreground">Started</dt>
+              <dd className="font-medium tabular-nums text-foreground">{formatDay(job.startedat ?? job.createdAt)}</dd>
+            </div>
+          </dl>
+        </li>
+      ))}
+    </ul>
   );
 }

@@ -51,6 +51,15 @@ const config: Config = {
         "on-dark": "hsl(var(--on-dark))",
         "on-dark-soft": "hsl(var(--on-dark-soft))",
         hairline: "hsl(var(--hairline))",
+        "hairline-strong": "hsl(var(--hairline-strong))",
+        cat: {
+          dev: "hsl(var(--cat-dev))",
+          design: "hsl(var(--cat-design))",
+          writing: "hsl(var(--cat-writing))",
+          video: "hsl(var(--cat-video))",
+          marketing: "hsl(var(--cat-marketing))",
+          data: "hsl(var(--cat-data))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

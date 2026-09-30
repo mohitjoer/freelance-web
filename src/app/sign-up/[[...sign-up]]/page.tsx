@@ -142,7 +142,7 @@ export default function SignUpPage() {
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" aria-hidden="true" />
+              <span className="size-4 border-2 border-white/40 border-t-white rounded-full animate-spin" aria-hidden="true" />
               Creating account...
             </span>
           ) : (

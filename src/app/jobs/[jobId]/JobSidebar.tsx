@@ -1,7 +1,7 @@
 'use client';
 
 import ProposalFormSection from './ProposalFormSection';
-import { formatDate, type Job, type Proposal } from './types';
+import type { Job, Proposal } from './types';
 
 interface JobSidebarProps {
   job: Job;
@@ -26,50 +26,32 @@ export default function JobSidebar({
   onSubmit,
   onDelete,
 }: JobSidebarProps) {
-  return (
-    <div className="lg:col-span-1">
-      <div className="sticky top-24 space-y-6">
-        {/* Action Card */}
-        {!isJobOwner && job.status === "open" && (
-          <ProposalFormSection
-            existingProposal={existingProposal}
-            isSubmitting={isSubmitting}
-            successMessage={successMessage}
-            failureMessage={failureMessage}
-            formRef={formRef}
-            onSubmit={onSubmit}
-            onDelete={onDelete}
-          />
-        )}
+  // Budget, deadline and status already read in the overview row. Repeating
+  // them in a "Job Statistics" card was the same numbers twice on one screen.
+  // The job owner never applies, so they get no sidebar at all.
+  if (isJobOwner) return null;
 
-        {/* Job Stats */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Statistics</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Status</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                job.status === 'open'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Posted</span>
-              <span className="text-sm font-medium text-gray-900">
-                {formatDate(job.createdAt)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Budget</span>
-              <span className="text-sm font-bold text-green-600">
-                ${job.budget.toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
+  if (job.status !== "open") {
+    return (
+      <div className="rounded-xl border border-hairline bg-card px-5 py-4">
+        <p className="text-sm font-medium text-ink">This job is {job.status}</p>
+        <p className="mt-1 text-sm text-muted-foreground">It is no longer accepting proposals.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="sticky top-8">
+        <ProposalFormSection
+          existingProposal={existingProposal}
+          isSubmitting={isSubmitting}
+          successMessage={successMessage}
+          failureMessage={failureMessage}
+          formRef={formRef}
+          onSubmit={onSubmit}
+          onDelete={onDelete}
+        />
       </div>
     </div>
   );

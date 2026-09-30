@@ -13,19 +13,19 @@ const flows = {
   clients: {
     label: "For clients",
     steps: [
-      { icon: BriefcaseBusiness, title: "Post a job", text: "Describe the work, set your budget, and publish in minutes." },
-      { icon: FileSearch, title: "Compare proposals", text: "Review offers, portfolios, and ratings side by side." },
-      { icon: MessagesSquare, title: "Collaborate in one place", text: "Every hired project gets a dedicated workspace with real-time chat." },
-      { icon: BadgeCheck, title: "Approve and close", text: "Track milestones and confirm completion when you are satisfied." },
+      { icon: BriefcaseBusiness, title: "Post a job", text: "Describe the work, set your budget, and publish in minutes.", tile: "bg-cat-dev/10", hue: "text-cat-dev" },
+      { icon: FileSearch, title: "Compare proposals", text: "Review offers, portfolios, and ratings side by side.", tile: "bg-cat-design/10", hue: "text-cat-design" },
+      { icon: MessagesSquare, title: "Collaborate in one place", text: "Every hired project gets a dedicated workspace with real-time chat.", tile: "bg-cat-writing/10", hue: "text-cat-writing" },
+      { icon: BadgeCheck, title: "Approve and close", text: "Track milestones and confirm completion when you are satisfied.", tile: "bg-cat-marketing/10", hue: "text-cat-marketing" },
     ],
   },
   freelancers: {
     label: "For freelancers",
     steps: [
-      { icon: UserRoundPlus, title: "Create your profile", text: "Show your skills, experience level, and best portfolio work." },
-      { icon: Send, title: "Submit proposals", text: "Apply to open jobs with your rate and a short pitch." },
-      { icon: FolderKanban, title: "Work in a dedicated space", text: "Chat with your client and track progress inside the job workspace." },
-      { icon: Repeat, title: "Grow your reputation", text: "Finish projects, collect reviews, and win bigger jobs." },
+      { icon: UserRoundPlus, title: "Create your profile", text: "Show your skills, experience level, and best portfolio work.", tile: "bg-cat-dev/10", hue: "text-cat-dev" },
+      { icon: Send, title: "Submit proposals", text: "Apply to open jobs with your rate and a short pitch.", tile: "bg-cat-design/10", hue: "text-cat-design" },
+      { icon: FolderKanban, title: "Work in a dedicated space", text: "Chat with your client and track progress inside the job workspace.", tile: "bg-cat-data/10", hue: "text-cat-data" },
+      { icon: Repeat, title: "Grow your reputation", text: "Finish projects, collect reviews, and win bigger jobs.", tile: "bg-cat-marketing/10", hue: "text-cat-marketing" },
     ],
   },
 } as const;
@@ -60,8 +60,9 @@ export default function HowItWorks() {
   const steps = flows[flow].steps;
 
   return (
-    <section ref={containerRef} className="py-16 md:py-24 bg-canvas">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="how-it-works" ref={containerRef} className="relative py-16 md:py-24 bg-surface-soft border-y border-hairline scroll-mt-[72px] overflow-hidden">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-grid mask-fade-b opacity-60" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <h2 className="text-display-sm md:text-display-md font-display text-ink tracking-tight">
@@ -96,8 +97,8 @@ export default function HowItWorks() {
                 0{idx + 1}
               </span>
 
-              <span className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center mb-8">
-                <step.icon className="w-5 h-5 text-primary" />
+              <span className={`size-11 rounded-xl ${step.tile} flex items-center justify-center mb-8`}>
+                <step.icon className={`size-5 ${step.hue}`} />
               </span>
 
               <h3 className="text-title-sm font-bold text-ink mb-2 leading-snug">{step.title}</h3>

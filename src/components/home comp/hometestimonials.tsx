@@ -76,7 +76,7 @@ export default function HomeTestimonials() {
               <div className="flex items-center justify-between mb-5">
                 <span className="flex gap-0.5" aria-label={`${t.rating} out of 5 stars`}>
                   {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={`item-${i}`} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <Star key={`item-${i}`} className="size-4 fill-amber-400 text-amber-400" />
                   ))}
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold">
@@ -89,7 +89,7 @@ export default function HomeTestimonials() {
               </blockquote>
 
               <figcaption className="mt-auto flex items-center gap-3 pt-4 border-t border-hairline">
-                <span className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                <span className="size-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
                   {t.name.split(" ").map((n) => n[0]).join("")}
                 </span>
                 <span>

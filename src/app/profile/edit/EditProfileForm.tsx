@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Field, Input, Textarea } from '@/components/ui/input';
+import { Page, PageHeader, SidePanel } from '@/components/PageShell';
 
 interface PortfolioItem {
   title: string;
@@ -24,18 +27,23 @@ interface EditProfileFormProps {
   initialForm: ProfileForm;
 }
 
+const LEVELS = ['beginner', 'intermediate', 'expert'];
+
 export default function EditProfileForm({ initialRole, initialForm }: EditProfileFormProps) {
   const router = useRouter();
 
   const [role, setRole] = useState(initialRole);
   const [form, setForm] = useState<ProfileForm>(initialForm);
   const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const set = <K extends keyof ProfileForm>(key: K, value: ProfileForm[K]) =>
+    setForm((f) => ({ ...f, [key]: value }));
 
   const handleUpdate = async () => {
     if (saving) return;
     setSaving(true);
-    setMsg(null);
+    setStatus(null);
 
     const payload: Record<string, unknown> = {
       bio: form.bio,
@@ -47,9 +55,7 @@ export default function EditProfileForm({ initialRole, initialForm }: EditProfil
       payload.skills = form.skills.split(",").map((s) => s.trim()).filter(Boolean);
       payload.portfolio = form.portfolio;
       payload.experienceLevel = form.experienceLevel;
-    }
-
-    if (role === "client") {
+    } else {
       payload.companyName = form.companyName;
       payload.companyWebsite = form.companyWebsite;
     }
@@ -65,102 +71,120 @@ export default function EditProfileForm({ initialRole, initialForm }: EditProfil
       const result = await res.json();
 
       if (result.success) {
-        setMsg("Profile updated successfully.");
-        router.push(`/dashboard/${role}`);
+        setStatus({ ok: true, text: "Profile updated." });
+        router.push('/dashboard');
       } else {
-        setMsg(result.message || "Failed to update.");
+        setStatus({ ok: false, text: result.message || "Could not save the profile." });
       }
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : "Server error.";
-      console.error(errorMsg);
-      setMsg(errorMsg);
+      console.error(err);
+      setStatus({ ok: false, text: "Server error. Your changes were not saved." });
     } finally {
       setSaving(false);
     }
   };
 
-  if (msg === "Loading...") return <p className="p-4">Loading...</p>;
-
   return (
-    <main className="h-screen bg-linear-to-r from-cyan-500 to-blue-500 flex flex-col items-center justify-center">
-      <div className="w-full max-w-3xl sm:p-8 p-6 bg-white shadow-xl rounded-xl transition duration-300">
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">Edit Profile</h1>
+    <Page aside={<SidePanel active="/profile/edit" />} back={{ href: "/setting", label: "Settings" }}>
+      <PageHeader
+        title="Edit profile"
+        body="This is what the other side of the marketplace sees when they open your profile."
+      />
 
-        {msg && <p className="text-sm text-red-500 mb-4">{msg}</p>}
+      <form
+        className="space-y-8"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleUpdate();
+        }}
+      >
+        <div className="grid gap-4 border-y border-hairline py-6 sm:grid-cols-2">
+          <Field label="First name" htmlFor="firstName">
+            <Input id="firstName" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} />
+          </Field>
+          <Field label="Last name" htmlFor="lastName">
+            <Input id="lastName" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} />
+          </Field>
+        </div>
 
-        <label htmlFor="firstName" className="block mb-1 font-medium text-gray-700">First Name</label>
-        <input
-          id="firstName"
-          className="w-full p-2 mb-4 border rounded"
-          value={form.firstName}
-          onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-        />
+        <Field label="Bio" htmlFor="bio" hint="Up to 500 characters. A couple of concrete sentences, not a cover letter.">
+          <Textarea id="bio" rows={5} value={form.bio} onChange={(e) => set('bio', e.target.value)} />
+        </Field>
 
-        <label htmlFor="lastName" className="block mb-1 font-medium text-gray-700">Last Name</label>
-        <input
-          id="lastName"
-          className="w-full p-2 mb-4 border rounded"
-          value={form.lastName}
-          onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-        />
+        {role === "freelancer" ? (
+          <fieldset className="space-y-6 border-y border-hairline py-6">
+            <legend className="mb-4 text-sm font-semibold tracking-tight text-ink">Freelance work</legend>
 
-        <label htmlFor="bio" className="block mb-1 font-medium text-gray-700">Bio</label>
-        <textarea
-          id="bio"
-          className="w-full p-2 mb-4 border rounded h-24"
-          value={form.bio}
-          onChange={(e) => setForm({ ...form, bio: e.target.value })}
-        />
+            <Field label="Skills" htmlFor="skills" hint="Comma separated.">
+              <Input
+                id="skills"
+                value={form.skills}
+                onChange={(e) => set('skills', e.target.value)}
+                placeholder="React, TypeScript, Design systems"
+              />
+            </Field>
 
-        {role === "freelancer" && (
-          <>
-            <label htmlFor="skills" className="block mb-1 font-medium text-gray-700">Skills (comma-separated)</label>
-            <input
-              id="skills"
-              className="w-full p-2 mb-4 border rounded"
-              value={form.skills}
-              onChange={(e) => setForm({ ...form, skills: e.target.value })}
-            />
+            <Field label="Experience level" htmlFor="experienceLevel">
+              <Input
+                id="experienceLevel"
+                list="experience-levels"
+                value={form.experienceLevel}
+                onChange={(e) => set('experienceLevel', e.target.value)}
+                placeholder="intermediate"
+              />
+              <datalist id="experience-levels">
+                {LEVELS.map((l) => (
+                  <option key={l} value={l} />
+                ))}
+              </datalist>
+            </Field>
+          </fieldset>
+        ) : (
+          <fieldset className="space-y-6 border-y border-hairline py-6">
+            <legend className="mb-4 text-sm font-semibold tracking-tight text-ink">Company</legend>
 
-            <label htmlFor="experienceLevel" className="block mb-1 font-medium text-gray-700">Experience Level</label>
-            <input
-              id="experienceLevel"
-              className="w-full p-2 mb-4 border rounded"
-              value={form.experienceLevel}
-              onChange={(e) => setForm({ ...form, experienceLevel: e.target.value })}
-            />
-          </>
+            <Field label="Company name" htmlFor="companyName">
+              <Input
+                id="companyName"
+                value={form.companyName}
+                onChange={(e) => set('companyName', e.target.value)}
+              />
+            </Field>
+
+            <Field label="Company website" htmlFor="companyWebsite">
+              <Input
+                id="companyWebsite"
+                type="url"
+                value={form.companyWebsite}
+                onChange={(e) => set('companyWebsite', e.target.value)}
+                placeholder="https://"
+              />
+            </Field>
+          </fieldset>
         )}
 
-        {role === "client" && (
-          <>
-            <label htmlFor="companyName" className="block mb-1 font-medium text-gray-700">Company Name</label>
-            <input
-              id="companyName"
-              className="w-full p-2 mb-4 border rounded"
-              value={form.companyName}
-              onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-            />
-
-            <label htmlFor="companyWebsite" className="block mb-1 font-medium text-gray-700">Company Website</label>
-            <input
-              id="companyWebsite"
-              className="w-full p-2 mb-4 border rounded"
-              value={form.companyWebsite}
-              onChange={(e) => setForm({ ...form, companyWebsite: e.target.value })}
-            />
-          </>
+        {status && (
+          <p className={`text-sm ${status.ok ? 'text-ink' : 'text-destructive'}`} role="status">
+            {status.text}
+          </p>
         )}
 
-        <button
-          type="button"
-          onClick={handleUpdate}
-          disabled={saving}
-          className="w-full h-11 rounded-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold transition-colors cursor-pointer"
-        >
-          {saving ? "Saving..." : "Save changes"}
-        </button>
-      </div>
-    </main>
+        <div className="flex items-center gap-3">
+          <Button type="submit" disabled={saving}>
+            {saving ? 'Saving…' : 'Save changes'}
+          </Button>
+          <Button type="button" variant="ghost" onClick={() => router.push('/dashboard')}>
+            Cancel
+          </Button>
+          <button
+            type="button"
+            onClick={() => setRole(role === 'freelancer' ? 'client' : 'freelancer')}
+            className="ml-auto text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            Switch to {role === 'freelancer' ? 'client' : 'freelancer'} view
+          </button>
+        </div>
+      </form>
+    </Page>
   );
 }

@@ -27,8 +27,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 
             {/* Brand panel */}
             <div className="relative hidden lg:flex flex-col justify-between bg-surface-dark text-on-dark p-10 xl:p-14 overflow-hidden">
-                <div className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[140px] opacity-50 pointer-events-none" />
-                <div className="absolute -bottom-1/4 -right-1/4 w-[500px] h-[500px] bg-indigo-500/15 rounded-full blur-[120px] opacity-40 pointer-events-none" />
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-grid opacity-[0.07]" />
 
                 <Link href="/" className="relative z-10 flex items-center gap-2.5 w-fit">
                     <Image
@@ -48,8 +47,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                     <ul className="space-y-3 mb-10">
                         {valueProps.map((item) => (
                             <li key={item} className="flex items-center gap-3 text-sm font-medium text-on-dark-soft">
-                                <span className="w-5 h-5 shrink-0 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                                    <Check className="w-3 h-3 text-emerald-400" />
+                                <span className="size-5 shrink-0 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                                    <Check className="size-3 text-emerald-400" />
                                 </span>
                                 {item}
                             </li>

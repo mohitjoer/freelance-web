@@ -12,12 +12,15 @@ export async function GET() {
 
     await connectDB();
 
-    const notifications = await Notification.find({ userId })
-      .sort({ createdAt: -1 })
-      .limit(50)
-      .lean();
+    const [notifications, unreadCount] = await Promise.all([
+      Notification.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .lean(),
+      Notification.countDocuments({ userId, read: false }),
+    ]);
 
-    return NextResponse.json({ success: true, data: notifications });
+    return NextResponse.json({ success: true, data: notifications, unreadCount });
   } catch (error) {
     console.error('GET /api/notifications error:', error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });

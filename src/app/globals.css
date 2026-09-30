@@ -1,21 +1,100 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Tailwind v4 only reads a JS config when it is explicitly loaded.
+   Without this the whole token set below (ink, canvas, hairline, primary…)
+   never generates a utility, and the UI renders unstyled/pale. */
+@config "../../tailwind.config.ts";
+
 @layer utilities {
-  .text-display-sm { @apply text-4xl md:text-5xl font-bold tracking-tight; }
-  .text-display-md { @apply text-5xl md:text-6xl font-bold tracking-tight; }
-  .text-display-lg { @apply text-6xl md:text-7xl font-bold tracking-tight; }
-  .text-display-xl { @apply text-7xl md:text-[84px] font-bold tracking-tighter; }
+  /* Display scale — capped at 7xl so headlines stay inside the fold. */
+  .text-display-sm { @apply text-3xl md:text-4xl font-bold tracking-tight; }
+  .text-display-md { @apply text-4xl md:text-5xl font-bold tracking-tight; }
+  .text-display-lg { @apply text-5xl md:text-6xl font-bold tracking-tight; }
+  .text-display-xl { @apply text-6xl md:text-7xl font-bold tracking-tighter; }
+
+  /* Title + caption */
   .text-title-sm { @apply text-xl font-bold; }
   .text-title-md { @apply text-2xl font-bold; }
   .text-caption-strong { @apply text-xs font-bold tracking-widest uppercase; }
+
+  /* Body scale — text-body is the default reading size. */
+  .text-body { @apply text-base leading-relaxed; }
   .text-body-sm { @apply text-sm leading-relaxed; }
   .text-body-md { @apply text-base leading-relaxed; }
+
+  /* Measure cap: long-form copy never exceeds a readable line length. */
+  .measure { max-width: 65ch; }
+  .measure-tight { max-width: 52ch; }
+
   .font-display { @apply font-sans; }
+
+  /* Elevation ramp — tinted shadows, one treatment per level. */
+  .elev-1 { box-shadow: var(--elev-1); }
+  .elev-2 { box-shadow: var(--elev-2); }
+  .elev-3 { box-shadow: var(--elev-3); }
+
+  /* Page depth: a fine hairline grid that fades out, so large flat
+     backgrounds read as surface rather than as empty white/black. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--hairline) / 0.9) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--hairline) / 0.9) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: center top;
+  }
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+  }
+  .mask-fade-radial {
+    -webkit-mask-image: radial-gradient(70% 60% at 50% 0%, #000 0%, transparent 100%);
+    mask-image: radial-gradient(70% 60% at 50% 0%, #000 0%, transparent 100%);
+  }
+
+  /* Broad brand wash — a gradient across the page, not a blurred orb. */
+  .bg-brand-wash {
+    background-image: radial-gradient(
+      75% 55% at 50% -10%,
+      hsl(var(--primary) / 0.12),
+      transparent 70%
+    );
+  }
+  .dark .bg-brand-wash {
+    background-image: radial-gradient(
+      75% 55% at 50% -10%,
+      hsl(var(--primary) / 0.18),
+      transparent 70%
+    );
+  }
+
+  /* Long-form legal reading rhythm. Replaces the `prose` classes, which were
+     dead here — @tailwindcss/typography is not a dependency. */
+  .legal {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  .legal > * + * { margin-top: 1rem; }
+  .legal > ol { padding-left: 0; list-style: none; }
+  .legal > ol > li { padding-left: 0; }
+  .legal > ol > li + li { margin-top: 2rem; }
+  .legal h2 {
+    color: hsl(var(--foreground));
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .legal h2 + * { margin-top: 0.5rem; }
+  .legal h3 { color: hsl(var(--foreground)); font-weight: 600; }
+  .legal ul, .legal ol { padding-left: 1.25rem; }
+  .legal ul { list-style: disc; }
+  .legal li + li { margin-top: 0.375rem; }  .legal a { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 4px; }
+  .legal strong { color: hsl(var(--foreground)); font-weight: 600; }
 }
 /* Theme design tokens (light) */
 :root {
-	--background: 0 0% 100%;
+	--background: 220 33% 99%;
 	--foreground: 222 47% 11%;
 
 	--card: 0 0% 100%;
@@ -24,73 +103,101 @@
 	--popover: 0 0% 100%;
 	--popover-foreground: 222 47% 11%;
 
-	--primary: 222 89% 55%; /* blue-ish */
+	--primary: 221 83% 53%; /* confident blue, 5.1:1 on white */
 	--primary-foreground: 0 0% 100%;
 
-	--secondary: 240 5% 96%;
+	--secondary: 220 26% 95%;
 	--secondary-foreground: 222 47% 11%;
 
-	--muted: 240 5% 96%;
-	--muted-foreground: 215 16% 47%;
+	--muted: 220 26% 95%;
+	--muted-foreground: 215 17% 45%;
 
-	--accent: 222 89% 55%;
+	--accent: 221 83% 53%;
 	--accent-foreground: 0 0% 100%;
 
-	--destructive: 0 84% 60%;
+	--destructive: 0 72% 51%;
 	--destructive-foreground: 0 0% 100%;
 
-	--border: 214 32% 91%;
-	--input: 214 32% 91%;
-	--ring: 222 89% 55%;
+	--border: 220 20% 90%;
+	--input: 220 20% 90%;
+	--ring: 221 83% 53%;
 
 	--radius: 0.5rem;
 
-	--canvas: 0 0% 100%;
+	--canvas: 220 33% 99%;
 	--ink: 222 47% 11%;
-	--surface-dark: 222 47% 5%;
-	--surface-soft: 240 5% 96%;
-	--on-dark: 0 0% 100%;
-	--on-dark-soft: 215 20% 65%;
-	--hairline: 214 32% 91%;
+	--surface-dark: 222 47% 6%;
+	--surface-soft: 220 26% 95%;
+	--on-dark: 0 0% 98%;
+	--on-dark-soft: 220 14% 72%;
+	--hairline: 220 20% 90%;
+	--hairline-strong: 220 16% 82%;
+
+	/* Elevation ramp — shadows are tinted to the ink hue, never pure black. */
+	--elev-1: 0 1px 2px 0 hsl(222 47% 11% / 0.05);
+	--elev-2: 0 4px 12px -2px hsl(222 47% 11% / 0.08);
+	--elev-3: 0 12px 32px -8px hsl(222 47% 11% / 0.12);
+
+	/* Category identity — a controlled, desaturated set so discipline
+	   colours read as one system rather than as decoration. */
+	--cat-dev: 217 83% 48%;
+	--cat-design: 258 68% 55%;
+	--cat-writing: 32 82% 36%;
+	--cat-video: 340 72% 48%;
+	--cat-marketing: 152 58% 27%;
+	--cat-data: 189 80% 30%;
 }
 
 /* Dark theme overrides */
 .dark {
-	--background: 222 47% 7%;
+	--background: 222 50% 6%;
 	--foreground: 0 0% 98%;
 
-	--card: 222 47% 9%;
+	--card: 222 42% 10%;
 	--card-foreground: 0 0% 98%;
 
-	--popover: 222 47% 9%;
+	--popover: 222 42% 10%;
 	--popover-foreground: 0 0% 98%;
 
-	--primary: 222 89% 63%;
-	--primary-foreground: 0 0% 100%;
+	--primary: 217 91% 60%;
+	--primary-foreground: 222 47% 7%;
 
-	--secondary: 217 33% 17%;
+	--secondary: 217 30% 16%;
 	--secondary-foreground: 0 0% 98%;
 
-	--muted: 217 33% 17%;
-	--muted-foreground: 215 20% 65%;
+	--muted: 217 30% 16%;
+	--muted-foreground: 220 14% 70%;
 
-	--accent: 222 89% 63%;
-	--accent-foreground: 0 0% 100%;
+	--accent: 217 91% 60%;
+	--accent-foreground: 222 47% 7%;
 
 	--destructive: 0 63% 50%;
 	--destructive-foreground: 0 0% 98%;
 
-	--border: 217 33% 22%;
-	--input: 217 33% 22%;
-	--ring: 222 89% 63%;
+	--border: 217 28% 20%;
+	--input: 217 28% 20%;
+	--ring: 217 91% 60%;
 
-	--canvas: 222 47% 7%;
+	--canvas: 222 50% 6%;
 	--ink: 0 0% 98%;
-	--surface-dark: 222 47% 5%;
-	--surface-soft: 217 33% 15%;
-	--on-dark: 0 0% 100%;
-	--on-dark-soft: 215 20% 65%;
-	--hairline: 217 33% 22%;
+	--surface-dark: 222 50% 4%;
+	--surface-soft: 218 28% 13%;
+	--on-dark: 0 0% 98%;
+	--on-dark-soft: 220 14% 72%;
+	--hairline: 217 28% 20%;
+	--hairline-strong: 217 26% 28%;
+
+	--elev-1: 0 1px 2px 0 hsl(222 50% 2% / 0.4);
+	--elev-2: 0 4px 12px -2px hsl(222 50% 2% / 0.5);
+	--elev-3: 0 12px 32px -8px hsl(222 50% 2% / 0.6);
+
+	/* Category identity — lifted for contrast on dark surfaces. */
+	--cat-dev: 217 91% 66%;
+	--cat-design: 258 85% 74%;
+	--cat-writing: 38 92% 62%;
+	--cat-video: 340 85% 70%;
+	--cat-marketing: 152 62% 52%;
+	--cat-data: 189 85% 58%;
 }
 
 body { 

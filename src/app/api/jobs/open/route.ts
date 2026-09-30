@@ -1,10 +1,9 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/mongo/db';
-import Job from '@/mongo/model/jobschema';
-import UserData from '@/mongo/model/user';
+import { NextRequest, NextResponse } from 'next/server';
 import { getUserId } from "@/lib/session";
+import { queryOpenJobs } from "@/lib/jobs";
 
-export async function GET() {
+// Any signed-in user may browse. Clients included — the nav links here for everyone.
+export async function GET(req: NextRequest) {
   try {
     const userId = await getUserId();
     if (!userId) {
@@ -14,54 +13,18 @@ export async function GET() {
       );
     }
 
-    await connectDB();
-
-    const user = await UserData.findOne({ userId });
-    if (!user || user.role !== 'freelancer') {
-      return NextResponse.json(
-        { success: false, message: 'Access denied: freelancers only.' },
-        { status: 403 }
-      );
-    }
-
-    // Fetch all open jobs with no assigned freelancer
-    const openJobs = await Job.find({
-      status: 'open',
-      freelancerId: { $exists: false },
-    }).sort({ createdAt: -1 });
-
-    // Fetch associated client data for each job
-    const jobsWithClientDetails = await Promise.all(
-      openJobs.map(async (job) => {
-        const client = await UserData.findOne({ userId: job.clientId }).select('firstName lastName userImage');
-
-        return {
-          _id: job._id,
-          jobId: job.jobId,
-          title: job.title,
-          description: job.description,
-          category: job.category,
-          budget: job.budget,
-          deadline: job.deadline,
-          status: job.status,
-          createdAt: job.createdAt,
-          updatedAt: job.updatedAt,
-
-          // Client details
-          client: {
-            clientId: job.clientId,
-            name: `${client?.firstName || ''} ${client?.lastName || ''}`.trim(),
-            image: client?.userImage || '/default-avatar.png',
-          },
-        };
-      })
-    );
-
-    return NextResponse.json({
-      success: true,
-      data: jobsWithClientDetails,
-      count: jobsWithClientDetails.length,
+    const p = req.nextUrl.searchParams;
+    const result = await queryOpenJobs({
+      search: p.get('search'),
+      category: p.get('category'),
+      min: p.get('min'),
+      max: p.get('max'),
+      budgetType: p.get('budgetType'),
+      sort: p.get('sort'),
+      page: p.get('page'),
     });
+
+    return NextResponse.json({ success: true, ...result, count: result.data.length });
   } catch (error) {
     console.error('Open jobs fetch error:', error);
     return NextResponse.json(

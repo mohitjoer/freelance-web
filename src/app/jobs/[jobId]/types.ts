@@ -1,3 +1,5 @@
+import { formatDay } from "@/lib/format";
+
 export interface Job {
   _id: string;
   jobId: string;
@@ -7,6 +9,8 @@ export interface Job {
   description: string;
   category: string;
   budget: number;
+  budgetType?: 'fixed' | 'hourly';
+  budgetMax?: number | null;
   deadline: string;
   createdAt: string;
   references?: string[];
@@ -24,10 +28,4 @@ export interface Proposal {
   estimatedDays: number;
 }
 
-// Module-scope formatter with fixed locale + timezone so SSR and client render identically
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  dateStyle: 'medium',
-  timeZone: 'UTC',
-});
-
-export const formatDate = (date: string | Date) => dateFormatter.format(new Date(date));
+export const formatDate = formatDay;

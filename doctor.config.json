@@ -5,6 +5,11 @@
       {
         "files": ["server/server.ts", "chrome extension/**"],
         "rules": ["deslop/unused-file"]
+      },
+      {
+        "comment": "Imported by src/app/api/room/[roomId]/route.ts and its message subroute; the detector does not follow that import chain.",
+        "files": ["src/lib/room-access.ts"],
+        "rules": ["deslop/unused-file"]
       }
     ]
   }

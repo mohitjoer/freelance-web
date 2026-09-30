@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/", "/privacy", "/terms", "/jobs/open", "/profile/"],
-        disallow: ["/api/", "/dashboard/", "/onboarding/", "/select/", "/setting/", "/room/", "/jobs/create/", "/jobs/edit/"],
+        disallow: ["/api/", "/dashboard/", "/onboarding/", "/setting/", "/room/", "/jobs/create/", "/jobs/edit/"],
       },
     ],
     sitemap: "https://freelancebase.mohitjoe.xyz/sitemap.xml",

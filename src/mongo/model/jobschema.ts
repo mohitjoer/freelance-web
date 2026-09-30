@@ -6,6 +6,8 @@ export interface IJob extends Document {
   description: string;
   category: string;
   budget: number;
+  budgetType: 'fixed' | 'hourly';  // existing rows backfill to 'fixed' via default
+  budgetMax?: number;             // hourly range upper bound, e.g. 40 for "$25-40/hr"
   deadline: Date;
 
   clientId: string;             // UserData.userId (client)
@@ -36,7 +38,12 @@ const jobSchema = new Schema<IJob>(
     description: { type: String, required: true },
     category: { type: String, required: true },
     budget: { type: Number, required: true },
-  
+    budgetType: {
+      type: String,
+      enum: ['fixed', 'hourly'],
+      default: 'fixed',
+    },
+    budgetMax: { type: Number },
 
     clientId: { type: String, required: true },
     freelancerId: { type: String }, 
